@@ -1,0 +1,1 @@
+export const baseUrl = "http://103.120.178.195/SangHRMS/SangHRMS/"
