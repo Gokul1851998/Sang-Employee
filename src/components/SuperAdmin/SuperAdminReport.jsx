@@ -7,13 +7,11 @@ import {
   IconButton,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import {
-  getDailyTaskReport,
-  getEmployee,
-} from "../../api/ApiCall";
+import { getDailyTaskReport, getEmployee } from "../../api/ApiCall";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
@@ -58,24 +56,22 @@ export default function SuperAdminReport() {
   });
 
   const handleSubmit = async () => {
-    if(from && to && employeeId !== 0){
-
-    const FromDate = formatDate(from);
-    const ToDate = formatDate(to);
-    const response = await getDailyTaskReport({
-      iEmployee: employeeId,
-      FromDate,
-      ToDate,
-    });
-    if (response.Status === "Success") {
-      const myObject = JSON.parse(response.ResultData);
-      setData(myObject.Table);
+    if (from && to && employeeId !== 0) {
+      const FromDate = formatDate(from);
+      const ToDate = formatDate(to);
+      const response = await getDailyTaskReport({
+        iEmployee: employeeId,
+        FromDate,
+        ToDate,
+      });
+      if (response.Status === "Success") {
+        const myObject = JSON.parse(response.ResultData);
+        setData(myObject.Table);
+      }
+    } else {
+      setMessage(`Fill all fields`);
+      handleOpen();
     }
-            
-}else{
-    setMessage(`Fill all fields`);
-    handleOpen();
-}
   };
 
   function formatDate(inputDate) {
@@ -98,177 +94,169 @@ export default function SuperAdminReport() {
 
   return (
     <>
-     
-        <Box
+      <Box
+        sx={{
+          width: "auto",
+          padding: 2,
+          zIndex: 1,
+          textAlign: "center",
+        }}
+      >
+        <Stack
+          direction="row"
+          paddingBottom={1}
+          justifyContent="flex-end"
           sx={{
-            p:2,
-            width: "auto",
-            zIndex: 1,
-            textAlign: "center", // Center content within this Box
+            "@media screen and (max-width: 600px)": {
+              flexDirection: "column",
+              alignItems: "center",
+            },
           }}
         >
-          <Stack direction="row" paddingBottom={1} justifyContent="flex-end">
-            <Button
-              onClick={handleClear}
-              variant="contained"
-              startIcon={<CloseIcon />}
-              style={buttonStyle}
-            >
-              Clear
-            </Button>
-          </Stack>
-          <div
-            style={{
-              display: "flex", // Set display to flex
-              alignItems: "center", // Center vertically
-              justifyContent: "normal", // Space between components
-              padding: "10px",
-              boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
-              backgroundColor: "#ffff",
-              // Make the div round
-              overflow: "hidden", // Ensure content doesn't overflow
-            }}
+          <Button
+            onClick={handleClear}
+            variant="contained"
+            startIcon={<CloseIcon />}
+            style={buttonStyle}
           >
-            <Box
-              component="form"
-              sx={{
-                "& > :not(style)": { m: 1, ml: 3, width: "35ch" },
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              <Autocomplete
-                id="size-small-filled"
-                size="small"
-                value={employee || null}
-                onChange={(event, newValue) => {
-                  setEmployee(newValue || null);
-                  setEmployeeId(newValue?.iId || 0);
-                }}
-                options={suggestionEmployee
-                  .filter((data) => data !== undefined)
-                  .map((data) => ({
-                    sCode: data.sCode,
-                    sName: data.sName,
-                    iId: data.iId,
-                  }))}
-                filterOptions={(options, { inputValue }) => {
-                  return options.filter(
-                    (option) =>
-                      option.sName
-                        .toLowerCase()
-                        .includes(inputValue.toLowerCase()) ||
-                      option.sCode
-                        .toLowerCase()
-                        .includes(inputValue.toLowerCase())
-                  );
-                }}
-                autoHighlight
-                getOptionLabel={(option) =>
-                  option && option.sName ? option.sName : ""
-                }
-                renderOption={(props, option) => (
-                  <Box {...props}>
-                    <p className="text-sm ">{option.sName}</p>
-                    <p className="text-sm ml-auto pl-2">{option.sCode}</p>
-                  </Box>
-                )}
-                renderInput={(params) => (
-                  <TextField
-                    required
-                    label="Employee"
-                    className="form-control"
-                    {...params}
-                    inputProps={{
-                      ...params.inputProps,
-                      autoComplete: "new-password", // disable autocomplete and autofill
+            Clear
+          </Button>
+        </Stack>
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          alignItems="center"
+          spacing={2}
+          padding={2}
+          boxShadow="0px 5px 15px rgba(0, 0, 0, 0.3)"
+          bgcolor="#ffff"
+          borderRadius={2}
+          overflow="hidden"
+          sx={{
+            "@media screen and (max-width: 600px)": {
+              flexDirection: "column",
+            },
+          }}
+        >
+          <Autocomplete
+            id="size-small-filled"
+            size="small"
+            value={employee || ""}
+            onChange={(event, newValue) => {
+              setEmployee(newValue);
+              setEmployeeId(newValue?.iId || null);
+            }}
+            options={suggestionEmployee}
+            getOptionLabel={(option) => (option ? option.sName : "")}
+            filterOptions={(options, { inputValue }) => {
+              return options.filter(
+                (option) =>
+                  option.sName
+                    .toLowerCase()
+                    .includes(inputValue.toLowerCase()) ||
+                  option.sCode.toLowerCase().includes(inputValue.toLowerCase())
+              );
+            }}
+            isOptionEqualToValue={(option, value) => option?.iId === value?.iId}
+            autoHighlight
+            renderOption={(props, option) => (
+              <li {...props}>
+                <div
+                  className=""
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Typography
+                    style={{
+                      marginRight: "auto",
+                      fontSize: "12px",
+                      fontWeight: "normal",
                     }}
-                  />
-                )}
-              />
-            </Box>
-            <Box
-              readOnly
-              component="form"
-              sx={{
-                "& > :not(style)": { m: 1, ml: 3, width: "35ch" },
-              }}
-              noValidate
-              autoComplete="off"
-            >
+                  >
+                    {option.sName}
+                  </Typography>
+                  <Typography
+                    style={{
+                      marginLeft: "auto",
+                      fontSize: "12px",
+                      fontWeight: "normal",
+                    }}
+                  >
+                    {option.sCode}
+                  </Typography>
+                </div>
+              </li>
+            )}
+            renderInput={(params) => (
               <TextField
                 required
-                type="date"
-                size="small"
+                label="Employee"
                 className="form-control"
-                value={from}
+                {...params}
                 inputProps={{
-                  maxLength: 150,
+                  ...params.inputProps,
+                  autoComplete: "new-password", // disable autocomplete and autofill
                 }}
-                onChange={(e) => {
-                  const inputValue = e.target.value;
-                  setFrom(inputValue);
-                }}
-                label="From Date"
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true, // Set shrink to true when there is a value
-                }}
+                sx={{ minWidth: 200 }} // Set the width for Autocomplete
               />
-            </Box>
-            <Box
-              component="form"
-              sx={{
-                "& > :not(style)": { m: 1, ml: 3, width: "35ch" },
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              <TextField
-                required
-                type="date"
-                size="small"
-                className="form-control"
-                value={to}
-                onChange={(e) => {
-                  const inputValue = e.target.value;
-                  setTo(inputValue);
-                }}
-                label="To Date"
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true, // Set shrink to true when there is a value
-                }}
-              />
-            </Box>
-            <Box
-              readOnly
-              component="form"
-              sx={{
-                "& > :not(style)": { m: 1, ml: 3 },
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              <IconButton
-                onClick={handleSubmit}
-                id="SearchVoucher"
-                style={{ background: "#74227a" }}
-              >
-                <SearchIcon style={{ color: "#ffffff" }}  />
-              </IconButton>
-            </Box>
-          </div>
-        </Box>
+            )}
+          />
 
-        {/* <Loader open={open} handleClose={handleClose} /> */}
-  
-
+          <TextField
+            required
+            type="date"
+            size="small"
+            className="form-control"
+            value={from}
+            inputProps={{
+              maxLength: 150,
+            }}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              setFrom(inputValue);
+            }}
+            label="From Date"
+            variant="outlined"
+            InputLabelProps={{
+              shrink: true, // Set shrink to true when there is a value
+            }}
+            sx={{ minWidth: 200 }} // Set the width for TextField
+          />
+          <TextField
+            required
+            type="date"
+            size="small"
+            className="form-control"
+            value={to}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              setTo(inputValue);
+            }}
+            label="To Date"
+            variant="outlined"
+            InputLabelProps={{
+              shrink: true, // Set shrink to true when there is a value
+            }}
+            sx={{ minWidth: 200 }} // Set the width for TextField
+          />
+          <IconButton
+            onClick={handleSubmit}
+            id="SearchVoucher"
+            style={{ background: "#8c99e0" }}
+          >
+            <SearchIcon style={{ color: "#ffffff" }} />
+          </IconButton>
+        </Stack>
+      </Box>
       {data && data.length ? (
         <>
-           <AdminList data={data} />
+          <AdminList data={data} />
         </>
       ) : null}
+      {/* <Loader open={open} handleClose={handleClose} /> */}
+
       <ErrorMessage open={open} handleClose={handleClose} message={message} />
     </>
   );

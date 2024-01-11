@@ -7,13 +7,11 @@ import {
   IconButton,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import {
-  getDailyTaskReport,
-  getEmployee,
-} from "../../api/ApiCall";
+import { getDailyTaskReport, getEmployee } from "../../api/ApiCall";
 import SearchIcon from "@mui/icons-material/Search";
 import AdminList from "./AdminList";
 import CloseIcon from "@mui/icons-material/Close";
@@ -57,24 +55,23 @@ export default function Admin() {
   });
 
   const handleSubmit = async () => {
-    if(from && to && employeeId !== 0){
-
-    const FromDate = formatDate(from);
-    const ToDate = formatDate(to);
-    const response = await getDailyTaskReport({
-      iEmployee: employeeId,
-      FromDate,
-      ToDate,
-    });
-    if (response.Status === "Success") {
-      const myObject = JSON.parse(response.ResultData);
-      setData(myObject.Table);
+    console.log(from, to, employeeId);
+    if (from && to && employeeId !== 0) {
+      const FromDate = formatDate(from);
+      const ToDate = formatDate(to);
+      const response = await getDailyTaskReport({
+        iEmployee: employeeId,
+        FromDate,
+        ToDate,
+      });
+      if (response.Status === "Success") {
+        const myObject = JSON.parse(response.ResultData);
+        setData(myObject.Table);
+      }
+    } else {
+      setMessage(`Fill all fields`);
+      handleOpen();
     }
-            
-}else{
-    setMessage(`Fill all fields`);
-    handleOpen();
-}
   };
 
   function formatDate(inputDate) {
@@ -101,18 +98,19 @@ export default function Admin() {
         sx={{
           margin: 0,
           background: "#8c99e0",
-          height: "150px",
+          height: "auto", // Set height to "auto"
           boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.5)",
-          display: "flex", // Make it a flex container
-          alignItems: "center", // Center vertically
-          justifyContent: "center", // Center horizontally
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <Box
           sx={{
             width: "auto",
+            padding: 2,
             zIndex: 1,
-            textAlign: "center", // Center content within this Box
+            textAlign: "center",
           }}
         >
           <Stack direction="row" paddingBottom={1} justifyContent="flex-end">
@@ -125,151 +123,133 @@ export default function Admin() {
               Clear
             </Button>
           </Stack>
-          <div
-            style={{
-              display: "flex", // Set display to flex
-              alignItems: "center", // Center vertically
-              justifyContent: "normal", // Space between components
-              padding: "10px",
-              boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
-              backgroundColor: "#ffff",
-              // Make the div round
-              overflow: "hidden", // Ensure content doesn't overflow
-            }}
+          <Stack
+            direction={{ xs: "column", md: "row" }}
+            alignItems="center"
+            spacing={2}
+            padding={2}
+            boxShadow="0px 5px 15px rgba(0, 0, 0, 0.3)"
+            bgcolor="#ffff"
+            borderRadius={2}
+            overflow="hidden"
           >
-            <Box
-              component="form"
-              sx={{
-                "& > :not(style)": { m: 1, ml: 3, width: "35ch" },
+            <Autocomplete
+              id="size-small-filled"
+              size="small"
+              value={employee || null}
+              onChange={(event, newValue) => {
+                setEmployee(newValue);
+                setEmployeeId(newValue?.iId || null);
               }}
-              noValidate
-              autoComplete="off"
-            >
-              <Autocomplete
-                id="size-small-filled"
-                size="small"
-                value={employee || null}
-                onChange={(event, newValue) => {
-                  setEmployee(newValue || null);
-                  setEmployeeId(newValue?.iId || 0);
-                }}
-                options={suggestionEmployee
-                  .filter((data) => data !== undefined)
-                  .map((data) => ({
-                    sCode: data.sCode,
-                    sName: data.sName,
-                    iId: data.iId,
-                  }))}
-                filterOptions={(options, { inputValue }) => {
-                  return options.filter(
-                    (option) =>
-                      option.sName
-                        .toLowerCase()
-                        .includes(inputValue.toLowerCase()) ||
-                      option.sCode
-                        .toLowerCase()
-                        .includes(inputValue.toLowerCase())
-                  );
-                }}
-                autoHighlight
-                getOptionLabel={(option) =>
-                  option && option.sName ? option.sName : ""
-                }
-                renderOption={(props, option) => (
-                  <Box {...props}>
-                    <p className="text-sm ">{option.sName}</p>
-                    <p className="text-sm ml-auto pl-2">{option.sCode}</p>
-                  </Box>
-                )}
-                renderInput={(params) => (
-                  <TextField
-                    required
-                    label="Employee"
-                    className="form-control"
-                    {...params}
-                    inputProps={{
-                      ...params.inputProps,
-                      autoComplete: "new-password", // disable autocomplete and autofill
+              options={suggestionEmployee}
+              getOptionLabel={(option) => (option ? option.sName : "")}
+              filterOptions={(options, { inputValue }) => {
+                return options.filter(
+                  (option) =>
+                    option.sName
+                      .toLowerCase()
+                      .includes(inputValue.toLowerCase()) ||
+                    option.sCode
+                      .toLowerCase()
+                      .includes(inputValue.toLowerCase())
+                );
+              }}
+              isOptionEqualToValue={(option, value) =>
+                option?.iId === value?.iId
+              }
+              autoHighlight
+              renderOption={(props, option) => (
+                <li {...props}>
+                  <div
+                    className=""
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      width: "100%",
                     }}
-                  />
-                )}
-              />
-            </Box>
-            <Box
-              readOnly
-              component="form"
-              sx={{
-                "& > :not(style)": { m: 1, ml: 3, width: "35ch" },
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              <TextField
-                required
-                type="date"
-                size="small"
-                className="form-control"
-                value={from}
-                inputProps={{
-                  maxLength: 150,
-                }}
-                onChange={(e) => {
-                  const inputValue = e.target.value;
-                  setFrom(inputValue);
-                }}
-                label="From Date"
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true, // Set shrink to true when there is a value
-                }}
-              />
-            </Box>
-            <Box
-              component="form"
-              sx={{
-                "& > :not(style)": { m: 1, ml: 3, width: "35ch" },
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              <TextField
-                required
-                type="date"
-                size="small"
-                className="form-control"
-                value={to}
-                onChange={(e) => {
-                  const inputValue = e.target.value;
-                  setTo(inputValue);
-                }}
-                label="To Date"
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true, // Set shrink to true when there is a value
-                }}
-              />
-            </Box>
-            <Box
-              readOnly
-              component="form"
-              sx={{
-                "& > :not(style)": { m: 1, ml: 3 },
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              <IconButton
-                onClick={handleSubmit}
-                id="SearchVoucher"
-                style={{ background: "#8c99e0" }}
-              >
-                <SearchIcon style={{ color: "#ffffff" }} />
-              </IconButton>
-            </Box>
-          </div>
-        </Box>
+                  >
+                    <Typography
+                      style={{
+                        marginRight: "auto",
+                        fontSize: "12px",
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {option.sName}
+                    </Typography>
+                    <Typography
+                      style={{
+                        marginLeft: "auto",
+                        fontSize: "12px",
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {option.sCode}
+                    </Typography>
+                  </div>
+                </li>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  required
+                  label="Employee"
+                  className="form-control"
+                  {...params}
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: "new-password", // disable autocomplete and autofill
+                  }}
+                  sx={{ minWidth: 200 }} // Set the width for Autocomplete
+                />
+              )}
+            />
 
-        {/* <Loader open={open} handleClose={handleClose} /> */}
+            <TextField
+              required
+              type="date"
+              size="small"
+              className="form-control"
+              value={from}
+              inputProps={{
+                maxLength: 150,
+              }}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                setFrom(inputValue);
+              }}
+              label="From Date"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true, // Set shrink to true when there is a value
+              }}
+              sx={{ minWidth: 200 }} // Set the width for TextField
+            />
+            <TextField
+              required
+              type="date"
+              size="small"
+              className="form-control"
+              value={to}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                setTo(inputValue);
+              }}
+              label="To Date"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true, // Set shrink to true when there is a value
+              }}
+              sx={{ minWidth: 200 }} // Set the width for TextField
+            />
+            <IconButton
+              onClick={handleSubmit}
+              id="SearchVoucher"
+              style={{ background: "#8c99e0" }}
+            >
+              <SearchIcon style={{ color: "#ffffff" }} />
+            </IconButton>
+          </Stack>
+        </Box>
       </Box>
 
       {data && data.length ? (

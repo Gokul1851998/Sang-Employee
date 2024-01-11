@@ -111,7 +111,7 @@ function EnhancedTableToolbar(props) {
         id="tableTitle"
         component="div"
       >
-        Purchase
+        Report
       </Typography>
 
       <TextField
@@ -245,16 +245,17 @@ export default function AdminList({ data }) {
               <TableBody>
                 {visibleRows.map((row, index) => {
                   const labelId = `enhanced-table-checkbox-${index}`;
-
                   return (
                     <TableRow
+                    key={row.iId}
                       hover
+                      
                       className={`table-row `}
                       tabIndex={-1}
-                      key={row.iId}
+                     
                       sx={{ cursor: "pointer" }}
                     >
-                      <TableCell padding="checkbox">*</TableCell>
+                      <TableCell padding="checkbox"></TableCell>
                       {Object.keys(data[0]).map((column, index) => {
                         if (column !== "iId") {
                           return (

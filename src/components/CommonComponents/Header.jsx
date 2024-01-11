@@ -7,7 +7,7 @@ import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import { useNavigate } from "react-router-dom";
-import { Stack, Tooltip, Typography } from "@mui/material";
+import { Hidden, Stack, Tooltip, Typography } from "@mui/material";
 
 function Header() {
   const navigate = useNavigate();
@@ -38,49 +38,56 @@ function Header() {
   const truncatedName = userName.slice(0, 2);
   return (
     <>
-      <AppBar
-        position="static"
-        sx={{
-          bgcolor: theme,
-          boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.5)", // Changed the vertical offset to 5px
-        }}
-      >
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            <Avatar
-              alt="Logo"
-              src="http://103.120.178.195:82/Sang_solutions/assets/images/sang_logo.png"
-              sx={{ mr: 2, width: 60, height: 60 }}
+       <AppBar
+      position="static"
+      sx={{
+        bgcolor: theme,
+        boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.5)", // Changed the vertical offset to 5px
+      }}
+    >
+      <Container maxWidth="xl">
+        <Toolbar disableGutters>
+          <Avatar
+            alt="Logo"
+            src="http://103.120.178.195:82/Sang_solutions/assets/images/sang_logo.png"
+            sx={{ mr: 2, width: 60, height: 60 }}
+          />
+          <Typography
+            variant="h5"
+            pt={2}
+            gutterBottom
+            sx={{
+              fontWeight: "normal",
+              fontFamily: "YourCustomFont, sans-serif",
+            }}
+          >
+            {title}
+          </Typography>
+
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", md: "flex" },
+              alignItems: "center",
+              justifyContent: "start",
+            }}
+          ></Box>
+
+          <Hidden mdUp>
+            {/* Render this box for small screens */}
+            <Box sx={{ flexGrow: 1 }}></Box>
+          </Hidden>
+
+          <Box sx={{ flexGrow: 0 }}>
+            <PowerSettingsNewIcon
+              sx={{ marginRight: { md: "20px" } }}
+              onClick={onClickLog}
             />
-            <Typography
-              variant="h4"
-              pt={2}
-              gutterBottom
-              sx={{
-                fontWeight: "normal",
-                fontFamily: "YourCustomFont, sans-serif",
-              }}
-            >
-              {title}
-            </Typography>
+          </Box>
 
-            <Box
-              sx={{
-                flexGrow: 1,
-                display: { xs: "none", md: "flex" },
-                alignItems: "center",
-                justifyContent: "start",
-              }}
-            ></Box>
-
-            <Box sx={{ flexGrow: 0 }}>
-              <PowerSettingsNewIcon
-                sx={{ marginRight: "20px" }}
-                onClick={onClickLog}
-              />
-            </Box>
-
-            <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ flexGrow: 0 }}>
+          
+              {/* Render this IconButton for small screens */}
               <IconButton sx={{ p: 0 }}>
                 <Tooltip title={userName} arrow>
                   <Stack direction="row" spacing={2}>
@@ -88,10 +95,11 @@ function Header() {
                   </Stack>
                 </Tooltip>
               </IconButton>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
+           
+          </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
     </>
   );
 }
