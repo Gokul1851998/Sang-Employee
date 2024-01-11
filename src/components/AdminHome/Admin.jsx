@@ -55,7 +55,6 @@ export default function Admin() {
   });
 
   const handleSubmit = async () => {
-    console.log(from, to, employeeId);
     if (from && to && employeeId !== 0) {
       const FromDate = formatDate(from);
       const ToDate = formatDate(to);
@@ -64,9 +63,16 @@ export default function Admin() {
         FromDate,
         ToDate,
       });
+      console.log(response);
       if (response.Status === "Success") {
         const myObject = JSON.parse(response.ResultData);
-        setData(myObject.Table);
+        if (myObject && myObject.Table.length) {
+          setData(myObject.Table);
+        } else {
+          setMessage(`No data found`);
+          handleOpen();
+          setData([]);
+        }
       }
     } else {
       setMessage(`Fill all fields`);

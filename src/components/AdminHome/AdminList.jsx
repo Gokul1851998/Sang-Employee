@@ -245,6 +245,7 @@ export default function AdminList({ data }) {
               <TableBody>
                 {visibleRows.map((row, index) => {
                   const labelId = `enhanced-table-checkbox-${index}`;
+
                   return (
                     <TableRow
                     key={row.iId}

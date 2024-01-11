@@ -61,7 +61,7 @@ export default function SuperAdmin() {
       label: "Task",
     },
     {
-      color: "secondary",
+      color: "",
       content: (
         <Box>
           <SuperAdminReport/>

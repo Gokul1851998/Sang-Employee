@@ -4,6 +4,7 @@ import Loader from "../Loader/Loader";
 import {
   Autocomplete,
   Button,
+  Grid,
   IconButton,
   Stack,
   TextField,
@@ -66,7 +67,13 @@ export default function SuperAdminReport() {
       });
       if (response.Status === "Success") {
         const myObject = JSON.parse(response.ResultData);
-        setData(myObject.Table);
+        if (myObject && myObject.Table.length) {
+            setData(myObject.Table);
+          } else {
+            setMessage(`No data found`);
+            handleOpen();
+            setData([]);
+          }
       }
     } else {
       setMessage(`Fill all fields`);
@@ -95,166 +102,152 @@ export default function SuperAdminReport() {
   return (
     <>
       <Box
-        sx={{
-          width: "auto",
-          padding: 2,
-          zIndex: 1,
-          textAlign: "center",
-        }}
+      sx={{
+        width: '100%',
+        padding: 2,
+        zIndex: 1,
+        textAlign: 'end',
+      }}
+    >
+      <Button
+        sx={{ margin: 1 }}
+        onClick={handleClear}
+        variant="contained"
+        startIcon={<CloseIcon />}
+        style={buttonStyle}
       >
-        <Stack
-          direction="row"
-          paddingBottom={1}
-          justifyContent="flex-end"
-          sx={{
-            "@media screen and (max-width: 600px)": {
-              flexDirection: "column",
-              alignItems: "center",
-            },
-          }}
-        >
-          <Button
-            onClick={handleClear}
-            variant="contained"
-            startIcon={<CloseIcon />}
-            style={buttonStyle}
+        Clear
+      </Button>
+        <Grid item xs={12} md={12}>
+          {/* Autocomplete and other input fields */}
+          <Stack
+            direction={{ xs: 'column', md: 'row' }}
+            alignItems="center"
+            spacing={2}
+            padding={2}
+            boxShadow="0px 5px 15px rgba(0, 0, 0, 0.3)"
+            bgcolor="#ffff"
+            borderRadius={2}
+            overflow="hidden"
           >
-            Clear
-          </Button>
-        </Stack>
-        <Stack
-          direction={{ xs: "column", md: "row" }}
-          alignItems="center"
-          spacing={2}
-          padding={2}
-          boxShadow="0px 5px 15px rgba(0, 0, 0, 0.3)"
-          bgcolor="#ffff"
-          borderRadius={2}
-          overflow="hidden"
-          sx={{
-            "@media screen and (max-width: 600px)": {
-              flexDirection: "column",
-            },
-          }}
-        >
-          <Autocomplete
-            id="size-small-filled"
-            size="small"
-            value={employee || ""}
-            onChange={(event, newValue) => {
-              setEmployee(newValue);
-              setEmployeeId(newValue?.iId || null);
-            }}
-            options={suggestionEmployee}
-            getOptionLabel={(option) => (option ? option.sName : "")}
-            filterOptions={(options, { inputValue }) => {
-              return options.filter(
-                (option) =>
-                  option.sName
-                    .toLowerCase()
-                    .includes(inputValue.toLowerCase()) ||
-                  option.sCode.toLowerCase().includes(inputValue.toLowerCase())
-              );
-            }}
-            isOptionEqualToValue={(option, value) => option?.iId === value?.iId}
-            autoHighlight
-            renderOption={(props, option) => (
-              <li {...props}>
-                <div
-                  className=""
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    width: "100%",
+            <Autocomplete
+              id="size-small-filled"
+              size="small"
+              value={employee || ''}
+              onChange={(event, newValue) => {
+                setEmployee(newValue);
+                setEmployeeId(newValue?.iId || null);
+              }}
+              options={suggestionEmployee}
+              getOptionLabel={(option) => (option ? option.sName : '')}
+              filterOptions={(options, { inputValue }) => {
+                return options.filter(
+                  (option) =>
+                    option.sName.toLowerCase().includes(inputValue.toLowerCase()) ||
+                    option.sCode.toLowerCase().includes(inputValue.toLowerCase())
+                );
+              }}
+              isOptionEqualToValue={(option, value) => option?.iId === value?.iId}
+              autoHighlight
+              renderOption={(props, option) => (
+                <li {...props}>
+                  <div
+                    className=""
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                    }}
+                  >
+                    <Typography
+                      style={{
+                        marginRight: 'auto',
+                        fontSize: '12px',
+                        fontWeight: 'normal',
+                      }}
+                    >
+                      {option.sName}
+                    </Typography>
+                    <Typography
+                      style={{
+                        marginLeft: 'auto',
+                        fontSize: '12px',
+                        fontWeight: 'normal',
+                      }}
+                    >
+                      {option.sCode}
+                    </Typography>
+                  </div>
+                </li>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  required
+                  label="Employee"
+                  className="form-control"
+                  {...params}
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'new-password', // disable autocomplete and autofill
                   }}
-                >
-                  <Typography
-                    style={{
-                      marginRight: "auto",
-                      fontSize: "12px",
-                      fontWeight: "normal",
-                    }}
-                  >
-                    {option.sName}
-                  </Typography>
-                  <Typography
-                    style={{
-                      marginLeft: "auto",
-                      fontSize: "12px",
-                      fontWeight: "normal",
-                    }}
-                  >
-                    {option.sCode}
-                  </Typography>
-                </div>
-              </li>
-            )}
-            renderInput={(params) => (
-              <TextField
-                required
-                label="Employee"
-                className="form-control"
-                {...params}
-                inputProps={{
-                  ...params.inputProps,
-                  autoComplete: "new-password", // disable autocomplete and autofill
-                }}
-                sx={{ minWidth: 200 }} // Set the width for Autocomplete
-              />
-            )}
-          />
+                  sx={{ minWidth: 200, flex: 1 }} // Set the width for Autocomplete and make it flexible
+                />
+              )}
+            />
 
-          <TextField
-            required
-            type="date"
-            size="small"
-            className="form-control"
-            value={from}
-            inputProps={{
-              maxLength: 150,
-            }}
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              setFrom(inputValue);
-            }}
-            label="From Date"
-            variant="outlined"
-            InputLabelProps={{
-              shrink: true, // Set shrink to true when there is a value
-            }}
-            sx={{ minWidth: 200 }} // Set the width for TextField
-          />
-          <TextField
-            required
-            type="date"
-            size="small"
-            className="form-control"
-            value={to}
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              setTo(inputValue);
-            }}
-            label="To Date"
-            variant="outlined"
-            InputLabelProps={{
-              shrink: true, // Set shrink to true when there is a value
-            }}
-            sx={{ minWidth: 200 }} // Set the width for TextField
-          />
-          <IconButton
-            onClick={handleSubmit}
-            id="SearchVoucher"
-            style={{ background: "#8c99e0" }}
-          >
-            <SearchIcon style={{ color: "#ffffff" }} />
-          </IconButton>
-        </Stack>
-      </Box>
-      {data && data.length ? (
-        <>
-          <AdminList data={data} />
-        </>
-      ) : null}
+            <TextField
+              required
+              type="date"
+              size="small"
+              className="form-control"
+              value={from}
+              inputProps={{
+                maxLength: 150,
+              }}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                setFrom(inputValue);
+              }}
+              label="From Date"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true, // Set shrink to true when there is a value
+              }}
+              sx={{ minWidth: 200 }} // Set the width for TextField
+            />
+            <TextField
+              required
+              type="date"
+              size="small"
+              className="form-control"
+              value={to}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                setTo(inputValue);
+              }}
+              label="To Date"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true, // Set shrink to true when there is a value
+              }}
+              sx={{ minWidth: 200 }} // Set the width for TextField
+            />
+            <IconButton
+              onClick={handleSubmit}
+              id="SearchVoucher"
+              style={{ background: '#8c99e0' }}
+            >
+              <SearchIcon style={{ color: '#ffffff' }} />
+            </IconButton>
+          </Stack>
+        </Grid>
+    </Box>
+    <Grid item xs={12} md={6}>
+          {/* AdminList component */}
+          {data && data.length ? (
+            <AdminList data={data} />
+          ) : null}
+        </Grid>
       {/* <Loader open={open} handleClose={handleClose} /> */}
 
       <ErrorMessage open={open} handleClose={handleClose} message={message} />
