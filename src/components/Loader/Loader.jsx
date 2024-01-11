@@ -1,6 +1,6 @@
 import { Backdrop } from '@mui/material'
 import React from 'react'
-import { Blocks , Hourglass } from 'react-loader-spinner'
+import { Hourglass } from 'react-loader-spinner'
 
 export default function Loader({open,handleClose}) {
   return (

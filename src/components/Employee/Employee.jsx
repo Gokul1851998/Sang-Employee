@@ -1,39 +1,11 @@
 import * as React from "react";
-import PropTypes from "prop-types";
-import { alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import TableSortLabel from "@mui/material/TableSortLabel";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
-import { visuallyHidden } from "@mui/utils";
 import "./PurchaseTable.css";
-
 import Loader from "../Loader/Loader";
-import { Button, ButtonGroup, TextField } from "@mui/material";
-import PrintIcon from "@mui/icons-material/Print";
-import CloseIcon from "@mui/icons-material/Close";
-
-import SendIcon from "@mui/icons-material/Send";
-import Stack from "@mui/material/Stack";
 import {
   MDBBtn,
-  MDBCheckbox,
   MDBCol,
-  MDBIcon,
   MDBInput,
   MDBRow,
   MDBTextArea,

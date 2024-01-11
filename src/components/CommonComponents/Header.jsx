@@ -7,24 +7,24 @@ import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import { useNavigate } from "react-router-dom";
-import { Stack, Typography } from "@mui/material";
+import { Stack, Tooltip, Typography } from "@mui/material";
 
 function Header() {
   const navigate = useNavigate();
   const userName = localStorage.getItem("userName");
   const admin = Number(localStorage.getItem("admin"));
   const [theme, setTheme] = React.useState("");
-  const [title, setTitle] = React.useState("")
+  const [title, setTitle] = React.useState("");
   React.useEffect(() => {
     if (admin === 1) {
       setTheme("#8c99e0");
-      setTitle("Sang Admin")
+      setTitle("Sang Admin");
     } else if (admin === 0) {
       setTheme("#1b77e9");
-      setTitle("Sang Employee")
+      setTitle("Sang Employee");
     } else if (admin === 2) {
       setTheme("#813587");
-      setTitle("Sang Super Admin")
+      setTitle("Sang Super Admin");
     }
   }, [admin]);
 
@@ -35,7 +35,7 @@ function Header() {
     localStorage.removeItem("iEmployee");
     navigate("/");
   };
-
+  const truncatedName = userName.slice(0, 2);
   return (
     <>
       <AppBar
@@ -61,7 +61,7 @@ function Header() {
                 fontFamily: "YourCustomFont, sans-serif",
               }}
             >
-             {title}
+              {title}
             </Typography>
 
             <Box
@@ -82,9 +82,11 @@ function Header() {
 
             <Box sx={{ flexGrow: 0 }}>
               <IconButton sx={{ p: 0 }}>
-                <Stack direction="row" spacing={2}>
-                  <Avatar>{userName}</Avatar>
-                </Stack>
+                <Tooltip title={userName} arrow>
+                  <Stack direction="row" spacing={2}>
+                    <Avatar>{truncatedName}</Avatar>
+                  </Stack>
+                </Tooltip>
               </IconButton>
             </Box>
           </Toolbar>

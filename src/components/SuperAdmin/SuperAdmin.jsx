@@ -6,13 +6,9 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Zoom from "@mui/material/Zoom";
-import Fab from "@mui/material/Fab";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import UpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { green } from "@mui/material/colors";
 import Box from "@mui/material/Box";
 import SuperAdminTask from "./SuperAdminTask";
+import SuperAdminReport from "./SuperAdminReport";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -35,18 +31,6 @@ TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.number.isRequired,
   value: PropTypes.number.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `action-tab-${index}`,
-    "aria-controls": `action-tabpanel-${index}`,
-  };
-}
-
-const fabStyle = {
-  bottom: 5,
-  right: 5,
 };
 
 export default function SuperAdmin() {
@@ -74,13 +58,16 @@ export default function SuperAdmin() {
           <SuperAdminTask />
         </Box>
       ),
-      label: "Add",
+      label: "Task",
     },
     {
       color: "secondary",
-      sx: fabStyle,
-      content: <EditIcon />,
-      label: "Edit",
+      content: (
+        <Box>
+          <SuperAdminReport/>
+        </Box>
+      ),
+      label: "Report",
     },
   ];
 

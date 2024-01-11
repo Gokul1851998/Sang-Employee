@@ -15,11 +15,12 @@ import {
   getEmployee,
 } from "../../api/ApiCall";
 import SearchIcon from "@mui/icons-material/Search";
-import AdminList from "./AdminList";
 import CloseIcon from "@mui/icons-material/Close";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import AdminList from "../AdminHome/AdminList";
 
-export default function Admin() {
+export default function SuperAdminReport() {
+  const iUser = localStorage.getItem("userId");
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState();
   const [employee, setEmployee] = React.useState();
@@ -32,7 +33,7 @@ export default function Admin() {
   const buttonStyle = {
     textTransform: "none", // Set text transform to none for normal case
     color: "#FFFFFF", // Set text color
-    backgroundColor: "#7581c6", // Set background color
+    backgroundColor: "#74227a", // Set background color
   };
 
   const handleClose = (event, reason) => {
@@ -97,19 +98,10 @@ export default function Admin() {
 
   return (
     <>
-      <Box
-        sx={{
-          margin: 0,
-          background: "#8c99e0",
-          height: "150px",
-          boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.5)",
-          display: "flex", // Make it a flex container
-          alignItems: "center", // Center vertically
-          justifyContent: "center", // Center horizontally
-        }}
-      >
+     
         <Box
           sx={{
+            p:2,
             width: "auto",
             zIndex: 1,
             textAlign: "center", // Center content within this Box
@@ -261,20 +253,20 @@ export default function Admin() {
               <IconButton
                 onClick={handleSubmit}
                 id="SearchVoucher"
-                style={{ background: "#8c99e0" }}
+                style={{ background: "#74227a" }}
               >
-                <SearchIcon style={{ color: "#ffffff" }} />
+                <SearchIcon style={{ color: "#ffffff" }}  />
               </IconButton>
             </Box>
           </div>
         </Box>
 
         {/* <Loader open={open} handleClose={handleClose} /> */}
-      </Box>
+  
 
       {data && data.length ? (
         <>
-          <AdminList data={data} />
+           <AdminList data={data} />
         </>
       ) : null}
       <ErrorMessage open={open} handleClose={handleClose} message={message} />
