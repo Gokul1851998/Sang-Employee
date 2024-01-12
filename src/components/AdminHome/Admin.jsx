@@ -63,7 +63,6 @@ export default function Admin() {
         FromDate,
         ToDate,
       });
-      console.log(response);
       if (response.Status === "Success") {
         const myObject = JSON.parse(response.ResultData);
         if (myObject && myObject.Table.length) {

@@ -63,9 +63,10 @@ export default function SuperAdmin() {
     {
       color: "",
       content: (
-        <Box>
-          <SuperAdminReport/>
-        </Box>
+        <Box sx={{ maxWidth: '100%', overflowX: 'auto' }}>
+        <SuperAdminReport />
+      </Box>
+      
       ),
       label: "Report",
     },
@@ -74,10 +75,10 @@ export default function SuperAdmin() {
   return (
     <Box
       sx={{
-        bgcolor: 'background.paper',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
+        bgcolor: "background.paper",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
       }}
     >
       <AppBar position="static" color="default">
@@ -89,8 +90,22 @@ export default function SuperAdmin() {
           variant="fullWidth"
           aria-label="action tabs example"
         >
-          <Tab label="Task" sx={{ textTransform: 'none', color: '#fff', backgroundColor: value === 0 ? '#74227a' : '#813587' }} />
-          <Tab label="Reports" sx={{ textTransform: 'none', color: '#fff', backgroundColor: value === 1 ? '#74227a' : '#813587' }} />
+          <Tab
+            label="Task"
+            sx={{
+              textTransform: "none",
+              color: "#fff",
+              backgroundColor: value === 0 ? "#74227a" : "#813587",
+            }}
+          />
+          <Tab
+            label="Reports"
+            sx={{
+              textTransform: "none",
+              color: "#fff",
+              backgroundColor: value === 1 ? "#74227a" : "#813587",
+            }}
+          />
         </Tabs>
       </AppBar>
 
@@ -100,7 +115,9 @@ export default function SuperAdmin() {
           in={value === index}
           timeout={transitionDuration}
           style={{
-            transitionDelay: `${value === index ? transitionDuration.exit : 0}ms`,
+            transitionDelay: `${
+              value === index ? transitionDuration.exit : 0
+            }ms`,
           }}
           unmountOnExit
         >
