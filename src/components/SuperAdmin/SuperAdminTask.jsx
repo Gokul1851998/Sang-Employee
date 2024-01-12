@@ -18,10 +18,11 @@ export default function SuperAdminTask() {
   const iEmployee = Number(localStorage.getItem("iEmployee"));
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState(null);
-  const [hour, setHour] = React.useState();
+  const [hour, setHour] = React.useState(0.0);
   const [start, setStart] = React.useState("00:00");
   const [end, setEnd] = React.useState("00:00");
   const [task, setTask] = React.useState("");
+  const [status, setStatus] = React.useState(false);
 
   const handleClose = () => {
     setOpen(false);
@@ -32,7 +33,7 @@ export default function SuperAdminTask() {
 
   const newData = () => {
     setDate("");
-    setHour("");
+    setHour(0.0);
     setStart("00:00");
     setEnd("00:00");
     setTask("");
@@ -40,6 +41,17 @@ export default function SuperAdminTask() {
 
   const handleData = async (e) => {
     e.preventDefault();
+    const startTime = new Date(`2000-01-01 ${start}`);
+    const endTime = new Date(`2000-01-01 ${end}`);
+  
+    if (startTime >= endTime) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Time Range',
+        text: 'End Time must be greater than Start Time',
+      });
+      return;
+    }
     const formattedDate = formatDate(date);
     Swal.fire({
       text: "Are you sure you want to continue?",
@@ -56,7 +68,7 @@ export default function SuperAdminTask() {
           sTask: task,
           sStart_Time: start,
           sEnd_Time: end,
-          NoOf_Hrs: hour,
+          NoOf_Hrs: Number(hour),
           iUser,
         });
         if (response?.Status === "Success") {
@@ -82,6 +94,30 @@ export default function SuperAdminTask() {
 
     return `${year}/${month}/${day}`;
   }
+
+  const calculateHours = () => {
+    // Calculate the time difference between start and end
+    const startTime = new Date(`2000-01-01 ${start}`);
+    const endTime = new Date(`2000-01-01 ${end}`);
+
+    const timeDiff = endTime - startTime;
+    const hours = timeDiff / 1000 / 60 / 60;
+
+    return hours > 0 ? hours : 0;
+  };
+
+  React.useEffect(() => {
+    if (start !== "" && end !== "") {
+      const calculatedHours = calculateHours();
+      let timeInHour = calculatedHours.toFixed(2);
+
+      if (timeInHour !== 0) {
+        setHour(timeInHour);
+      } else {
+        setHour(0.00);
+      }
+    }
+  }, [start, end]);
 
   return (
     <Box
@@ -118,14 +154,15 @@ export default function SuperAdminTask() {
                 />
               </MDBCol>
               <MDBCol>
-                <MDBInput
-                  required
-                  id="form3Example2"
-                  value={hour}
-                  label="No of Hrs"
-                  onChange={(e) => setHour(Number(e.target.value))}
-                  type="number"
-                />
+              <MDBInput
+                    required
+                    id="form3Example2"
+                    value={hour}
+                    label="No of Hrs"
+                    readOnly
+                    onChange={(e) => setHour(Number(e.target.value))}
+                    type="number"
+                  />
               </MDBCol>
             </MDBRow>
             <MDBRow className="mb-4">
@@ -153,6 +190,8 @@ export default function SuperAdminTask() {
             <MDBTextArea
               required
               value={task}
+              maxLength={300}
+            
               label="Task"
               id="textAreaExample"
               onChange={(e) => setTask(e.target.value)}

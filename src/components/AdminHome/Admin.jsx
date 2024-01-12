@@ -259,7 +259,7 @@ export default function Admin() {
 
       {data && data.length ? (
         <>
-          <AdminList data={data} />
+          <AdminList data={data} name={employee?.sName} />
         </>
       ) : null}
       <ErrorMessage open={open} handleClose={handleClose} message={message} />

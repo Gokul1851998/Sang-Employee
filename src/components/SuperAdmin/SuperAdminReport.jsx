@@ -433,7 +433,7 @@ export default function SuperAdminReport() {
       </Box>
       {data && data.length ? (
         <>
-          <AdminList data={data} />
+           <AdminList data={data} name={employee?.sName} />
         </>
       ) : null}
       {/* <Loader open={open} handleClose={handleClose} /> */}

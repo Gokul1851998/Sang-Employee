@@ -20,10 +20,11 @@ export default function Employee() {
   const iEmployee = Number(localStorage.getItem("iEmployee"));
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState(null);
-  const [hour, setHour] = React.useState();
-  const [start, setStart] = React.useState('00:00');
-  const [end, setEnd] = React.useState('00:00');
-  const [task, setTask] = React.useState('');
+  const [hour, setHour] = React.useState(0.0);
+  const [start, setStart] = React.useState("00:00");
+  const [end, setEnd] = React.useState("00:00");
+  const [task, setTask] = React.useState("");
+  const [status, setStatus] = React.useState(false);
 
   const handleClose = () => {
     setOpen(false);
@@ -32,16 +33,27 @@ export default function Employee() {
     setOpen(true);
   };
 
-  const newData=()=>{
-    setDate('')
-    setHour('')
-    setStart('00:00')
-    setEnd('00:00')
-    setTask('')
-  }
+  const newData = () => {
+    setDate("");
+    setHour(0.0);
+    setStart("00:00");
+    setEnd("00:00");
+    setTask("");
+  };
 
-  const handleData = async(e)=>{
+  const handleData = async (e) => {
     e.preventDefault();
+    const startTime = new Date(`2000-01-01 ${start}`);
+    const endTime = new Date(`2000-01-01 ${end}`);
+  
+    if (startTime >= endTime) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Time Range',
+        text: 'End Time must be greater than Start Time',
+      });
+      return;
+    }
     const formattedDate = formatDate(date);
     Swal.fire({
       text: "Are you sure you want to continue?",
@@ -55,36 +67,59 @@ export default function Employee() {
           iId: 0,
           iEmployee,
           sDate: formattedDate,
-          sTask: task, 
+          sTask: task,
           sStart_Time: start,
           sEnd_Time: end,
-          NoOf_Hrs: hour,
-          iUser
-         })
-          if(response?.Status === "Success"){
-            Swal.fire({
-              title: "Updated",
-              text: "Task Updated!",
-              icon: "success",
-              showConfirmButton: false,
-              timer: 1500,
-            });
-            newData()
-          }
+          NoOf_Hrs: Number(hour),
+          iUser,
+        });
+        if (response?.Status === "Success") {
+          Swal.fire({
+            title: "Updated",
+            text: "Task Updated!",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          newData();
+        }
       }
     });
-   
-  }
+  };
 
   function formatDate(inputDate) {
     const dateObject = new Date(inputDate);
-    
+
     const year = dateObject.getFullYear();
-    const month = String(dateObject.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObject.getDate()).padStart(2, '0');
-  
+    const month = String(dateObject.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObject.getDate()).padStart(2, "0");
+
     return `${year}/${month}/${day}`;
   }
+
+  const calculateHours = () => {
+    // Calculate the time difference between start and end
+    const startTime = new Date(`2000-01-01 ${start}`);
+    const endTime = new Date(`2000-01-01 ${end}`);
+
+    const timeDiff = endTime - startTime;
+    const hours = timeDiff / 1000 / 60 / 60;
+
+    return hours > 0 ? hours : 0;
+  };
+
+  React.useEffect(() => {
+    if (start !== "" && end !== "") {
+      const calculatedHours = calculateHours();
+      let timeInHour = calculatedHours.toFixed(2);
+
+      if (timeInHour !== 0) {
+        setHour(timeInHour);
+      } else {
+        setHour(0.00);
+      }
+    }
+  }, [start, end]);
 
   return (
     <Box
@@ -123,7 +158,7 @@ export default function Employee() {
               <MDBRow className="mb-4">
                 <MDBCol>
                   <MDBInput
-                  required
+                    required
                     id="form3Example1"
                     label="Date"
                     value={date}
@@ -133,10 +168,11 @@ export default function Employee() {
                 </MDBCol>
                 <MDBCol>
                   <MDBInput
-                   required
+                    required
                     id="form3Example2"
                     value={hour}
                     label="No of Hrs"
+                    readOnly
                     onChange={(e) => setHour(Number(e.target.value))}
                     type="number"
                   />
@@ -145,8 +181,8 @@ export default function Employee() {
               <MDBRow className="mb-4">
                 <MDBCol>
                   <MDBInput
-                   required
-                  value={start}
+                    required
+                    value={start}
                     id="form3Example7"
                     label="Start Time"
                     onChange={(e) => setStart(e.target.value)}
@@ -155,8 +191,7 @@ export default function Employee() {
                 </MDBCol>
                 <MDBCol>
                   <MDBInput
-                   required
-                  value={end}
+                    value={end}
                     id="form3Example8"
                     label="End Time"
                     onChange={(e) => setEnd(e.target.value)}
@@ -165,21 +200,17 @@ export default function Employee() {
                 </MDBCol>
               </MDBRow>
               <MDBTextArea
-               required
-              value={task}
+                required
+                value={task}
                 label="Task"
+                maxLength={300}
                 id="textAreaExample"
                 onChange={(e) => setTask(e.target.value)}
                 rows={4}
               />
-
-             
-
               <MDBBtn type="submit" className="mb-4 mt-4" block>
                 Submit
               </MDBBtn>
-
-              
             </form>
           </Box>
         </Paper>

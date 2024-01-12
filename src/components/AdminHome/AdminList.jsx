@@ -14,7 +14,10 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import { visuallyHidden } from "@mui/utils";
 import Loader from "../Loader/Loader";
-import {TextField } from "@mui/material";
+import { IconButton, TextField, Tooltip } from "@mui/material";
+import SaveIcon from "@mui/icons-material/Save";
+import { exportToExcel } from "../Excel/ExcelForm";
+import Employee from "../Employee/Employee";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -97,7 +100,7 @@ EnhancedTableHead.propTypes = {
 };
 
 function EnhancedTableToolbar(props) {
-  const { numSelected, values, changes } = props;
+  const { numSelected, values, changes, action} = props;
 
   return (
     <Toolbar
@@ -122,6 +125,19 @@ function EnhancedTableToolbar(props) {
         onChange={changes}
         size="small"
       />
+      <Toolbar
+      sx={{
+        pl: { sm: 2 },
+        pr: { xs: 1, sm: 1 },
+      }}
+    >
+      {/* Add Tooltip to IconButton */}
+      <Tooltip title="Excel" arrow>
+        <IconButton onClick={action} aria-label="Excel">
+          <SaveIcon />
+        </IconButton>
+      </Tooltip>
+    </Toolbar>
     </Toolbar>
   );
 }
@@ -130,7 +146,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function AdminList({ data }) {
+export default function AdminList({ data, name }) {
   const iUser = localStorage.getItem("userId");
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState(0);
@@ -170,22 +186,22 @@ export default function AdminList({ data }) {
   // Avoid a layout jump when reaching the last page with empty rows.
   const ignoredField = "iId";
   const filteredRows = data.filter((row) =>
-  Object.entries(row).some(([key, value]) => {
-    // Ignore the specified field from filtering
-    if (key === ignoredField) {
-      return false;
-    }
+    Object.entries(row).some(([key, value]) => {
+      // Ignore the specified field from filtering
+      if (key === ignoredField) {
+        return false;
+      }
 
-    if (typeof value === "string") {
-      return value.toLowerCase().includes(searchQuery.toLowerCase());
-    }
+      if (typeof value === "string") {
+        return value.toLowerCase().includes(searchQuery.toLowerCase());
+      }
 
-    if (typeof value === "number") {
-      return value.toString().includes(searchQuery.toLowerCase());
-    }
+      if (typeof value === "number") {
+        return value.toString().includes(searchQuery.toLowerCase());
+      }
 
-    return false; // Ignore other types
-  })
+      return false; // Ignore other types
+    })
   );
 
   const visibleRows = React.useMemo(
@@ -196,6 +212,11 @@ export default function AdminList({ data }) {
       ),
     [order, orderBy, page, rowsPerPage, filteredRows]
   );
+
+  const handleExcel =()=>{
+    const Id = ["iId"];
+    exportToExcel(data, `${name} Report`, Id)
+  }
 
   return (
     <Box
@@ -214,10 +235,12 @@ export default function AdminList({ data }) {
         }}
       >
         <EnhancedTableToolbar
+          action={handleExcel}
           numSelected={selected.length}
           values={searchQuery}
           changes={handleSearch}
         />
+        
         {data.length > 0 && (
           <TableContainer
             style={{
@@ -248,12 +271,10 @@ export default function AdminList({ data }) {
 
                   return (
                     <TableRow
-                    key={row.iId}
+                      key={row.iId}
                       hover
-                      
                       className={`table-row `}
                       tabIndex={-1}
-                     
                       sx={{ cursor: "pointer" }}
                     >
                       <TableCell padding="checkbox"></TableCell>
@@ -287,22 +308,22 @@ export default function AdminList({ data }) {
             </Table>
           </TableContainer>
         )}
-         <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
-            }}
-          >
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 50, 100]}
-          component="div"
-          count={data.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
+        >
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 50, 100]}
+            component="div"
+            count={data.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
         </div>
       </Paper>
       <Loader open={open} handleClose={handleClose} />
