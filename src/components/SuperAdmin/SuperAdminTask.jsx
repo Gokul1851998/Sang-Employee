@@ -43,12 +43,12 @@ export default function SuperAdminTask() {
     e.preventDefault();
     const startTime = new Date(`2000-01-01 ${start}`);
     const endTime = new Date(`2000-01-01 ${end}`);
-  
+
     if (startTime >= endTime) {
       Swal.fire({
-        icon: 'error',
-        title: 'Invalid Time Range',
-        text: 'End Time must be greater than Start Time',
+        icon: "error",
+        title: "Invalid Time Range",
+        text: "End Time must be greater than Start Time",
       });
       return;
     }
@@ -114,10 +114,27 @@ export default function SuperAdminTask() {
       if (timeInHour !== 0) {
         setHour(timeInHour);
       } else {
-        setHour(0.00);
+        setHour(0.0);
       }
     }
   }, [start, end]);
+
+  function getCurrentDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    let month = today.getMonth() + 1; // Months are zero-indexed
+    let day = today.getDate();
+
+    // Ensure month and day are always two digits
+    if (month < 10) {
+      month = `0${month}`;
+    }
+    if (day < 10) {
+      day = `0${day}`;
+    }
+
+    return `${year}-${month}-${day}`;
+  }
 
   return (
     <Box
@@ -151,18 +168,19 @@ export default function SuperAdminTask() {
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   type="date"
+                  max={getCurrentDate()} // Set the max attribute to the current date
                 />
               </MDBCol>
               <MDBCol>
-              <MDBInput
-                    required
-                    id="form3Example2"
-                    value={hour}
-                    label="No of Hrs"
-                    readOnly
-                    onChange={(e) => setHour(Number(e.target.value))}
-                    type="number"
-                  />
+                <MDBInput
+                  required
+                  id="form3Example2"
+                  value={hour}
+                  label="No of Hrs"
+                  readOnly
+                  onChange={(e) => setHour(Number(e.target.value))}
+                  type="number"
+                />
               </MDBCol>
             </MDBRow>
             <MDBRow className="mb-4">
@@ -191,7 +209,6 @@ export default function SuperAdminTask() {
               required
               value={task}
               maxLength={300}
-            
               label="Task"
               id="textAreaExample"
               onChange={(e) => setTask(e.target.value)}

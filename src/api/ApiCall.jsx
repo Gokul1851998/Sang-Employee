@@ -14,8 +14,8 @@ export const getLogin = async (payload) => {
 
   export const postDailyTask = async (payload) => {
     try {
-      console.log(payload);
       const response = await axios.post(`${baseUrl}PostDailyTask`,payload);
+      console.log(response);
       return response?.data;
     } catch (error) {
       console.log('PostDailyTask',error);
