@@ -26,6 +26,14 @@ export default function Admin() {
   const [from, setFrom] = React.useState("");
   const [to, setTo] = React.useState("");
   const [data, setData] = React.useState([]);
+  const [loader, setLoader] = React.useState(false)
+
+  const handleLoaderClose = () => {
+    setLoader(false);
+  };
+  const handleLoaderOpen = () => {
+    setLoader(true);
+  };
 
   const buttonStyle = {
     textTransform: "none", // Set text transform to none for normal case
@@ -45,17 +53,20 @@ export default function Admin() {
 
   React.useEffect(() => {
     const fetchData = async () => {
+      handleLoaderOpen()
       const response1 = await getEmployee({ iType: 1 });
       if (response1.Status === "Success") {
         const myObject1 = JSON.parse(response1.ResultData);
         setSuggestionEmployee(myObject1);
       }
+      handleLoaderClose()
     };
     fetchData();
-  });
+  },[]);
 
   const handleSubmit = async () => {
-    if (from && to && employeeId !== 0) {
+    handleLoaderOpen()
+    if (from && to ) {
       const FromDate = formatDate(from);
       const ToDate = formatDate(to);
       const response = await getDailyTaskReport({
@@ -74,9 +85,10 @@ export default function Admin() {
         }
       }
     } else {
-      setMessage(`Fill all fields`);
+      setMessage(`Fill both From & To date`);
       handleOpen();
     }
+    handleLoaderClose()
   };
 
   function formatDate(inputDate) {
@@ -144,7 +156,7 @@ export default function Admin() {
               value={employee || null}
               onChange={(event, newValue) => {
                 setEmployee(newValue);
-                setEmployeeId(newValue?.iId || null);
+                setEmployeeId(newValue?.iId || 0);
               }}
               options={suggestionEmployee}
               getOptionLabel={(option) => (option ? option.sName : "")}
@@ -262,6 +274,7 @@ export default function Admin() {
           <AdminList data={data} name={employee?.sName} />
         </>
       ) : null}
+       <Loader open={loader} handleClose={handleLoaderClose} />
       <ErrorMessage open={open} handleClose={handleClose} message={message} />
     </>
   );

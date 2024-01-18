@@ -190,7 +190,6 @@ export default function Employee() {
                     id="form3Example2"
                     value={hour}
                     label="No of Hrs"
-                    readOnly
                     onChange={(e) => setHour(Number(e.target.value))}
                     type="number"
                   />

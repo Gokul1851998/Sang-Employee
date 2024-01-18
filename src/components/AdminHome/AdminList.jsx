@@ -253,7 +253,7 @@ export default function AdminList({ data, name }) {
             }}
           >
             <Table
-              sx={{ minWidth: 750 }}
+              sx={{ minWidth: 1600 }}
               aria-labelledby="tableTitle"
               size={dense ? "small" : "medium"}
             >

@@ -160,6 +160,15 @@ export default function SuperAdminReport() {
   const [dense, setDense] = React.useState(true);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [loader, setLoader] = React.useState(false)
+
+  const handleLoaderClose = () => {
+    setLoader(false);
+  };
+  const handleLoaderOpen = () => {
+    setLoader(true);
+  };
+
 
   const buttonStyle = {
     textTransform: "none", // Set text transform to none for normal case
@@ -179,17 +188,20 @@ export default function SuperAdminReport() {
 
   React.useEffect(() => {
     const fetchData = async () => {
+      handleLoaderOpen()
       const response1 = await getEmployee({ iType: 1 });
       if (response1.Status === "Success") {
         const myObject1 = JSON.parse(response1.ResultData);
         setSuggestionEmployee(myObject1);
       }
+      handleLoaderClose()
     };
     fetchData();
-  });
+  },[]);
 
   const handleSubmit = async () => {
-    if (from && to && employeeId !== 0) {
+    handleLoaderOpen()
+    if (from && to ) {
       const FromDate = formatDate(from);
       const ToDate = formatDate(to);
       const response = await getDailyTaskReport({
@@ -208,9 +220,10 @@ export default function SuperAdminReport() {
         }
       }
     } else {
-      setMessage(`Fill all fields`);
+      setMessage(`Fill both From & To date`);
       handleOpen();
     }
+    handleLoaderClose()
   };
 
   function formatDate(inputDate) {
@@ -279,7 +292,7 @@ export default function SuperAdminReport() {
       ),
     [order, orderBy, page, rowsPerPage, filteredRows]
   );
-
+ 
   return (
     <>
       <Box
@@ -290,15 +303,7 @@ export default function SuperAdminReport() {
           textAlign: "end",
         }}
       >
-        <Button
-          sx={{ margin: 1 }}
-          onClick={handleClear}
-          variant="contained"
-          startIcon={<CloseIcon />}
-          style={buttonStyle}
-        >
-          Clear
-        </Button>
+      
    
 
       <Stack
@@ -320,13 +325,14 @@ export default function SuperAdminReport() {
           borderRadius={2}
           overflow="hidden"
       >
+        
         <Autocomplete
           id="size-small-filled"
           size="small"
           value={employee || ""}
           onChange={(event, newValue) => {
             setEmployee(newValue);
-            setEmployeeId(newValue?.iId || null);
+            setEmployeeId(newValue?.iId || 0);
           }}
           options={suggestionEmployee}
           getOptionLabel={(option) => (option ? option.sName : "")}
@@ -429,6 +435,15 @@ export default function SuperAdminReport() {
         >
           <SearchIcon style={{ color: "#ffffff" }} />
         </IconButton>
+        <Button
+          sx={{ margin: 1 }}
+          onClick={handleClear}
+          variant="contained"
+          startIcon={<CloseIcon />}
+          style={buttonStyle}
+        >
+          Clear
+        </Button>
       </Stack>
       </Box>
       {data && data.length ? (
@@ -437,7 +452,7 @@ export default function SuperAdminReport() {
         </>
       ) : null}
       {/* <Loader open={open} handleClose={handleClose} /> */}
-
+      <Loader open={loader} handleClose={handleLoaderClose} />
       <ErrorMessage open={open} handleClose={handleClose} message={message} />
     </>
   );
