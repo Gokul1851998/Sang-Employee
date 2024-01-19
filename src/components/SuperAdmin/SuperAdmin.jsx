@@ -63,7 +63,7 @@ export default function SuperAdmin() {
     {
       color: "",
       content: (
-        <Box sx={{ maxWidth: '100%', overflowX: 'auto' }}>
+        <Box sx={{ maxWidth: '100%', minHeight:'100%' }}>
         <SuperAdminReport />
       </Box>
       

@@ -44,5 +44,24 @@ export const getLogin = async (payload) => {
     }
   };
 
+  export const getTaskType = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}GetTaskType`);
+      return response?.data;
+    } catch (error) {
+      console.log('GetTaskType',error);
+    }
+  };
+
+  export const getCustomer = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}GetCustomer`);
+      return response?.data;
+    } catch (error) {
+      console.log('GetCustomer',error);
+    }
+  };
+
+
 
  

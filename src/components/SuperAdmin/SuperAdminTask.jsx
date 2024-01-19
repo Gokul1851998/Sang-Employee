@@ -10,8 +10,9 @@ import {
 } from "mdb-react-ui-kit";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import { postDailyTask } from "../../api/ApiCall";
+import { getCustomer, getTaskType, postDailyTask } from "../../api/ApiCall";
 import Swal from "sweetalert2";
+import { Autocomplete, TextField, Typography } from "@mui/material";
 
 export default function SuperAdminTask() {
   const iUser = Number(localStorage.getItem("userId"));
@@ -23,6 +24,12 @@ export default function SuperAdminTask() {
   const [end, setEnd] = React.useState("00:00");
   const [task, setTask] = React.useState("");
   const [status, setStatus] = React.useState(false);
+  const [suggestionTask, setSuggestionTask] = React.useState([]);
+  const [suggestionCustomer, setSuggestionCustomer] = React.useState([]);
+  const [taskId, setTaskId] = React.useState(0);
+  const [taskName, setTaskName] = React.useState({});
+  const [customerId, setCustomerId] = React.useState(0);
+  const [customer, setCustomer] = React.useState({});
 
   const handleClose = () => {
     setOpen(false);
@@ -32,18 +39,20 @@ export default function SuperAdminTask() {
   };
 
   const newData = () => {
-    setDate("");
     setHour(0.0);
     setStart("00:00");
     setEnd("00:00");
     setTask("");
+    setTaskId(0);
+    setCustomerId(0);
+    setCustomer({});
+    setTaskName({});
   };
 
   const handleData = async (e) => {
     e.preventDefault();
     const startTime = new Date(`2000-01-01 ${start}`);
     const endTime = new Date(`2000-01-01 ${end}`);
-
     if (startTime >= endTime) {
       Swal.fire({
         icon: "error",
@@ -52,7 +61,6 @@ export default function SuperAdminTask() {
       });
       return;
     }
-    const formattedDate = formatDate(date);
     Swal.fire({
       text: "Are you sure you want to continue?",
       showCancelButton: true,
@@ -64,12 +72,14 @@ export default function SuperAdminTask() {
         const response = await postDailyTask({
           iId: 0,
           iEmployee,
-          sDate: formattedDate,
+          sDate: date,
           sTask: task,
           sStart_Time: start,
           sEnd_Time: end,
           NoOf_Hrs: Number(hour),
           iUser,
+          iTaskType: taskId,
+          iCustomer: customerId,
         });
         if (response?.Status === "Success") {
           Swal.fire({
@@ -84,16 +94,6 @@ export default function SuperAdminTask() {
       }
     });
   };
-
-  function formatDate(inputDate) {
-    const dateObject = new Date(inputDate);
-
-    const year = dateObject.getFullYear();
-    const month = String(dateObject.getMonth() + 1).padStart(2, "0");
-    const day = String(dateObject.getDate()).padStart(2, "0");
-
-    return `${year}/${month}/${day}`;
-  }
 
   const calculateHours = () => {
     // Calculate the time difference between start and end
@@ -117,25 +117,30 @@ export default function SuperAdminTask() {
         setHour(0.0);
       }
     }
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    const formattedDate = `${year}-${month}-${day}`;
+    setDate(formattedDate);
   }, [start, end]);
 
-  function getCurrentDate() {
-    const today = new Date();
-    const year = today.getFullYear();
-    let month = today.getMonth() + 1; // Months are zero-indexed
-    let day = today.getDate();
-
-    // Ensure month and day are always two digits
-    if (month < 10) {
-      month = `0${month}`;
-    }
-    if (day < 10) {
-      day = `0${day}`;
-    }
-
-    return `${year}-${month}-${day}`;
-  }
-
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const response1 = await getTaskType();
+      if (response1.Status === "Success") {
+        const myObject1 = JSON.parse(response1.ResultData);
+        setSuggestionTask(myObject1);
+      }
+      const response2 = await getCustomer();
+      if (response2.Status === "Success") {
+        const myObject2 = JSON.parse(response2.ResultData);
+        setSuggestionCustomer(myObject2);
+      }
+    };
+    fetchData();
+  }, []);
+  
   return (
     <Box
       sx={{
@@ -159,29 +164,7 @@ export default function SuperAdminTask() {
           }}
         >
           <form onSubmit={handleData}>
-            <MDBRow className="mb-4">
-              <MDBCol>
-                <MDBInput
-                  required
-                  id="form3Example1"
-                  label="Date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  type="date"
-                  max={getCurrentDate()} // Set the max attribute to the current date
-                />
-              </MDBCol>
-              <MDBCol>
-                <MDBInput
-                  required
-                  id="form3Example2"
-                  value={hour}
-                  label="No of Hrs"
-                  onChange={(e) => setHour(Number(e.target.value))}
-                  type="number"
-                />
-              </MDBCol>
-            </MDBRow>
+           
             <MDBRow className="mb-4">
               <MDBCol>
                 <MDBInput
@@ -201,6 +184,167 @@ export default function SuperAdminTask() {
                   label="End Time"
                   onChange={(e) => setEnd(e.target.value)}
                   type="time"
+                />
+              </MDBCol>
+            </MDBRow>
+            <MDBRow className="mb-4">
+              <MDBCol>
+                <MDBInput
+                  required
+                  id="form3Example1"
+                  label="Date"
+                  value={date}
+                  type="date"
+                  readOnly
+                />
+              </MDBCol>
+              <MDBCol>
+                <MDBInput
+                  required
+                  id="form3Example2"
+                  value={hour}
+                  label="No of Hrs"
+                  onChange={(e) => setHour(Number(e.target.value))}
+                  type="number"
+                />
+              </MDBCol>
+            </MDBRow>
+            <MDBRow className="mb-4">
+              <MDBCol>
+                <Autocomplete
+                  id={`size-small-filled-assetType`}
+                  size="small"
+                  value={taskName}
+                  onChange={(event, newValue) => {
+                    setTaskId(newValue?.iId || 0), setTaskName(newValue);
+                  }}
+                  options={suggestionTask.map((data) => ({
+                    sName: data.sName,
+                    sCode: data.sCode,
+                    iId: data?.iId,
+                  }))}
+                  filterOptions={(options, { inputValue }) => {
+                    return options.filter((option) =>
+                      option.sName
+                        .toLowerCase()
+                        .includes(inputValue.toLowerCase())
+                    );
+                  }}
+                  autoHighlight
+                  getOptionLabel={(option) =>
+                    option && option.sName ? option.sName : ""
+                  }
+                  renderOption={(props, option) => (
+                    <li {...props}>
+                      <div
+                        className=""
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          width: "100%",
+                        }}
+                      >
+                        <Typography
+                          style={{
+                            marginRight: "auto",
+                            fontSize: "12px",
+                            fontWeight: "normal",
+                          }}
+                        >
+                          {option.sName}
+                        </Typography>
+                      </div>
+                    </li>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      required
+                      label="Task Type"
+                      {...params}
+                      inputProps={{
+                        ...params.inputProps,
+                        autoComplete: "new-password", // disable autocomplete and autofill
+                        style: {
+                          borderWidth: "1px",
+                          borderColor: "#ddd",
+                          borderRadius: "10px",
+                          fontSize: "15px",
+                          height: "20px",
+                          paddingLeft: "6px",
+                        },
+                      }}
+                    />
+                  )}
+                  style={{ width: `auto` }}
+                />
+              </MDBCol>
+              <MDBCol>
+                <Autocomplete
+                  id={`size-small-filled-assetType`}
+                  size="small"
+                  value={customer}
+                  onChange={(event, newValue) => {
+                    setCustomerId(newValue?.iId || 0), setCustomer(newValue);
+                  }}
+                  options={suggestionCustomer.map((data) => ({
+                    sName: data.sName,
+                    sCode: data.sCode,
+                    iId: data?.iId,
+                  }))}
+                  filterOptions={(options, { inputValue }) => {
+                    return options.filter((option) =>
+                      option.sName
+                        .toLowerCase()
+                        .includes(inputValue.toLowerCase())
+                    );
+                  }}
+                  autoHighlight
+                  getOptionLabel={(option) =>
+                    option && option.sName ? option.sName : ""
+                  }
+                  renderOption={(props, option) => (
+                    <li {...props}>
+                      <div
+                        className=""
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          width: "100%",
+                        }}
+                      >
+                        <Typography
+                          style={{
+                            marginRight: "auto",
+                            fontSize: "12px",
+                            fontWeight: "normal",
+                          }}
+                        >
+                          {option.sName}
+                        </Typography>
+                      </div>
+                    </li>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      required
+                      label="Customer"
+                      {...params}
+                      inputProps={{
+                        ...params.inputProps,
+                        autoComplete: "new-password", // disable autocomplete and autofill
+                        style: {
+                          borderWidth: "1px",
+                          borderColor: "#ddd",
+                          borderRadius: "10px",
+                          fontSize: "15px",
+
+                          height: "20px",
+                          paddingLeft: "6px",
+                        },
+                      }}
+                    />
+                  )}
+                  style={{ width: `auto` }}
                 />
               </MDBCol>
             </MDBRow>

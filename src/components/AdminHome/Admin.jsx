@@ -11,7 +11,12 @@ import {
 } from "@mui/material";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import { getDailyTaskReport, getEmployee } from "../../api/ApiCall";
+import {
+  getCustomer,
+  getDailyTaskReport,
+  getEmployee,
+  getTaskType,
+} from "../../api/ApiCall";
 import SearchIcon from "@mui/icons-material/Search";
 import AdminList from "./AdminList";
 import CloseIcon from "@mui/icons-material/Close";
@@ -26,7 +31,13 @@ export default function Admin() {
   const [from, setFrom] = React.useState("");
   const [to, setTo] = React.useState("");
   const [data, setData] = React.useState([]);
-  const [loader, setLoader] = React.useState(false)
+  const [loader, setLoader] = React.useState(false);
+  const [suggestionTask, setSuggestionTask] = React.useState([]);
+  const [suggestionCustomer, setSuggestionCustomer] = React.useState([]);
+  const [taskId, setTaskId] = React.useState(0);
+  const [taskName, setTaskName] = React.useState({});
+  const [customerId, setCustomerId] = React.useState(0);
+  const [customer, setCustomer] = React.useState({});
 
   const handleLoaderClose = () => {
     setLoader(false);
@@ -53,26 +64,38 @@ export default function Admin() {
 
   React.useEffect(() => {
     const fetchData = async () => {
-      handleLoaderOpen()
+      handleLoaderOpen();
       const response1 = await getEmployee({ iType: 1 });
       if (response1.Status === "Success") {
         const myObject1 = JSON.parse(response1.ResultData);
         setSuggestionEmployee(myObject1);
       }
-      handleLoaderClose()
+      const response3 = await getTaskType();
+      if (response3.Status === "Success") {
+        const myObject3 = JSON.parse(response3.ResultData);
+        setSuggestionTask(myObject3);
+      }
+      const response2 = await getCustomer();
+      if (response2.Status === "Success") {
+        const myObject2 = JSON.parse(response2.ResultData);
+        setSuggestionCustomer(myObject2);
+      }
+      handleLoaderClose();
     };
     fetchData();
-  },[]);
+  }, []);
 
   const handleSubmit = async () => {
-    handleLoaderOpen()
-    if (from && to ) {
+    handleLoaderOpen();
+    if (from && to) {
       const FromDate = formatDate(from);
       const ToDate = formatDate(to);
       const response = await getDailyTaskReport({
         iEmployee: employeeId,
         FromDate,
         ToDate,
+        iCustomer:customerId,
+        iTaskType: taskId
       });
       if (response.Status === "Success") {
         const myObject = JSON.parse(response.ResultData);
@@ -88,7 +111,7 @@ export default function Admin() {
       setMessage(`Fill both From & To date`);
       handleOpen();
     }
-    handleLoaderClose()
+    handleLoaderClose();
   };
 
   function formatDate(inputDate) {
@@ -107,6 +130,10 @@ export default function Admin() {
     setEmployeeId(0);
     setFrom("");
     setTo("");
+    setCustomer({})
+    setCustomerId(0)
+    setTaskName({})
+    setTaskId(0)
   };
 
   return (
@@ -120,6 +147,7 @@ export default function Admin() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          mb:2,
         }}
       >
         <Box
@@ -130,16 +158,7 @@ export default function Admin() {
             textAlign: "center",
           }}
         >
-          <Stack direction="row" paddingBottom={1} justifyContent="flex-end">
-            <Button
-              onClick={handleClear}
-              variant="contained"
-              startIcon={<CloseIcon />}
-              style={buttonStyle}
-            >
-              Clear
-            </Button>
-          </Stack>
+         
           <Stack
             direction={{ xs: "column", md: "row" }}
             alignItems="center"
@@ -258,6 +277,121 @@ export default function Admin() {
               }}
               sx={{ minWidth: 200 }} // Set the width for TextField
             />
+            <Autocomplete
+              id="size-small-filled"
+              size="small"
+              value={taskName}
+              onChange={(event, newValue) => {
+                setTaskId(newValue?.iId || 0), setTaskName(newValue);
+              }}
+              options={suggestionTask.map((data) => ({
+                sName: data.sName,
+                sCode: data.sCode,
+                iId: data?.iId,
+              }))}
+              filterOptions={(options, { inputValue }) => {
+                return options.filter((option) =>
+                  option.sName.toLowerCase().includes(inputValue.toLowerCase())
+                );
+              }}
+              autoHighlight
+              getOptionLabel={(option) =>
+                option && option.sName ? option.sName : ""
+              }
+              renderOption={(props, option) => (
+                <li {...props}>
+                  <div
+                    className=""
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      width: "100%",
+                    }}
+                  >
+                    <Typography
+                      style={{
+                        marginRight: "auto",
+                        fontSize: "12px",
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {option.sName}
+                    </Typography>
+                  </div>
+                </li>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  required
+                  label="Task Type"
+                  className="form-control"
+                  {...params}
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: "new-password", // disable autocomplete and autofill
+                  }}
+                  sx={{ minWidth: 200 }} // Set the width for Autocomplete
+                />
+              )}
+            />
+
+            <Autocomplete
+              id="size-small-filled"
+              size="small"
+              value={customer}
+              onChange={(event, newValue) => {
+                setCustomerId(newValue?.iId || 0), setCustomer(newValue);
+              }}
+              options={suggestionCustomer.map((data) => ({
+                sName: data.sName,
+                sCode: data.sCode,
+                iId: data?.iId,
+              }))}
+              filterOptions={(options, { inputValue }) => {
+                return options.filter((option) =>
+                  option.sName.toLowerCase().includes(inputValue.toLowerCase())
+                );
+              }}
+              autoHighlight
+              getOptionLabel={(option) =>
+                option && option.sName ? option.sName : ""
+              }
+              renderOption={(props, option) => (
+                <li {...props}>
+                  <div
+                    className=""
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      width: "100%",
+                    }}
+                  >
+                    <Typography
+                      style={{
+                        marginRight: "auto",
+                        fontSize: "12px",
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {option.sName}
+                    </Typography>
+                  </div>
+                </li>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  required
+                  label="Customer"
+                  className="form-control"
+                  {...params}
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: "new-password", // disable autocomplete and autofill
+                  }}
+                  sx={{ minWidth: 200 }} // Set the width for Autocomplete
+                />
+              )}
+            />
             <IconButton
               onClick={handleSubmit}
               id="SearchVoucher"
@@ -265,6 +399,16 @@ export default function Admin() {
             >
               <SearchIcon style={{ color: "#ffffff" }} />
             </IconButton>
+            <Stack direction="row"  justifyContent="flex-end">
+            <Button
+              onClick={handleClear}
+              variant="contained"
+              startIcon={<CloseIcon />}
+              style={buttonStyle}
+            >
+              Clear
+            </Button>
+          </Stack>
           </Stack>
         </Box>
       </Box>
@@ -274,7 +418,7 @@ export default function Admin() {
           <AdminList data={data} name={employee?.sName} />
         </>
       ) : null}
-       <Loader open={loader} handleClose={handleLoaderClose} />
+      <Loader open={loader} handleClose={handleLoaderClose} />
       <ErrorMessage open={open} handleClose={handleClose} message={message} />
     </>
   );

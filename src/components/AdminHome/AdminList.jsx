@@ -17,7 +17,8 @@ import Loader from "../Loader/Loader";
 import { IconButton, TextField, Tooltip } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { exportToExcel } from "../Excel/ExcelForm";
-import Employee from "../Employee/Employee";
+import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
+import ZoomInMapIcon from "@mui/icons-material/ZoomInMap";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -56,13 +57,20 @@ function EnhancedTableHead(props) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox"></TableCell>
         {rows.map((header, index) => {
           if (header !== "iId") {
             // Exclude "iId", "iAssetType", and "sAltName" from the header
             return (
               <TableCell
-                sx={{ border: "1px solid #ddd" }}
+                sx={{
+                  padding: "4px",
+                  border: " 1px solid #ddd",
+                  minWidth: "10px",
+                  maxWidth: "20px",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
                 key={index}
                 align="left" // Set the alignment to left
                 padding="normal"
@@ -100,7 +108,7 @@ EnhancedTableHead.propTypes = {
 };
 
 function EnhancedTableToolbar(props) {
-  const { numSelected, values, changes, action} = props;
+  const { numSelected, values, changes, action, expandAction, expand } = props;
 
   return (
     <Toolbar
@@ -126,18 +134,25 @@ function EnhancedTableToolbar(props) {
         size="small"
       />
       <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-      }}
-    >
-      {/* Add Tooltip to IconButton */}
-      <Tooltip title="Excel" arrow>
-        <IconButton onClick={action} aria-label="Excel">
-          <SaveIcon />
-        </IconButton>
-      </Tooltip>
-    </Toolbar>
+        sx={{
+          pl: { sm: 2 },
+          pr: { xs: 1, sm: 1 },
+        }}
+      >
+        <button onClick={expandAction} className="btn pl-1">
+          {expand ? (
+            <ZoomInMapIcon style={{ fontSize: "large" }} />
+          ) : (
+            <ZoomOutMapIcon style={{ fontSize: "large" }} />
+          )}
+        </button>
+        {/* Add Tooltip to IconButton */}
+        <Tooltip title="Excel" arrow>
+          <IconButton onClick={action} aria-label="Excel">
+            <SaveIcon />
+          </IconButton>
+        </Tooltip>
+      </Toolbar>
     </Toolbar>
   );
 }
@@ -156,6 +171,7 @@ export default function AdminList({ data, name }) {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [open, setOpen] = React.useState(false);
+  const [expand, setExpand] = React.useState(false);
 
   const handleClose = () => {
     setOpen(false);
@@ -213,10 +229,14 @@ export default function AdminList({ data, name }) {
     [order, orderBy, page, rowsPerPage, filteredRows]
   );
 
-  const handleExcel =()=>{
+  const handleExcel = () => {
     const Id = ["iId"];
-    exportToExcel(data, `${name} Report`, Id)
-  }
+    exportToExcel(data, `${name} Report`, Id);
+  };
+
+  const handleExpand = () => {
+    setExpand(!expand);
+  };
 
   return (
     <Box
@@ -230,7 +250,8 @@ export default function AdminList({ data, name }) {
       <Paper
         sx={{
           width: "100%",
-          mb: 2,
+          paddingLeft: 2,
+          paddingRight: 2,
           boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
         }}
       >
@@ -239,8 +260,10 @@ export default function AdminList({ data, name }) {
           numSelected={selected.length}
           values={searchQuery}
           changes={handleSearch}
+          expand={expand}
+          expandAction={handleExpand}
         />
-        
+
         {data.length > 0 && (
           <TableContainer
             style={{
@@ -250,6 +273,7 @@ export default function AdminList({ data, name }) {
               scrollbarWidth: "thin",
               scrollbarColor: "#888 #f5f5f5",
               scrollbarTrackColor: "#f5f5f5",
+              boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)",
             }}
           >
             <Table
@@ -277,26 +301,48 @@ export default function AdminList({ data, name }) {
                       tabIndex={-1}
                       sx={{ cursor: "pointer" }}
                     >
-                      <TableCell padding="checkbox"></TableCell>
                       {Object.keys(data[0]).map((column, index) => {
                         if (column !== "iId") {
                           return (
                             <>
-                              <TableCell
-                                sx={{
-                                  padding: "4px",
-                                  border: "1px solid #ddd",
-                                  whiteSpace: "nowrap",
-                                }}
-                                key={index + labelId}
-                                component="th"
-                                id={labelId}
-                                scope="row"
-                                padding="normal"
-                                align="left"
-                              >
-                                {row[column]}
-                              </TableCell>
+                              {expand ? (
+                                <TableCell
+                                  sx={{
+                                    padding: "4px",
+                                    border: "1px solid #ddd",
+                                    whiteSpace: "nowrap",
+                                  }}
+                                  key={index + labelId}
+                                  component="th"
+                                  id={labelId}
+                                  scope="row"
+                                  padding="normal"
+                                  align="left"
+                                >
+                                  {row[column]}
+                                </TableCell>
+                              ) : (
+                                <TableCell
+                                  
+                                  style={{
+                                      padding: "4px",
+                                      border: " 1px solid #ddd",
+                                      minWidth: "10px",
+                                      maxWidth: "20px",
+                                      whiteSpace: "nowrap",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                  }}
+                                  key={index + labelId}
+                                  component="th"
+                                  id={labelId}
+                                  scope="row"
+                                  padding="normal"
+                                  align="left"
+                                >
+                                  {row[column]}
+                                </TableCell>
+                              )}
                             </>
                           );
                         }
