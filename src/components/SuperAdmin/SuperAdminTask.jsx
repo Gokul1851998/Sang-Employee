@@ -99,25 +99,22 @@ export default function SuperAdminTask() {
     // Calculate the time difference between start and end
     const startTime = new Date(`2000-01-01 ${start}`);
     const endTime = new Date(`2000-01-01 ${end}`);
+
     const timeDiff = endTime - startTime;
-    const hourTime = timeDiff / 1000 / 60 / 60;
-    const hours = hourTime > 0 ? hourTime : 0;
-    let decimalPart = (hours % 1)?.toFixed(2)?.split(".")[1];
-    const decimalValue = Math.round((60 * decimalPart) / 100);
-    const currentValue = Math.floor(hours);
-    let result = currentValue + "." + decimalValue;
-    return result > 0 ? result : 0.0;
+    const hours = timeDiff / 1000 / 60 / 60;
+
+    return hours > 0 ? hours : 0;
   };
 
   React.useEffect(() => {
     if (start !== "" && end !== "") {
       const calculatedHours = calculateHours();
-      let timeInHour = calculatedHours;
+      let timeInHour = calculatedHours.toFixed(2);
 
       if (timeInHour !== 0) {
         setHour(timeInHour);
       } else {
-        setHour("0.0");
+        setHour(0.0);
       }
     }
     const currentDate = new Date();
@@ -143,7 +140,7 @@ export default function SuperAdminTask() {
     };
     fetchData();
   }, []);
-
+  
   return (
     <Box
       sx={{
@@ -167,6 +164,7 @@ export default function SuperAdminTask() {
           }}
         >
           <form onSubmit={handleData}>
+           
             <MDBRow className="mb-4">
               <MDBCol>
                 <MDBInput
