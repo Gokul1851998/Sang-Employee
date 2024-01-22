@@ -6,15 +6,30 @@ import IconButton from "@mui/material/IconButton";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Hidden, Stack, Tooltip, Typography } from "@mui/material";
+const events = ["load", "mousemove", "mousedown", "click", "scroll", "keypress"];
+const idleTime = 10 * 60 * 1000;
 
 function Header() {
   const navigate = useNavigate();
   const userName = localStorage.getItem("userName");
+  const userId = localStorage.getItem("userId");
+  const location = useLocation();
+  const [isOnline, setIsOnline] = React.useState(window.navigator.onLine);
   const admin = Number(localStorage.getItem("admin"));
   const [theme, setTheme] = React.useState("");
   const [title, setTitle] = React.useState("");
+
+  const handleLogout = React.useCallback(() => {
+    if (userId && userName) {
+      localStorage.removeItem("userId");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("admin");
+      localStorage.removeItem("iEmployee");
+    }
+  }, [userId, userName]);
+
   React.useEffect(() => {
     if (admin === 1) {
       setTheme("#8c99e0");
@@ -35,7 +50,70 @@ function Header() {
     localStorage.removeItem("iEmployee");
     navigate("/");
   };
-  const truncatedName = userName.slice(0, 2);
+  const truncatedName = userName ? userName.slice(0, 2) : '';
+
+  React.useEffect(() => {
+    const goOnline = () => {
+      setIsOnline(true);
+      // Optionally, reload the page
+      //window.location.reload();
+      alert('Success is walking from failure to failure with no loss of enthusiam.')
+    };
+
+    const goOffline = () => {
+      setIsOnline(false);
+      alert('Please verify your network connection and try again.')
+    };
+
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+
+    return () => {
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
+    };
+  }, []);
+
+
+  React.useEffect(() => {
+    if (location.pathname === "/") {
+      return; // Avoid logout action if the path is "/"
+    }
+
+    const data = localStorage.getItem("timeStamp");
+
+    if (data && userName && userId > 0) {
+      const currentTimestamp = new Date().getTime();
+      const expirationTimestamp = parseInt(data, 10);
+
+      if (currentTimestamp > expirationTimestamp) {
+        handleLogout();
+      }
+    }
+
+    const currentTime = new Date().getTime();
+    const expirationTime = currentTime + idleTime;
+    localStorage.setItem("timeStamp", expirationTime);
+
+    let timer = setTimeout(handleLogout, idleTime);
+
+    const resetTimer = () => {
+      clearTimeout(timer);
+    };
+
+    const handleActivity = () => {
+      resetTimer();
+      timer = setTimeout(handleLogout, idleTime);
+    };
+
+    events.forEach((event) => window.addEventListener(event, handleActivity));
+
+    return () => {
+      clearTimeout(timer);
+      events.forEach((event) => window.removeEventListener(event, handleActivity));
+    };
+  }, [handleLogout, location.pathname, userId, userName]);
+
   return (
     <>
        <AppBar

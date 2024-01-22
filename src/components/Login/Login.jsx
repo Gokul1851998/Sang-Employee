@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import sangImage from "../../assets/sangsolution.png";
 import Loader from "../Loader/Loader";
+const idleTime = 10 * 60 * 1000;
 
 const defaultTheme = createTheme();
 
@@ -52,6 +53,9 @@ export default function Login() {
         localStorage.setItem("userName", response[0]?.sUserName);
         localStorage.setItem("admin", response[0]?.bReport);
         localStorage.setItem("iEmployee", response[0]?.iEmployee);
+        const currentTime = new Date().getTime();
+        const expirationTime = currentTime + idleTime;
+        localStorage.setItem("timeStamp", expirationTime);
         navigate("/home");
       } else if(response?.length === 0){
         setMessage(`Wrong UserName or Password`);
