@@ -62,6 +62,51 @@ export const getLogin = async (payload) => {
     }
   };
 
+  export const getLeaveApplicationSummary = async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}GetLeaveApplicationSummary`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('GetLeaveApplicationSummary',error);
+    }
+  };
+
+  export const deleteLeaveApplication = async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}DeleteLeaveApplication`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('DeleteLeaveApplication',error);
+    }
+  };
+
+  export const getLeaveApplicationDetails = async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}GetLeaveApplicationDetails`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('GetLeaveApplicationDetails',error);
+    }
+  };
+
+  export const getLeave_Type = async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}GetLeave_Type`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('GetLeave_Type',error);
+    }
+  };
+
+
 
 
  

@@ -142,38 +142,28 @@ export default function Employee() {
     fetchData();
   }, []);
   return (
+ 
     <Box
+    sx={{
+      width: "auto",
+      zIndex: 1,
+      textAlign: "center", // Center content within this Box
+    }}
+  >
+    <Paper
       sx={{
-        margin: 0,
-        background: "#1b77e9",
-        height: "200px",
-        boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.5)",
-        display: "flex", // Make it a flex container
-        alignItems: "center", // Center vertically
-        justifyContent: "center", // Center horizontally
+        width: "100%",
+        mt: 5,
+        boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
+        textAlign: "center",
+        display: "inline-block", // Add this to prevent the Paper from taking full width
       }}
     >
       <Box
         sx={{
-          width: "auto",
-          zIndex: 1,
-          textAlign: "center", // Center content within this Box
+          p: 5,
         }}
       >
-        <Paper
-          sx={{
-            width: "100%",
-            mt: 50,
-            boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
-            textAlign: "center",
-            display: "inline-block", // Add this to prevent the Paper from taking full width
-          }}
-        >
-          <Box
-            sx={{
-              p: 5,
-            }}
-          >
             <form onSubmit={handleData}>
               <MDBRow className="mb-4">
                 <MDBCol>
@@ -372,7 +362,7 @@ export default function Employee() {
             </form>
           </Box>
         </Paper>
-      </Box>
+  
       {/* <Loader open={open} handleClose={handleClose} /> */}
     </Box>
   );
