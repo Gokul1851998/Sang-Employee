@@ -170,13 +170,6 @@ export default function LeaveForm({ setChange, id }) {
   useEffect(() => {
     const startDate = new Date(start);
     const endDate = new Date(end);
-
-    // Calculate the difference in milliseconds
-    const timeDifference = endDate.getTime() - startDate.getTime();
-
-    // Convert milliseconds to days
-    const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24)) + 1;
-    setTotal(daysDifference || "");
     const dateArray = [];
 
     for (
@@ -194,6 +187,20 @@ export default function LeaveForm({ setChange, id }) {
 
     setTableData(dateArray);
   }, [start, end]);
+
+  useEffect(()=>{
+    let totalHalfDay = 0;
+
+    tableData.forEach((entry) => {
+      if (entry.iHalfDay === 1) {
+        totalHalfDay += 0.5;
+      } else if (entry.iHalfDay === 0) {
+        totalHalfDay += 1;
+      }
+    });
+    
+    setTotal(totalHalfDay)
+  },[tableData])
 
   const updateType = () => {
     handleModalClose();
@@ -256,7 +263,7 @@ export default function LeaveForm({ setChange, id }) {
   const handleCloseLeave = () => {
     setChange(false);
   };
-
+ 
   return (
     <>
       <div style={{ display: "flex", alignItems: "center" }}>
@@ -274,6 +281,30 @@ export default function LeaveForm({ setChange, id }) {
         }}
       >
         <form onSubmit={handleSave}>
+          
+          <MDBRow className="mb-2">
+            <MDBCol>
+              <MDBInput
+                required
+                value={start}
+                id="form3Example1"
+                label="Start Date"
+                onChange={(e) => setStart(e.target.value)}
+                type="date"
+                style={{ marginBottom: 10 }}
+              />
+            </MDBCol>
+            <MDBCol>
+              <MDBInput
+                required
+                value={end}
+                id="form3Example1"
+                label="End Date"
+                onChange={(e) => setEnd(e.target.value)}
+                type="date"
+              />
+            </MDBCol>
+          </MDBRow>
           <MDBRow className="mb-3">
             <MDBCol>
               <Autocomplete
@@ -351,29 +382,6 @@ export default function LeaveForm({ setChange, id }) {
                 label="Total Leave"
                 onChange={(e) => setTotal(e.target.value)}
                 type="number"
-              />
-            </MDBCol>
-          </MDBRow>
-          <MDBRow className="mb-2">
-            <MDBCol>
-              <MDBInput
-                required
-                value={start}
-                id="form3Example1"
-                label="Start Date"
-                onChange={(e) => setStart(e.target.value)}
-                type="date"
-                style={{ marginBottom: 10 }}
-              />
-            </MDBCol>
-            <MDBCol>
-              <MDBInput
-                required
-                value={end}
-                id="form3Example1"
-                label="End Date"
-                onChange={(e) => setEnd(e.target.value)}
-                type="date"
               />
             </MDBCol>
           </MDBRow>
