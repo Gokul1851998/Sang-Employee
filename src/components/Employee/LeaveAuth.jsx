@@ -15,16 +15,12 @@ import Paper from "@mui/material/Paper";
 import { visuallyHidden } from "@mui/utils";
 import Loader from "../Loader/Loader";
 import { IconButton, TextField, Tooltip } from "@mui/material";
-import SaveIcon from "@mui/icons-material/Save";
-import { exportToExcel } from "../Excel/ExcelForm";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import ZoomInMapIcon from "@mui/icons-material/ZoomInMap";
 import {
   getLeaveAuthorizationSummary,
   leaveAuthorization,
 } from "../../api/ApiCall";
-import EditIcon from "@mui/icons-material/Edit";
-import { Button } from "rsuite";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
 import Swal from "sweetalert2";
@@ -199,19 +195,19 @@ export default function LeaveAuth() {
     setOpen(true);
   };
 
+  const fetchData = async () => {
+    handleOpen()
+  const response = await getLeaveAuthorizationSummary({ iUser: 0 });
+  if (response.Status === "Success") {
+    const myObject = JSON.parse(response.ResultData);
+    setData(myObject);
+  }else{
+    setData([])
+  }
+  handleClose()
+};
+
   React.useEffect(() => {
-    const fetchData = async () => {
-        handleOpen()
-      const response = await getLeaveAuthorizationSummary({ iUser: 0 });
-      if (response.Status === "Success") {
-        const myObject = JSON.parse(response.ResultData);
-        console.log(myObject);
-        setData(myObject);
-      }else{
-        setData([])
-      }
-      handleClose()
-    };
     fetchData();
   }, []);
 
@@ -268,7 +264,7 @@ export default function LeaveAuth() {
     setExpand(!expand);
   };
 
-  const handleApprove = async (iAuth,status, iTransId) => {
+  const handleApprove = async (iAuth, status, iTransId) => {
     Swal.fire({
       title: "Remarks",
       input: "text",
@@ -281,36 +277,34 @@ export default function LeaveAuth() {
       confirmButtonText: `${status}`,
       showLoaderOnConfirm: true,
       preConfirm: async (login) => {
-        const apiData = {
-            sRemarks:login,
-            iTransId,
-            iUser,
-            iAuth
+        if (iAuth === 2 && !login) {
+          Swal.showValidationMessage("Remarks are mandatory for rejection");
+          return;
         }
+  
+        const apiData = {
+          sRemarks: login,
+          iTransId,
+          iUser,
+          iAuth,
+        };
+  
         const response = await leaveAuthorization(apiData);
-        console.log(response,'---');
-        // if (!response.ok) {
-        //   return Swal.showValidationMessage(`
-        //     ${JSON.stringify(await response.json())}
-        //   `);
-        // }
-
-        // return response.json();
+  
+        if (response.Status === "Success") {
+          Swal.fire({
+            title: `${status}`,
+            text: `Leave request ${status}.`,
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          fetchData();
+        }
       },
-      allowOutsideClick: () => !Swal.isLoading(),
-      customClass: {
-        cancelButton: "swal-button swal-button--danger",
-      },
-      confirmButtonClass: "swal-button--success",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: `${result.value.login}'s avatar`,
-          imageUrl: result.value.avatar_url,
-        });
-      }
     });
   };
+  
 
   return (
     <Box

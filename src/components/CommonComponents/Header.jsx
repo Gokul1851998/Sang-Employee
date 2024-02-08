@@ -5,10 +5,21 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
-import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Hidden, Stack, Tooltip, Typography } from "@mui/material";
-const events = ["load", "mousemove", "mousedown", "click", "scroll", "keypress"];
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import Divider from "@mui/material/Divider";
+import Logout from "@mui/icons-material/Logout";
+const events = [
+  "load",
+  "mousemove",
+  "mousedown",
+  "click",
+  "scroll",
+  "keypress",
+];
 const idleTime = 10 * 60 * 1000;
 
 function Header() {
@@ -17,9 +28,15 @@ function Header() {
   const userId = localStorage.getItem("userId");
   const location = useLocation();
   const [isOnline, setIsOnline] = React.useState(window.navigator.onLine);
-  const admin = Number(localStorage.getItem("admin"));
-  const [theme, setTheme] = React.useState("");
-  const [title, setTitle] = React.useState("");
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogout = React.useCallback(() => {
     if (userId && userName) {
@@ -29,27 +46,28 @@ function Header() {
     }
   }, [userId, userName]);
 
- 
-
   const onClickLog = () => {
+    handleClose();
     localStorage.removeItem("userId");
     localStorage.removeItem("userName");
     localStorage.removeItem("iEmployee");
     navigate("/");
   };
-  const truncatedName = userName ? userName.slice(0, 2) : '';
+  const truncatedName = userName ? userName.slice(0, 2) : "";
 
   React.useEffect(() => {
     const goOnline = () => {
       setIsOnline(true);
       // Optionally, reload the page
       //window.location.reload();
-      alert('Success is walking from failure to failure with no loss of enthusiam.')
+      alert(
+        "Success is walking from failure to failure with no loss of enthusiam."
+      );
     };
 
     const goOffline = () => {
       setIsOnline(false);
-      alert('Please verify your network connection and try again.')
+      alert("Please verify your network connection and try again.");
     };
 
     window.addEventListener("online", goOnline);
@@ -60,7 +78,6 @@ function Header() {
       window.removeEventListener("offline", goOffline);
     };
   }, []);
-
 
   React.useEffect(() => {
     if (location.pathname === "/") {
@@ -97,74 +114,119 @@ function Header() {
 
     return () => {
       clearTimeout(timer);
-      events.forEach((event) => window.removeEventListener(event, handleActivity));
+      events.forEach((event) =>
+        window.removeEventListener(event, handleActivity)
+      );
     };
   }, [handleLogout, location.pathname, userId, userName]);
 
   return (
     <>
-       <AppBar
-      position="static"
-      sx={{
-        bgcolor: "#1b77e9",
-        boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.5)", // Changed the vertical offset to 5px
-      }}
-    >
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <Avatar
-            alt="Logo"
-            src="http://103.120.178.195:82/Sang_solutions/assets/images/sang_logo.png"
-            sx={{ mr: 2, width: 60, height: 60 }}
-          />
-          <Typography
-            variant="h5"
-            pt={2}
-            gutterBottom
-            sx={{
-              fontWeight: "normal",
-              fontFamily: "YourCustomFont, sans-serif",
-            }}
-          >
-            Sang Solutions
-          </Typography>
-
-          <Box
-            sx={{
-              flexGrow: 1,
-              display: { xs: "none", md: "flex" },
-              alignItems: "center",
-              justifyContent: "start",
-            }}
-          ></Box>
-
-          <Hidden mdUp>
-            {/* Render this box for small screens */}
-            <Box sx={{ flexGrow: 1 }}></Box>
-          </Hidden>
-
-          <Box sx={{ flexGrow: 0 }}>
-            <PowerSettingsNewIcon
-              sx={{ marginRight: { md: "20px" } }}
-              onClick={onClickLog}
+      <AppBar
+        position="static"
+        sx={{
+          bgcolor: "#1b77e9",
+          boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.5)", // Changed the vertical offset to 5px
+        }}
+      >
+        <Container maxWidth="xl">
+          <Toolbar disableGutters>
+            <Avatar
+              alt="Logo"
+              src="http://103.120.178.195:82/Sang_solutions/assets/images/sang_logo.png"
+              sx={{ mr: 2, width: 60, height: 60 }}
             />
-          </Box>
+            <Typography
+              variant="h5"
+              pt={2}
+              gutterBottom
+              sx={{
+                fontWeight: "normal",
+                fontFamily: "YourCustomFont, sans-serif",
+              }}
+            >
+              Sang Solutions
+            </Typography>
 
-          <Box sx={{ flexGrow: 0 }}>
-          
+            <Box
+              sx={{
+                flexGrow: 1,
+                display: { xs: "none", md: "flex" },
+                alignItems: "center",
+                justifyContent: "start",
+              }}
+            ></Box>
+
+            <Hidden mdUp>
+              {/* Render this box for small screens */}
+              <Box sx={{ flexGrow: 1 }}></Box>
+            </Hidden>
+
+            {/* <Box sx={{ flexGrow: 0 }}>
+              <PowerSettingsNewIcon
+                sx={{ marginRight: { md: "20px" } }}
+                onClick={onClickLog}
+              />
+            </Box> */}
+
+            <Box sx={{ flexGrow: 0 }}>
               {/* Render this IconButton for small screens */}
-              <IconButton sx={{ p: 0 }}>
+              <IconButton onClick={handleClick} sx={{ p: 0 }}>
                 <Tooltip title={userName} arrow>
                   <Stack direction="row" spacing={2}>
                     <Avatar>{truncatedName}</Avatar>
                   </Stack>
                 </Tooltip>
               </IconButton>
-           
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
+
+      <Menu
+        anchorEl={anchorEl}
+        id="account-menu"
+        open={open}
+        onClose={handleClose}
+        onClick={handleClose}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: "visible",
+            filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+            mt: 1.5,
+            "& .MuiAvatar-root": {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            "&::before": {
+              content: '""',
+              display: "block",
+              position: "absolute",
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: "background.paper",
+              transform: "translateY(-50%) rotate(45deg)",
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      >
+        <Divider />
+
+        <MenuItem onClick={onClickLog}>
+          <ListItemIcon>
+            <Logout fontSize="small" />
+          </ListItemIcon>
+          Logout
+        </MenuItem>
+      </Menu>
     </>
   );
 }

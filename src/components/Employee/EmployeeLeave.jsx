@@ -10,28 +10,22 @@ import TablePagination from "@mui/material/TablePagination";
 import Paper from "@mui/material/Paper";
 import empty from "../../assets/empty.png";
 import EditIcon from '@mui/icons-material/Edit';
-
 import {
   deleteLeaveApplication,
   getLeaveApplicationSummary,
 } from "../../api/ApiCall";
 import Loader from "../Loader/Loader";
-import { Stack } from "rsuite";
 import {
   Box,
   Button,
   IconButton,
-  Pagination,
   TextField,
   Toolbar,
   Tooltip,
   Typography,
-  Zoom,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
-import Swal from "sweetalert2";
-import AddIcon from "@mui/icons-material/Add";
 import LeaveForm from "./LeaveForm";
 
 const buttonStyle = {

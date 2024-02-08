@@ -23,7 +23,6 @@ export default function SuperAdminTask() {
   const [start, setStart] = React.useState("00:00");
   const [end, setEnd] = React.useState("00:00");
   const [task, setTask] = React.useState("");
-  const [status, setStatus] = React.useState(false);
   const [suggestionTask, setSuggestionTask] = React.useState([]);
   const [suggestionCustomer, setSuggestionCustomer] = React.useState([]);
   const [taskId, setTaskId] = React.useState(0);

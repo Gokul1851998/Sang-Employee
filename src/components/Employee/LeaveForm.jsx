@@ -22,7 +22,6 @@ import {
   postLeaveApplication,
 } from "../../api/ApiCall";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { IconButton } from "rsuite";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -85,7 +84,6 @@ export default function LeaveForm({ setChange, id }) {
         const response = await getLeaveApplicationDetails({ iTransId: id });
         if (response?.Status === "Success") {
           const myObject = JSON.parse(response?.ResultData);
-          console.log(myObject);
           setTotal(myObject?.Table[0]?.fNoOfDays || "");
           setITransId(myObject?.Table[0]?.iTransId || 0);
           setReason(myObject?.Table[0]?.sReason || "");
@@ -220,7 +218,6 @@ export default function LeaveForm({ setChange, id }) {
       //   CreatedDate: createdDate,
       sFileName: selectedFile?.name,
     };
-    console.log(data);
     const formData = new FormData();
     formData.append("data", JSON.stringify(data));
     formData.append("imageFiles",selectedFile);

@@ -9,7 +9,6 @@ import Zoom from "@mui/material/Zoom";
 import Box from "@mui/material/Box";
 import SuperAdminTask from "./SuperAdminTask";
 import SuperAdminReport from "./SuperAdminReport";
-import LeaveApplication from "./LeaveApplication";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -70,15 +69,7 @@ export default function SuperAdmin() {
       ),
       label: "Report",
     },
-    {
-      color: "",
-      content: (
-        <Box>
-          <LeaveApplication />
-        </Box>
-      ),
-      label: "Leave Applications",
-    },
+
   ];
 
   return (
@@ -115,14 +106,7 @@ export default function SuperAdmin() {
               backgroundColor: value === 1 ? "#74227a" : "#813587",
             }}
           />
-          <Tab
-            label="Leave Applications"
-            sx={{
-              textTransform: "none",
-              color: "#fff",
-              backgroundColor: value === 2 ? "#74227a" : "#813587",
-            }}
-          />
+         
         </Tabs>
       </AppBar>
 
