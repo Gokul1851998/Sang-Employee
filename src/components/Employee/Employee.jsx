@@ -72,6 +72,7 @@ export default function Employee() {
       confirmButtonText: "Yes",
     }).then(async (result) => {
       if (result.value) {
+        handleOpen()
         const response = await postDailyTask({
           iId: 0,
           iEmployee,
@@ -94,6 +95,7 @@ export default function Employee() {
           });
           newData();
         }
+        handleClose()
       }
     });
   };
@@ -128,6 +130,7 @@ export default function Employee() {
 
   React.useEffect(() => {
     const fetchData = async () => {
+      handleOpen()
       const response1 = await getTaskType();
       if (response1.Status === "Success") {
         const myObject1 = JSON.parse(response1.ResultData);
@@ -138,6 +141,7 @@ export default function Employee() {
         const myObject2 = JSON.parse(response2.ResultData);
         setSuggestionCustomer(myObject2);
       }
+      handleClose()
     };
     fetchData();
   }, []);
@@ -272,6 +276,7 @@ export default function Employee() {
                             paddingLeft: "6px",
                           },
                         }}
+                        
                       />
                     )}
                     style={{ width: `auto` }}
@@ -363,7 +368,7 @@ export default function Employee() {
           </Box>
         </Paper>
   
-      {/* <Loader open={open} handleClose={handleClose} /> */}
+      <Loader open={open} handleClose={handleClose} />
     </Box>
   );
 }

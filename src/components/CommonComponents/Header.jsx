@@ -25,28 +25,15 @@ function Header() {
     if (userId && userName) {
       localStorage.removeItem("userId");
       localStorage.removeItem("userName");
-      localStorage.removeItem("admin");
       localStorage.removeItem("iEmployee");
     }
   }, [userId, userName]);
 
-  React.useEffect(() => {
-    if (admin === 1) {
-      setTheme("#8c99e0");
-      setTitle("Sang Admin");
-    } else if (admin === 0) {
-      setTheme("#1b77e9");
-      setTitle("Sang Employee");
-    } else if (admin === 2) {
-      setTheme("#813587");
-      setTitle("Sang Super Admin");
-    }
-  }, [admin]);
+ 
 
   const onClickLog = () => {
     localStorage.removeItem("userId");
     localStorage.removeItem("userName");
-    localStorage.removeItem("admin");
     localStorage.removeItem("iEmployee");
     navigate("/");
   };
@@ -119,7 +106,7 @@ function Header() {
        <AppBar
       position="static"
       sx={{
-        bgcolor: theme,
+        bgcolor: "#1b77e9",
         boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.5)", // Changed the vertical offset to 5px
       }}
     >
@@ -139,7 +126,7 @@ function Header() {
               fontFamily: "YourCustomFont, sans-serif",
             }}
           >
-            {title}
+            Sang Solutions
           </Typography>
 
           <Box

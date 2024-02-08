@@ -9,6 +9,7 @@ import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
 import Paper from "@mui/material/Paper";
 import empty from "../../assets/empty.png";
+import EditIcon from '@mui/icons-material/Edit';
 
 import {
   deleteLeaveApplication,
@@ -50,9 +51,10 @@ export default function EnployeeLeave() {
   const [data, setData] = useState([]);
   const [loader, setLoader] = React.useState(false);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [navigate, setNavigate] = useState(false);
+  const [id, setId] = useState("")
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -101,7 +103,7 @@ export default function EnployeeLeave() {
       iEmployee,
       iYear: year,
     });
-    console.log(response);
+   
     if (response?.Status === "Success") {
       const myObject = JSON.parse(response?.ResultData);
       setData(myObject);
@@ -113,7 +115,7 @@ export default function EnployeeLeave() {
 
   useEffect(() => {
     fetchData();
-  }, [iEmployee, year]);
+  }, [iEmployee, year,navigate]);
 
   const headers = data.length > 0 ? Object.keys(data[0]) : [];
 
@@ -126,6 +128,7 @@ export default function EnployeeLeave() {
       confirmButtonText: "Yes",
     }).then(async (result) => {
       if (result.value) {
+        handleLoaderOpen()
         const response = await deleteLeaveApplication({
           iTransId: id,
           iUser: userId,
@@ -140,9 +143,20 @@ export default function EnployeeLeave() {
           });
           fetchData();
         }
+        handleLoaderClose()
       }
     });
   };
+
+  const handleEdit = (iId)=>{
+    setId(iId)
+    setNavigate(true)
+  }
+
+  const handleNew = ()=>{
+    setId(null)
+    setNavigate(true)
+  }
 
   return (
     <>
@@ -162,9 +176,7 @@ export default function EnployeeLeave() {
           }}
         >
           {navigate ? (
-            
-            <LeaveForm setChange={setNavigate} />
-          
+            <LeaveForm setChange={setNavigate} id={id} />
           ) : (
             <>
               <Toolbar
@@ -184,13 +196,13 @@ export default function EnployeeLeave() {
 
                 <div>
                   <Button
-                    onClick={() => setNavigate(true)}
+                    onClick={handleNew}
                     variant="contained"
                     style={buttonStyle}
-                    startIcon={<AddIcon />}
+                    // startIcon={<AddIcon />}
                     size="small"
                   >
-                    Add
+                    Leave Apply
                   </Button>
                   {data && data.length ? (
                     <TextField
@@ -206,199 +218,220 @@ export default function EnployeeLeave() {
                 </div>
               </Toolbar>
               {data && data.length > 0 ? (
-              <TableContainer
-                component={Paper}
-               
-              >
-              
-                  <Table
-                    sx={{ width: "100%" }}
-                    size="small"
-                    aria-label="a dense table"
-                  >
-                    <TableHead
-                      style={{
-                        backgroundColor: "#119def",
-                        position: "sticky",
-                        top: 0,
-                        zIndex: "1",
-                      }}
+                <>
+                  <TableContainer component={Paper}>
+                    <Table
+                      sx={{ width: "100%" }}
+                      size="small"
+                      aria-label="a dense table"
                     >
-                      <TableRow>
-                        {headers.map((header) =>
-                          header !== "iTransId" ? (
-                            <TableCell
-                              key={header}
-                              className="text-white"
-                              sx={{
-                                padding: "4px",
-                                border: "1px solid #ddd",
-                                minWidth:
-                                  header === "RejectedRemark"
-                                    ? "300px"
-                                    : "140px",
-                                maxWidth:
-                                  header === "RejectedRemark"
-                                    ? "400px"
-                                    : "200px",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              }}
-                              align="center"
-                              padding="normal"
-                            >
-                              {header}
-                            </TableCell>
-                          ) : null
-                        )}
-                        <TableCell
-                          className="text-white"
-                          sx={{
-                            padding: "4px",
-                            border: "1px solid #ddd",
-                            minWidth: "180px",
-                            maxWidth: "100px",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          }}
-                          align="center"
-                          padding="normal"
-                        >
-                          Action
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {filteredRows
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        .map((row, rowIndex) => (
-                          <TableRow key={rowIndex}>
-                            {headers.map((header) =>
-                              header !== "iTransId" ? (
-                                <TableCell
-                                  key={header}
-                                  sx={{
-                                    padding: "4px",
-                                    border: "1px solid #ddd",
-                                    whiteSpace: "nowrap",
-                                  }}
-                                  component="th"
-                                  scope="row"
-                                  padding="normal"
-                                  align="center"
-                                >
-                                  {row[header] === "Approved" ? (
-                                    <Typography
-                                      sx={{
-                                        flex: "1 1 100%",
-                                        fontWeight: "bold",
-                                      }}
-                                      className="text-success"
-                                      variant="p"
-                                      id="tableTitle"
-                                      component="div"
-                                    >
-                                      {row[header]}
-                                    </Typography>
-                                  ) : row[header] === "Rejected" ? (
-                                    <Typography
-                                      sx={{
-                                        flex: "1 1 100%",
-                                        fontWeight: "bold",
-                                      }}
-                                      className="text-danger"
-                                      variant="p"
-                                      id="tableTitle"
-                                      component="div"
-                                    >
-                                      {row[header]}
-                                    </Typography>
-                                  ) : row[header] === "Pending" ? (
-                                    <Typography
-                                      sx={{
-                                        flex: "1 1 100%",
-                                        fontWeight: "bold",
-                                      }}
-                                      className="text-warning"
-                                      variant="p"
-                                      id="tableTitle"
-                                      component="div"
-                                    >
-                                      {row[header]}
-                                    </Typography>
-                                  ) : (
-                                    row[header]
-                                  )}
-                                </TableCell>
-                              ) : null
-                            )}
-                            <TableCell
-                              sx={{
-                                padding: "4px",
-                                border: "1px solid #ddd",
-                                whiteSpace: "nowrap",
-                              }}
-                              component="th"
-                              scope="row"
-                              padding="normal"
-                              align="center"
-                            >
-                              {row?.sAuth === "Approved" ? (
-                                "---"
-                              ) : row?.sAuth === "Rejected" ? (
-                                <Tooltip title="Reapply" arrow>
-                                  <IconButton aria-label="delete" size="small">
-                                    <AutorenewIcon
-                                      fontSize="small"
-                                      sx={{ fontSize: 16, color: "#1b77e9" }}
-                                    />
-                                  </IconButton>
-                                </Tooltip>
-                              ) : row?.sAuth === "Pending" ? (
-                                <Tooltip title="Delete" arrow>
-                                  <IconButton
-                                    aria-label="delete"
-                                    size="small"
-                                    onClick={() => handleDelete(row?.iTransId)}
+                      <TableHead
+                        style={{
+                          backgroundColor: "#119def",
+                          position: "sticky",
+                          top: 0,
+                          zIndex: "1",
+                        }}
+                      >
+                        <TableRow>
+                          {headers.map((header) =>
+                            header !== "iTransId" ? (
+                              <TableCell
+                                key={header}
+                                className="text-white"
+                                sx={{
+                                  padding: "4px",
+                                  border: "1px solid #ddd",
+                                  minWidth:
+                                    header === "RejectedRemark"
+                                      ? "300px"
+                                      : "140px",
+                                  maxWidth:
+                                    header === "RejectedRemark"
+                                      ? "400px"
+                                      : "200px",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                                align="center"
+                                padding="normal"
+                              >
+                                {header}
+                              </TableCell>
+                            ) : null
+                          )}
+                          <TableCell
+                            className="text-white"
+                            sx={{
+                              padding: "4px",
+                              border: "1px solid #ddd",
+                              minWidth: "180px",
+                              maxWidth: "100px",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                            align="center"
+                            padding="normal"
+                          >
+                            Action
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {filteredRows
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .map((row, rowIndex) => (
+                            <TableRow key={rowIndex}>
+                              {headers.map((header) =>
+                                header !== "iTransId" ? (
+                                  <TableCell
+                                    key={header}
+                                    sx={{
+                                      padding: "4px",
+                                      border: "1px solid #ddd",
+                                      whiteSpace: "nowrap",
+                                    }}
+                                    component="th"
+                                    scope="row"
+                                    padding="normal"
+                                    align="center"
                                   >
-                                    <DeleteIcon
-                                      fontSize="small"
-                                      sx={{ fontSize: 16, color: "#1b77e9" }}
-                                    />
-                                  </IconButton>
-                                </Tooltip>
-                              ) : null}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                        
-                    </TableBody>
-                    
-                  </Table>
-             
-              </TableContainer>
-                 ) : (
-                    <>
-                       <TableContainer
-                component={Paper}
-             
-              >
-                        <img
-                        className="p-5"
-                          srcSet={`${empty}`}
-                          src={`${empty}`}
-                          alt={empty}
-                          loading="lazy"
-                          style={{width:"500px"}}
-                        />
-                      </TableContainer>
-                    </>
-                  )}
+                                    {row[header] === "Approved" ? (
+                                      <Typography
+                                        sx={{
+                                          flex: "1 1 100%",
+                                          fontWeight: "bold",
+                                        }}
+                                        className="text-success"
+                                        variant="p"
+                                        id="tableTitle"
+                                        component="div"
+                                      >
+                                        {row[header]}
+                                      </Typography>
+                                    ) : row[header] === "Rejected" ? (
+                                      <Typography
+                                        sx={{
+                                          flex: "1 1 100%",
+                                          fontWeight: "bold",
+                                        }}
+                                        className="text-danger"
+                                        variant="p"
+                                        id="tableTitle"
+                                        component="div"
+                                      >
+                                        {row[header]}
+                                      </Typography>
+                                    ) : row[header] === "Pending" ? (
+                                      <Typography
+                                        sx={{
+                                          flex: "1 1 100%",
+                                          fontWeight: "bold",
+                                        }}
+                                        className="text-warning"
+                                        variant="p"
+                                        id="tableTitle"
+                                        component="div"
+                                      >
+                                        {row[header]}
+                                      </Typography>
+                                    ) : (
+                                      row[header]
+                                    )}
+                                  </TableCell>
+                                ) : null
+                              )}
+                              <TableCell
+                                sx={{
+                                  padding: "4px",
+                                  border: "1px solid #ddd",
+                                  whiteSpace: "nowrap",
+                                }}
+                                component="th"
+                                scope="row"
+                                padding="normal"
+                                align="center"
+                              >
+                                {row?.sAuth === "Approved" ? (
+                                  "---"
+                                ) : row?.sAuth === "Rejected" ? (
+                                  <Tooltip title="Reapply" arrow>
+                                    <IconButton onClick={()=>handleEdit(row?.iTransId)}
+                                      aria-label="delete"
+                                      size="small"
+                                    >
+                                      <AutorenewIcon
+                                        fontSize="small"
+                                        sx={{ fontSize: 16, color: "#1b77e9" }}
+                                      />
+                                    </IconButton>
+                                  </Tooltip>
+                                ) : row?.sAuth === "Pending" ? (
+                                    <>
+                                      <Tooltip title="Edit" arrow>
+                                    <IconButton
+                                      aria-label="edit"
+                                      size="small"
+                                     onClick={()=>handleEdit(row?.iTransId)}
+                                    >
+                                      <EditIcon
+                                        fontSize="small"
+                                        sx={{ fontSize: 16, color: "#1b77e9" }}
+                                      />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Tooltip title="Delete" arrow>
+                                    <IconButton
+                                      aria-label="delete"
+                                      size="small"
+                                      onClick={() =>
+                                        handleDelete(row?.iTransId)
+                                      }
+                                    >
+                                      <DeleteIcon
+                                        fontSize="small"
+                                        sx={{ fontSize: 16, color: "#1b77e9" }}
+                                      />
+                                    </IconButton>
+                                  </Tooltip>
+                                
+                                  </>
+                                ) : null}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <TablePagination
+                    rowsPerPageOptions={[10, 25, 50, 100]}
+                    component="div"
+                    count={filteredRows.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                  />
+                </>
+              ) : (
+                <>
+                  <TableContainer component={Paper}>
+                    <img
+                      className="p-5"
+                      srcSet={`${empty}`}
+                      src={`${empty}`}
+                      alt={empty}
+                      loading="lazy"
+                      style={{ width: "500px" }}
+                    />
+                  </TableContainer>
+                </>
+              )}
             </>
           )}
         </Paper>

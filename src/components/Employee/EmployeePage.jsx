@@ -9,6 +9,10 @@ import Zoom from "@mui/material/Zoom";
 import Box from "@mui/material/Box";
 import Employee from "./Employee";
 import EmployeeLeave from "./EmployeeLeave";
+import SuperAdminReport from "../SuperAdmin/SuperAdminReport";
+import { getMenuWeb } from "../../api/ApiCall";
+import LeaveAuth from "./LeaveAuth";
+import Loader from "../Loader/Loader";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -36,6 +40,31 @@ TabPanel.propTypes = {
 export default function EmployeePage() {
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
+  const [changes, setChanges] = React.useState([]);
+  const [loader, setLoader] = React.useState(false);
+  const userId = localStorage.getItem("userId");
+
+  const handleLoaderClose = () => {
+    setLoader(false);
+  };
+
+  const handleLoaderOpen = () => {
+    setLoader(true);
+  };
+  React.useEffect(() => {
+    const fetchData = async () => {
+        handleLoaderOpen()
+      const response = await getMenuWeb({ iUser: userId });
+      if (response.Status === "Success") {
+        const myObject = JSON.parse(response.ResultData);
+        setChanges(myObject);
+      }else{
+        setChanges([])
+      }
+      handleLoaderClose()
+    };
+    fetchData();
+  }, []);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -50,28 +79,33 @@ export default function EmployeePage() {
     exit: theme.transitions.duration.leavingScreen,
   };
 
-  const fabs = [
-    {
+  const fabs = changes.map((change) => {
+    let contentComponent;
+  
+    switch (change.sMenuName) {
+      case "DailyTask":
+        contentComponent = <Employee />;
+        break;
+      case "DailyReport":
+        contentComponent = <SuperAdminReport />;
+        break;
+      case "Leave Application":
+        contentComponent = <EmployeeLeave />;
+        break;
+      case "Leave Authorization":
+        contentComponent = <LeaveAuth />;
+        break;
+      default:
+        contentComponent = null;
+    }
+  
+    return {
       color: "",
-      content: (
-        <Box>
-          <Employee/>
-        </Box>
-      ),
-      label: "Task",
-    },
-    {
-      color: "",
-      content: (
-        <Box sx={{ maxWidth: '100%' }}>
-         <EmployeeLeave />
-      </Box>
-      
-      ),
-      label: "Report",
-    },
-  ];
-
+      content: <Box sx={{ maxWidth: "100%", minHeight: "100%" }}>{contentComponent}</Box>,
+      label: change.sMenuName,
+    };
+  });
+  
   return (
     <Box
       sx={{
@@ -90,22 +124,17 @@ export default function EmployeePage() {
           variant="fullWidth"
           aria-label="action tabs example"
         >
-          <Tab
-            label="Daily Task"
-            sx={{
-              textTransform: "none",
-              color: "#fff",
-              backgroundColor: value === 0 ? "#053fc7" : "#1b77e9",
-            }}
-          />
-          <Tab
-            label="Leave"
-            sx={{
-              textTransform: "none",
-              color: "#fff",
-              backgroundColor: value === 1 ? "#053fc7" : "#1b77e9",
-            }}
-          />
+          {changes.map((change, index) => (
+            <Tab
+              key={change.iMenuId}
+              label={change.sMenuName}
+              sx={{
+                textTransform: "none",
+                color: "#fff",
+                backgroundColor: value === index ? "#053fc7" : "#1b77e9",
+              }}
+            />
+          ))}
         </Tabs>
       </AppBar>
 
@@ -124,6 +153,7 @@ export default function EmployeePage() {
           {fab.content}
         </Zoom>
       ))}
+       <Loader open={loader} handleClose={handleLoaderClose} />
     </Box>
   );
 }

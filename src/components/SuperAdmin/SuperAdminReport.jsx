@@ -176,7 +176,7 @@ export default function SuperAdminReport() {
   const buttonStyle = {
     textTransform: "none", // Set text transform to none for normal case
     color: "#FFFFFF", // Set text color
-    backgroundColor: "#74227a", // Set background color
+    backgroundColor: "#1b77e9", // Set background color
   };
 
   const handleClose = (event, reason) => {
@@ -259,11 +259,16 @@ export default function SuperAdminReport() {
   }
 
   const handleClear = async () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    const formattedDate = `${year}-${month}-${day}`;
+    setFrom(formattedDate);
+    setTo(formattedDate)
     setData([]);
     setEmployee();
     setEmployeeId(0);
-    setFrom("");
-    setTo("");
     setCustomer({});
     setCustomerId(0);
     setTaskName({});
@@ -522,7 +527,7 @@ export default function SuperAdminReport() {
           <IconButton
             onClick={handleSubmit}
             id="SearchVoucher"
-            style={{ background: "#74227a" }}
+            style={{ background: "#1b77e9" }}
           >
             <SearchIcon style={{ color: "#ffffff" }} />
           </IconButton>

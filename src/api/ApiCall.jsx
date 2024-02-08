@@ -15,7 +15,6 @@ export const getLogin = async (payload) => {
   export const postDailyTask = async (payload) => {
     try {
       const response = await axios.post(`${baseUrl}PostDailyTask`,payload);
-      console.log(response);
       return response?.data;
     } catch (error) {
       console.log('PostDailyTask',error);
@@ -106,7 +105,64 @@ export const getLogin = async (payload) => {
     }
   };
 
+  export const postLeaveApplication = async (payload) => {
+    try {
+      const response = await axios.post(`${baseUrl}PostLeaveApplication`, payload, {
+        headers: {
+          "Content-type": "multipart/form-data",
+        },
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('PostLeaveApplication',error);
+    }
+  };
 
+  
+  export const getMenuWeb = async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}GetMenuWeb`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('GetMenuWeb',error);
+    }
+  };
+
+  export const getLeaveAuthorizationSummary= async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}GetLeaveAuthorizationSummary`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('GetLeaveAuthorizationSummary',error);
+    }
+  };
+
+  export const leaveAuthorization = async (payload) => {
+    try {
+      // Create a new URLSearchParams object
+      const params = new URLSearchParams();
+  
+      // Append each key-value pair from the payload to the URLSearchParams
+      Object.entries(payload).forEach(([key, value]) => {
+        params.append(key, value);
+      });
+  
+      // Build the complete URL with the query string
+      const url = `${baseUrl}LeaveAuthorization?${params.toString()}`;
+  
+      // Make the POST request with the complete URL
+      const response = await axios.post(url);
+  
+      return response?.data;
+    } catch (error) {
+      console.log('LeaveAuthorization', error);
+    }
+  };
+  
 
 
  
