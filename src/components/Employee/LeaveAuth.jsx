@@ -91,8 +91,7 @@ function EnhancedTableHead(props) {
               <TableCell
                 sx={{
                   border: "1px solid #ddd",
-                  minWidth:
-                    (header === "Reason" ? "150px" : "auto"),
+                  minWidth: header === "Reason" ? "150px" : "auto",
                 }}
                 key={header}
                 align="center"
@@ -137,11 +136,14 @@ function EnhancedTableToolbar(props) {
   return (
     <Toolbar
       sx={{
-        mt: 2,
+        mt: { xs: 2, sm: 0 }, // Adjust top margin for different screen sizes
+        flexDirection: { xs: "column", sm: "row" }, // Stack items vertically on small screens
+        alignItems: { xs: "center", sm: "flex-end" }, // Align items vertically centered on small screens, at the bottom on larger screens
+        justifyContent: "space-between",
       }}
     >
       <Typography
-        sx={{ flex: "1 1 100%" }}
+        sx={{ flex: { xs: "1 1 100%", sm: "unset" } }} // Allow the Typography to grow on smaller screens
         variant="h6"
         id="tableTitle"
         component="div"
@@ -149,20 +151,16 @@ function EnhancedTableToolbar(props) {
         Leave Requests
       </Typography>
 
-      <TextField
-        id="search"
-        label="Search"
-        variant="outlined"
-        value={values}
-        onChange={changes}
-        size="small"
-      />
-      <Toolbar
-        sx={{
-          pl: { sm: 2 },
-          pr: { xs: 1, sm: 1 },
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <TextField
+          id="search"
+          label="Search"
+          variant="outlined"
+          value={values}
+          onChange={changes}
+          size="small"
+          sx={{ marginBottom: { xs: 2, sm: 0 }, marginRight: { xs: 0, sm: 2 } }} // Adjust margins for different screen sizes
+        />
         <button onClick={expandAction} className="btn pl-1">
           {expand ? (
             <ZoomInMapIcon style={{ fontSize: "large" }} />
@@ -171,7 +169,7 @@ function EnhancedTableToolbar(props) {
           )}
         </button>
         {/* Add Tooltip to IconButton */}
-      </Toolbar>
+      </div>
     </Toolbar>
   );
 }

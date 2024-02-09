@@ -101,22 +101,22 @@ export default function EnployeeLeave() {
 
   const fetchData = async () => {
     handleLoaderOpen();
-    if(year){
+    if (year) {
       const response = await getLeaveApplicationSummary({
         iEmployee,
         iYear: year,
       });
-  
+
       if (response?.Status === "Success") {
         const myObject = JSON.parse(response?.ResultData);
         setData(myObject);
       } else {
         setData([]);
       }
-    }else{
-      setYear(currentYear)
+    } else {
+      setYear(currentYear);
     }
-   
+
     handleLoaderClose();
   };
 
@@ -188,11 +188,12 @@ export default function EnployeeLeave() {
             <>
               <Toolbar
                 sx={{
-                  pl: { sm: 2 },
+                  pl: { xs: 1, sm: 2 }, // Adjust left padding for different screen sizes
                   pr: { xs: 1, sm: 1 },
                   display: "flex",
-                  justifyContent: "space-between", // Align items horizontally
-                  alignItems: "center", // Align items vertically
+                  flexDirection: { xs: "column", sm: "row" }, // Stack items vertically on small screens
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center" }}>
@@ -200,7 +201,8 @@ export default function EnployeeLeave() {
                     variant="h6"
                     id="tableTitle"
                     component="div"
-                    marginRight={2}
+                    marginRight={{ xs: 0, sm: 2 }} // Adjust right margin for different screen sizes
+                    marginBottom={{ xs: 2, sm: 0 }} // Adjust bottom margin for different screen sizes
                   >
                     Leave History
                   </Typography>
@@ -210,10 +212,10 @@ export default function EnployeeLeave() {
                     size="small"
                     options={suggestionYear}
                     onChange={(event, newValue) => {
-                      setYear(newValue?.label)
+                      setYear(newValue?.label);
                     }}
                     getOptionLabel={(option) => option.label.toString()}
-                    sx={{ width: 300 }}
+                    sx={{ width: { xs: "100%", sm: 300 } }} // Adjust width for different screen sizes
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -221,7 +223,7 @@ export default function EnployeeLeave() {
                         size="small"
                         inputProps={{
                           ...params.inputProps,
-                          autoComplete: "new-password", // disable autocomplete and autofill
+                          autoComplete: "new-password",
                           style: {
                             borderWidth: "1px",
                             borderColor: "#ddd",
@@ -242,8 +244,8 @@ export default function EnployeeLeave() {
                     onClick={handleNew}
                     variant="contained"
                     style={buttonStyle}
-                    // startIcon={<AddIcon />}
                     size="small"
+                    sx={{ marginBottom: { xs: 2, sm: 0 } }} // Adjust margin for different screen sizes
                   >
                     Leave Apply
                   </Button>
@@ -260,6 +262,7 @@ export default function EnployeeLeave() {
                   ) : null}
                 </div>
               </Toolbar>
+
               {data && data.length > 0 ? (
                 <>
                   <TableContainer component={Paper}>
@@ -345,54 +348,53 @@ export default function EnployeeLeave() {
                                     align="center"
                                   >
                                     {header === "Authorization" ? (
-                                     <>
-                                     {row[header] === "Approved" ? (
-                                      <Typography
-                                        sx={{
-                                          flex: "1 1 100%",
-                                          fontWeight: "bold",
-                                        }}
-                                        className="text-success"
-                                        variant="p"
-                                        id="tableTitle"
-                                        component="div"
-                                      >
-                                        {row[header]}
-                                      </Typography>
-                                    ) : row[header] === "Rejected" ? (
-                                      <Typography
-                                        sx={{
-                                          flex: "1 1 100%",
-                                          fontWeight: "bold",
-                                        }}
-                                        className="text-danger"
-                                        variant="p"
-                                        id="tableTitle"
-                                        component="div"
-                                      >
-                                        {row[header]}
-                                      </Typography>
-                                    ) : row[header] === "Pending" ? (
-                                      <Typography
-                                        sx={{
-                                          flex: "1 1 100%",
-                                          fontWeight: "bold",
-                                        }}
-                                        className="text-warning"
-                                        variant="p"
-                                        id="tableTitle"
-                                        component="div"
-                                      >
-                                        {row[header]}
-                                      </Typography>
+                                      <>
+                                        {row[header] === "Approved" ? (
+                                          <Typography
+                                            sx={{
+                                              flex: "1 1 100%",
+                                              fontWeight: "bold",
+                                            }}
+                                            className="text-success"
+                                            variant="p"
+                                            id="tableTitle"
+                                            component="div"
+                                          >
+                                            {row[header]}
+                                          </Typography>
+                                        ) : row[header] === "Rejected" ? (
+                                          <Typography
+                                            sx={{
+                                              flex: "1 1 100%",
+                                              fontWeight: "bold",
+                                            }}
+                                            className="text-danger"
+                                            variant="p"
+                                            id="tableTitle"
+                                            component="div"
+                                          >
+                                            {row[header]}
+                                          </Typography>
+                                        ) : row[header] === "Pending" ? (
+                                          <Typography
+                                            sx={{
+                                              flex: "1 1 100%",
+                                              fontWeight: "bold",
+                                            }}
+                                            className="text-warning"
+                                            variant="p"
+                                            id="tableTitle"
+                                            component="div"
+                                          >
+                                            {row[header]}
+                                          </Typography>
+                                        ) : (
+                                          row[header]
+                                        )}
+                                      </>
                                     ) : (
                                       row[header]
                                     )}
-                                     </>
-                                    ): (
-                                      row[header]
-                                    )}
-                                    
                                   </TableCell>
                                 ) : null
                               )}
@@ -459,7 +461,9 @@ export default function EnployeeLeave() {
                                       </IconButton>
                                     </Tooltip>
                                   </>
-                                ) : ( "---")}
+                                ) : (
+                                  "---"
+                                )}
                               </TableCell>
                             </TableRow>
                           ))}
