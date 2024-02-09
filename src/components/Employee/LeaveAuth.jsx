@@ -135,12 +135,14 @@ function EnhancedTableToolbar(props) {
 
   return (
     <Toolbar
-      sx={{
-        mt: { xs: 2, sm: 0 }, // Adjust top margin for different screen sizes
-        flexDirection: { xs: "column", sm: "row" }, // Stack items vertically on small screens
-        alignItems: { xs: "center", sm: "flex-end" }, // Align items vertically centered on small screens, at the bottom on larger screens
-        justifyContent: "space-between",
-      }}
+    sx={{
+      pl: { xs: 1, sm: 2 }, // Adjust left padding for different screen sizes
+      pr: { xs: 1, sm: 1 },
+      display: "flex",
+      flexDirection: { xs: "column", sm: "row" }, // Stack items vertically on small screens
+      justifyContent: "space-between",
+      alignItems: "center",
+    }}
     >
       <Typography
         sx={{ flex: { xs: "1 1 100%", sm: "unset" } }} // Allow the Typography to grow on smaller screens
@@ -201,7 +203,7 @@ export default function LeaveAuth() {
 
   const fetchData = async () => {
     handleOpen();
-    const response = await getLeaveAuthorizationSummary({ iUser: 0 });
+    const response = await getLeaveAuthorizationSummary({ iUser: iUser });
     if (response?.Status === "Success") {
       const myObject = JSON.parse(response?.ResultData);
       setData(myObject);
@@ -274,6 +276,7 @@ export default function LeaveAuth() {
       input: "text",
       inputAttributes: {
         autocapitalize: "off",
+        maxlength: 200, 
       },
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
@@ -311,20 +314,19 @@ export default function LeaveAuth() {
 
   return (
     <Box
-      sx={{
-        width: "auto",
-        paddingLeft: 5,
-        paddingRight: 5,
-        zIndex: 1,
-      }}
-    >
-      <Paper
         sx={{
           width: "100%",
-          paddingLeft: 2,
-          paddingRight: 2,
-          boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
+          padding: 2,
+          zIndex: 1,
+          textAlign: "center",
         }}
+      >
+      <Paper
+          sx={{
+            width: "100%",
+            mb: 2,
+            boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
+          }}
       >
         <EnhancedTableToolbar
           numSelected={selected.length}

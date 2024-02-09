@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
 const events = ["load", "mousemove", "mousedown", "click", "scroll", "keypress"];
-const idleTime = 2 * 60 * 1000;
+const idleTime = 10 * 60 * 1000;
 
 const ProtectedRoute = (props) => {
   const userId = localStorage.getItem("userId");

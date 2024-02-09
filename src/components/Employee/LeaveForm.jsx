@@ -421,7 +421,7 @@ export default function LeaveForm({ setChange, id }) {
                 required
                 value={reason}
                 label="Reason"
-                maxLength={300}
+                maxLength={200}
                 id="textAreaExample"
                 onChange={(e) => setReason(e.target.value)}
                 rows={2}
