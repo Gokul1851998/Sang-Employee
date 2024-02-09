@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import sangImage from "../../assets/sangsolution.png";
 import Loader from "../Loader/Loader";
-const idleTime = 10 * 60 * 1000;
+const idleTime = 2 * 60 * 1000;
 
 const defaultTheme = createTheme();
 

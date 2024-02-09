@@ -9,13 +9,14 @@ import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
 import Paper from "@mui/material/Paper";
 import empty from "../../assets/empty.png";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import {
   deleteLeaveApplication,
   getLeaveApplicationSummary,
 } from "../../api/ApiCall";
 import Loader from "../Loader/Loader";
 import {
+  Autocomplete,
   Box,
   Button,
   IconButton,
@@ -27,6 +28,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import LeaveForm from "./LeaveForm";
+import Swal from "sweetalert2";
 
 const buttonStyle = {
   textTransform: "none", // Set text transform to none for normal case
@@ -48,7 +50,13 @@ export default function EnployeeLeave() {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [navigate, setNavigate] = useState(false);
-  const [id, setId] = useState("")
+  const [id, setId] = useState("");
+  const getCurrentYear = new Date().getFullYear();
+  const previousYears = Array.from(
+    { length: 6 },
+    (_, index) => getCurrentYear - index
+  );
+  const suggestionYear = previousYears.map((year) => ({ label: year }));
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -93,23 +101,28 @@ export default function EnployeeLeave() {
 
   const fetchData = async () => {
     handleLoaderOpen();
-    const response = await getLeaveApplicationSummary({
-      iEmployee,
-      iYear: year,
-    });
-   
-    if (response?.Status === "Success") {
-      const myObject = JSON.parse(response?.ResultData);
-      setData(myObject);
-    } else {
-      setData([]);
+    if(year){
+      const response = await getLeaveApplicationSummary({
+        iEmployee,
+        iYear: year,
+      });
+  
+      if (response?.Status === "Success") {
+        const myObject = JSON.parse(response?.ResultData);
+        setData(myObject);
+      } else {
+        setData([]);
+      }
+    }else{
+      setYear(currentYear)
     }
+   
     handleLoaderClose();
   };
 
   useEffect(() => {
     fetchData();
-  }, [iEmployee, year,navigate]);
+  }, [iEmployee, year, navigate]);
 
   const headers = data.length > 0 ? Object.keys(data[0]) : [];
 
@@ -122,7 +135,7 @@ export default function EnployeeLeave() {
       confirmButtonText: "Yes",
     }).then(async (result) => {
       if (result.value) {
-        handleLoaderOpen()
+        handleLoaderOpen();
         const response = await deleteLeaveApplication({
           iTransId: id,
           iUser: userId,
@@ -137,20 +150,20 @@ export default function EnployeeLeave() {
           });
           fetchData();
         }
-        handleLoaderClose()
+        handleLoaderClose();
       }
     });
   };
 
-  const handleEdit = (iId)=>{
-    setId(iId)
-    setNavigate(true)
-  }
+  const handleEdit = (iId) => {
+    setId(iId);
+    setNavigate(true);
+  };
 
-  const handleNew = ()=>{
-    setId(null)
-    setNavigate(true)
-  }
+  const handleNew = () => {
+    setId(null);
+    setNavigate(true);
+  };
 
   return (
     <>
@@ -182,10 +195,46 @@ export default function EnployeeLeave() {
                   alignItems: "center", // Align items vertically
                 }}
               >
-                <div>
-                  <Typography variant="h6" id="tableTitle" component="div">
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <Typography
+                    variant="h6"
+                    id="tableTitle"
+                    component="div"
+                    marginRight={2}
+                  >
                     Leave History
                   </Typography>
+                  <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    size="small"
+                    options={suggestionYear}
+                    onChange={(event, newValue) => {
+                      setYear(newValue?.label)
+                    }}
+                    getOptionLabel={(option) => option.label.toString()}
+                    sx={{ width: 300 }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Year"
+                        size="small"
+                        inputProps={{
+                          ...params.inputProps,
+                          autoComplete: "new-password", // disable autocomplete and autofill
+                          style: {
+                            borderWidth: "1px",
+                            borderColor: "#ddd",
+                            borderRadius: "10px",
+                            fontSize: "15px",
+                            height: "20px",
+                            paddingLeft: "6px",
+                          },
+                        }}
+                      />
+                    )}
+                    style={{ width: `150px` }}
+                  />
                 </div>
 
                 <div>
@@ -295,7 +344,9 @@ export default function EnployeeLeave() {
                                     padding="normal"
                                     align="center"
                                   >
-                                    {row[header] === "Approved" ? (
+                                    {header === "Authorization" ? (
+                                     <>
+                                     {row[header] === "Approved" ? (
                                       <Typography
                                         sx={{
                                           flex: "1 1 100%",
@@ -337,6 +388,11 @@ export default function EnployeeLeave() {
                                     ) : (
                                       row[header]
                                     )}
+                                     </>
+                                    ): (
+                                      row[header]
+                                    )}
+                                    
                                   </TableCell>
                                 ) : null
                               )}
@@ -351,11 +407,12 @@ export default function EnployeeLeave() {
                                 padding="normal"
                                 align="center"
                               >
-                                {row?.sAuth === "Approved" ? (
+                                {row?.Authorization === "Approved" ? (
                                   "---"
-                                ) : row?.sAuth === "Rejected" ? (
+                                ) : row?.Authorization === "Rejected" ? (
                                   <Tooltip title="Reapply" arrow>
-                                    <IconButton onClick={()=>handleEdit(row?.iTransId)}
+                                    <IconButton
+                                      onClick={() => handleEdit(row?.iTransId)}
                                       aria-label="delete"
                                       size="small"
                                     >
@@ -365,37 +422,44 @@ export default function EnployeeLeave() {
                                       />
                                     </IconButton>
                                   </Tooltip>
-                                ) : row?.sAuth === "Pending" ? (
-                                    <>
-                                      <Tooltip title="Edit" arrow>
-                                    <IconButton
-                                      aria-label="edit"
-                                      size="small"
-                                     onClick={()=>handleEdit(row?.iTransId)}
-                                    >
-                                      <EditIcon
-                                        fontSize="small"
-                                        sx={{ fontSize: 16, color: "#1b77e9" }}
-                                      />
-                                    </IconButton>
-                                  </Tooltip>
-                                  <Tooltip title="Delete" arrow>
-                                    <IconButton
-                                      aria-label="delete"
-                                      size="small"
-                                      onClick={() =>
-                                        handleDelete(row?.iTransId)
-                                      }
-                                    >
-                                      <DeleteIcon
-                                        fontSize="small"
-                                        sx={{ fontSize: 16, color: "#1b77e9" }}
-                                      />
-                                    </IconButton>
-                                  </Tooltip>
-                                
+                                ) : row?.Authorization === "Pending" ? (
+                                  <>
+                                    <Tooltip title="Edit" arrow>
+                                      <IconButton
+                                        aria-label="edit"
+                                        size="small"
+                                        onClick={() =>
+                                          handleEdit(row?.iTransId)
+                                        }
+                                      >
+                                        <EditIcon
+                                          fontSize="small"
+                                          sx={{
+                                            fontSize: 16,
+                                            color: "#1b77e9",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Delete" arrow>
+                                      <IconButton
+                                        aria-label="delete"
+                                        size="small"
+                                        onClick={() =>
+                                          handleDelete(row?.iTransId)
+                                        }
+                                      >
+                                        <DeleteIcon
+                                          fontSize="small"
+                                          sx={{
+                                            fontSize: 16,
+                                            color: "#1b77e9",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    </Tooltip>
                                   </>
-                                ) : null}
+                                ) : ( "---")}
                               </TableCell>
                             </TableRow>
                           ))}

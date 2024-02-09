@@ -26,6 +26,7 @@ import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
 import Swal from "sweetalert2";
 import PreviewIcon from "@mui/icons-material/Preview";
 import { useNavigate } from "react-router-dom";
+import empty from "../../assets/empty.png";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -57,8 +58,13 @@ function stableSort(array, comparator) {
 
 function EnhancedTableHead(props) {
   const { order, orderBy, rowCount, onRequestSort, rows, expand } = props;
+  const [fixedHeader, setFixedHeader] = React.useState(true);
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
+  };
+
+  const toggleFixedHeader = () => {
+    setFixedHeader(!fixedHeader);
   };
 
   return (
@@ -78,17 +84,17 @@ function EnhancedTableHead(props) {
             header !== "iEmployee" &&
             header !== "iLeaveType" &&
             header !== "sFileName" &&
-            header !== "sTelephone"
+            header !== "Telephone"
           ) {
             // Exclude "iId", "iAssetType", and "sAltName" from the header
             return (
               <TableCell
                 sx={{
                   border: "1px solid #ddd",
-                  minWidth: !expand ? "50px" : "20px", // Adjust the values as needed
-                  maxWidth: !expand ? "200px" : "50px", // Adjust the values as needed
+                  minWidth:
+                    (header === "Reason" ? "150px" : "auto"),
                 }}
-                key={index}
+                key={header}
                 align="center"
                 padding="normal"
                 sortDirection={orderBy === header ? order : false}
@@ -196,16 +202,16 @@ export default function LeaveAuth() {
   };
 
   const fetchData = async () => {
-    handleOpen()
-  const response = await getLeaveAuthorizationSummary({ iUser: 0 });
-  if (response.Status === "Success") {
-    const myObject = JSON.parse(response.ResultData);
-    setData(myObject);
-  }else{
-    setData([])
-  }
-  handleClose()
-};
+    handleOpen();
+    const response = await getLeaveAuthorizationSummary({ iUser: 0 });
+    if (response?.Status === "Success") {
+      const myObject = JSON.parse(response?.ResultData);
+      setData(myObject);
+    } else {
+      setData([]);
+    }
+    handleClose();
+  };
 
   React.useEffect(() => {
     fetchData();
@@ -281,16 +287,16 @@ export default function LeaveAuth() {
           Swal.showValidationMessage("Remarks are mandatory for rejection");
           return;
         }
-  
+
         const apiData = {
           sRemarks: login,
           iTransId,
           iUser,
           iAuth,
         };
-  
+
         const response = await leaveAuthorization(apiData);
-  
+
         if (response.Status === "Success") {
           Swal.fire({
             title: `${status}`,
@@ -304,7 +310,6 @@ export default function LeaveAuth() {
       },
     });
   };
-  
 
   return (
     <Box
@@ -331,240 +336,277 @@ export default function LeaveAuth() {
           expandAction={handleExpand}
         />
 
-        {data.length > 0 && (
-          <TableContainer
-            style={{
-              display: "block",
-              maxHeight: "calc(100vh - 400px)",
-              overflowY: "auto",
-              scrollbarWidth: "thin",
-              scrollbarColor: "#888 #f5f5f5",
-              scrollbarTrackColor: "#f5f5f5",
-              boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <Table
-              sx={{ minWidth: 1600 }}
-              aria-labelledby="tableTitle"
-              size={dense ? "small" : "medium"}
+        {data && data.length ? (
+          <>
+            <TableContainer
+              style={{
+                display: "block",
+                maxHeight: "calc(100vh - 400px)",
+                overflowY: "auto",
+                scrollbarWidth: "thin",
+                scrollbarColor: "#888 #f5f5f5",
+                scrollbarTrackColor: "#f5f5f5",
+                boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)",
+              }}
             >
-              <EnhancedTableHead
-                order={order}
-                orderBy={orderBy}
-                onRequestSort={handleRequestSort}
-                rowCount={filteredRows.length}
-                rows={Object.keys(data[0])}
-                expand={expand}
+              <Table
+                sx={{ minWidth: 1600 }}
+                aria-labelledby="tableTitle"
+                size={dense ? "small" : "medium"}
+              >
+                <EnhancedTableHead
+                  order={order}
+                  orderBy={orderBy}
+                  onRequestSort={handleRequestSort}
+                  rowCount={filteredRows.length}
+                  rows={Object.keys(data[0])}
+                  expand={expand}
+                />
+
+                <TableBody>
+                  {visibleRows.map((row, index) => {
+                    const labelId = `enhanced-table-checkbox-${index}`;
+
+                    return (
+                      <TableRow
+                        key={row.iId}
+                        hover
+                        className={`table-row `}
+                        tabIndex={-1}
+                        sx={{ cursor: "pointer" }}
+                      >
+                        {Object.keys(data[0]).map((column, index) => {
+                          if (
+                            column !== "iId" &&
+                            column !== "iTransId" &&
+                            column !== "iEmployee" &&
+                            column !== "iLeaveType" &&
+                            column !== "sFileName" &&
+                            column !== "Telephone"
+                          ) {
+                            return (
+                              <>
+                                {expand ? (
+                                  <TableCell
+                                    sx={{
+                                      padding: "4px",
+                                      border: "1px solid #ddd",
+                                      whiteSpace: "nowrap",
+                                    }}
+                                    key={index + labelId}
+                                    component="th"
+                                    id={labelId}
+                                    scope="row"
+                                    padding="normal"
+                                    align="center"
+                                  >
+                                    {column === "link" ? (
+                                      <>
+                                        {row[column] ? (
+                                          <Tooltip title="View" arrow>
+                                            <IconButton
+                                              aria-label="edit"
+                                              size="small"
+                                              onClick={() =>
+                                                window.open(
+                                                  row[column],
+                                                  "_blank"
+                                                )
+                                              }
+                                            >
+                                              <PreviewIcon
+                                                fontSize="small"
+                                                sx={{
+                                                  fontSize: 18,
+                                                  color: "#ffb400",
+                                                }}
+                                              />
+                                            </IconButton>
+                                          </Tooltip>
+                                        ) : null}
+                                      </>
+                                    ) : row[column] === "Pending" ? (
+                                      <>
+                                        <Tooltip title="Approve" arrow>
+                                          <IconButton
+                                            aria-label="edit"
+                                            size="small"
+                                            onClick={() =>
+                                              handleApprove(
+                                                1,
+                                                "Approve",
+                                                row.iTransId
+                                              )
+                                            }
+                                          >
+                                            <CheckBoxIcon
+                                              fontSize="small"
+                                              sx={{
+                                                fontSize: 18,
+                                                color: "#01a34f",
+                                              }}
+                                            />
+                                          </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Reject" arrow>
+                                          <IconButton
+                                            onClick={() =>
+                                              handleApprove(
+                                                2,
+                                                "Reject",
+                                                row.iTransId
+                                              )
+                                            }
+                                            aria-label="edit"
+                                            size="small"
+                                          >
+                                            <DisabledByDefaultIcon
+                                              fontSize="small"
+                                              sx={{
+                                                fontSize: 18,
+                                                color: "#ed1d26",
+                                              }}
+                                            />
+                                          </IconButton>
+                                        </Tooltip>
+                                      </>
+                                    ) : (
+                                      row[column]
+                                    )}
+                                  </TableCell>
+                                ) : (
+                                  <TableCell
+                                    scope="row"
+                                    padding="normal"
+                                    align="center"
+                                    sx={{
+                                      padding: "4px",
+                                      border: " 1px solid #ddd",
+                                      minWidth: "100px",
+                                      maxWidth: 150,
+                                      whiteSpace: "nowrap",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                    }}
+                                    key={index + labelId}
+                                  >
+                                    {column === "link" ? (
+                                      <>
+                                        {row[column] ? (
+                                          <Tooltip title="View" arrow>
+                                            <IconButton
+                                              aria-label="edit"
+                                              size="small"
+                                              onClick={() =>
+                                                window.open(
+                                                  row[column],
+                                                  "_blank"
+                                                )
+                                              }
+                                            >
+                                              <PreviewIcon
+                                                fontSize="small"
+                                                sx={{
+                                                  fontSize: 18,
+                                                  color: "#ffb400",
+                                                }}
+                                              />
+                                            </IconButton>
+                                          </Tooltip>
+                                        ) : null}
+                                      </>
+                                    ) : row[column] === "Pending" ? (
+                                      <>
+                                        <Tooltip title="Approve" arrow>
+                                          <IconButton
+                                            aria-label="edit"
+                                            size="small"
+                                            onClick={() =>
+                                              handleApprove(
+                                                1,
+                                                "Approve",
+                                                row.iTransId
+                                              )
+                                            }
+                                          >
+                                            <CheckBoxIcon
+                                              fontSize="small"
+                                              sx={{
+                                                fontSize: 18,
+                                                color: "#01a34f",
+                                              }}
+                                            />
+                                          </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Reject" arrow>
+                                          <IconButton
+                                            onClick={() =>
+                                              handleApprove(
+                                                2,
+                                                "Reject",
+                                                row.iTransId
+                                              )
+                                            }
+                                            aria-label="edit"
+                                            size="small"
+                                          >
+                                            <DisabledByDefaultIcon
+                                              fontSize="small"
+                                              sx={{
+                                                fontSize: 18,
+                                                color: "#ed1d26",
+                                              }}
+                                            />
+                                          </IconButton>
+                                        </Tooltip>
+                                      </>
+                                    ) : (
+                                      row[column]
+                                    )}
+                                  </TableCell>
+                                )}
+                              </>
+                            );
+                          }
+                        })}
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+              }}
+            >
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 50, 100]}
+                component="div"
+                count={data.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
               />
-
-              <TableBody>
-                {visibleRows.map((row, index) => {
-                  const labelId = `enhanced-table-checkbox-${index}`;
-
-                  return (
-                    <TableRow
-                      key={row.iId}
-                      hover
-                      className={`table-row `}
-                      tabIndex={-1}
-                      sx={{ cursor: "pointer" }}
-                    >
-                      {Object.keys(data[0]).map((column, index) => {
-                        if (
-                          column !== "iId" &&
-                          column !== "iTransId" &&
-                          column !== "iEmployee" &&
-                          column !== "iLeaveType" &&
-                          column !== "sFileName" &&
-                          column !== "sTelephone"
-                        ) {
-                          return (
-                            <>
-                              {expand ? (
-                                <TableCell
-                                  sx={{
-                                    padding: "4px",
-                                    border: "1px solid #ddd",
-                                    overflow: "hidden",
-                                    whiteSpace: "normal",
-                                  }}
-                                  key={index + labelId}
-                                  component="th"
-                                  id={labelId}
-                                  scope="row"
-                                  padding="normal"
-                                  align="center"
-                                >
-                                  {column === "link" ? (
-                                    <Tooltip title="View" arrow>
-                                      <IconButton
-                                        aria-label="edit"
-                                        size="small"
-                                        onClick={() => window.open(row[column], '_blank')}
-                                      >
-                                        <PreviewIcon
-                                          fontSize="small"
-                                          sx={{
-                                            fontSize: 18,
-                                            color: "#ffb400",
-                                          }}
-                                        />
-                                      </IconButton>
-                                    </Tooltip>
-                                  ) : row[column] === "Pending" ? (
-                                    <>
-                                      <Tooltip title="Approve" arrow>
-                                        <IconButton
-                                          aria-label="edit"
-                                          size="small"
-                                          onClick={() =>
-                                            handleApprove(
-                                             1, "Approve",
-                                              row.iTransId
-                                            )
-                                          }
-                                        >
-                                          <CheckBoxIcon
-                                            fontSize="small"
-                                            sx={{
-                                              fontSize: 18,
-                                              color: "#01a34f",
-                                            }}
-                                          />
-                                        </IconButton>
-                                      </Tooltip>
-                                      <Tooltip title="Reject" arrow>
-                                        <IconButton
-                                          onClick={() =>
-                                            handleApprove(
-                                                2,
-                                              "Reject",
-                                              row.iTransId
-                                            )
-                                          }
-                                          aria-label="edit"
-                                          size="small"
-                                        >
-                                          <DisabledByDefaultIcon
-                                            fontSize="small"
-                                            sx={{
-                                              fontSize: 18,
-                                              color: "#ed1d26",
-                                            }}
-                                          />
-                                        </IconButton>
-                                      </Tooltip>
-                                    </>
-                                  ) : (
-                                    row[column]
-                                  )}
-                                </TableCell>
-                              ) : (
-                                <TableCell
-                                  scope="row"
-                                  padding="normal"
-                                  align="center"
-                                  sx={{
-                                    border: "1px solid #ddd",
-                                    padding: "4px",
-                                    overflow: "hidden",
-                                    whiteSpace: "nowrap "
-                                  }}
-                                  key={index + labelId}
-                                >
-                                  {column === "link" ? (
-                                    <Tooltip title="View" arrow>
-                                      <IconButton
-                                        aria-label="edit"
-                                        size="small"
-                                        onClick={() => window.open(row[column], '_blank')}
-                                      >
-                                        <PreviewIcon
-                                          fontSize="small"
-                                          sx={{
-                                            fontSize: 18,
-                                            color: "#ffb400",
-                                          }}
-                                        />
-                                      </IconButton>
-                                    </Tooltip>
-                                  ) : row[column] === "Pending" ? (
-                                    <>
-                                      <Tooltip title="Approve" arrow>
-                                        <IconButton
-                                          aria-label="edit"
-                                          size="small"
-                                          onClick={() =>
-                                            handleApprove(
-                                             1, "Approve",
-                                              row.iTransId
-                                            )
-                                          }
-                                        >
-                                          <CheckBoxIcon
-                                            fontSize="small"
-                                            sx={{
-                                              fontSize: 18,
-                                              color: "#01a34f",
-                                            }}
-                                          />
-                                        </IconButton>
-                                      </Tooltip>
-                                      <Tooltip title="Reject" arrow>
-                                        <IconButton
-                                          onClick={() =>
-                                            handleApprove(
-                                                2,
-                                              "Reject",
-                                              row.iTransId
-                                            )
-                                          }
-                                          aria-label="edit"
-                                          size="small"
-                                        >
-                                          <DisabledByDefaultIcon
-                                            fontSize="small"
-                                            sx={{
-                                              fontSize: 18,
-                                              color: "#ed1d26",
-                                            }}
-                                          />
-                                        </IconButton>
-                                      </Tooltip>
-                                    </>
-                                  ) : (
-                                    row[column]
-                                  )}
-                                </TableCell>
-                              )}
-                            </>
-                          );
-                        }
-                      })}
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+            </div>
+          </>
+        ) : (
+          <>
+            <TableContainer component={Paper}>
+              <img
+                className="p-5"
+                srcSet={`${empty}`}
+                src={`${empty}`}
+                alt={empty}
+                loading="lazy"
+                style={{ width: "500px" }}
+              />
+            </TableContainer>
+          </>
         )}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-          }}
-        >
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 50, 100]}
-            component="div"
-            count={data.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </div>
       </Paper>
       <Loader open={open} handleClose={handleClose} />
     </Box>

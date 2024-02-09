@@ -263,6 +263,22 @@ export default function LeaveForm({ setChange, id }) {
   const handleCloseLeave = () => {
     setChange(false);
   };
+
+  const getCurrentDate = () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    let month = currentDate.getMonth() + 1;
+    month = month < 10 ? `0${month}` : month;
+    let day = currentDate.getDate();
+    day = day < 10 ? `0${day}` : day;
+    return `${year}-${month}-${day}`;
+  };
+
+  useEffect(()=>{
+     if(total <= 0){
+      setEnd(start)
+     }
+  },[total])
  
   return (
     <>
@@ -291,6 +307,7 @@ export default function LeaveForm({ setChange, id }) {
                 label="Start Date"
                 onChange={(e) => setStart(e.target.value)}
                 type="date"
+                min={getCurrentDate()}
                 style={{ marginBottom: 10 }}
               />
             </MDBCol>
@@ -301,6 +318,7 @@ export default function LeaveForm({ setChange, id }) {
                 id="form3Example1"
                 label="End Date"
                 onChange={(e) => setEnd(e.target.value)}
+                min={getCurrentDate()}
                 type="date"
               />
             </MDBCol>
