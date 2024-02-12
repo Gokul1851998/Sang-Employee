@@ -91,7 +91,9 @@ function EnhancedTableHead(props) {
               <TableCell
                 sx={{
                   border: "1px solid #ddd",
-                  minWidth: header === "Reason" ? "150px" : "auto",
+                  maxWidth: "5px",
+                  minWidth: "40px",
+                  maxWidth: "auto",
                 }}
                 key={header}
                 align="center"
@@ -341,7 +343,7 @@ export default function LeaveAuth() {
             <TableContainer
               style={{
                 display: "block",
-                maxHeight: "calc(100vh - 400px)",
+                maxHeight: "calc(100vh - 300px)",
                 overflowY: "auto",
                 scrollbarWidth: "thin",
                 scrollbarColor: "#888 #f5f5f5",
@@ -392,6 +394,7 @@ export default function LeaveAuth() {
                                       padding: "4px",
                                       border: "1px solid #ddd",
                                       whiteSpace: "nowrap",
+                                    
                                     }}
                                     key={index + labelId}
                                     component="th"
@@ -482,8 +485,8 @@ export default function LeaveAuth() {
                                     sx={{
                                       padding: "4px",
                                       border: " 1px solid #ddd",
-                                      minWidth: "100px",
-                                      maxWidth: 150,
+                                      minWidth: "10px",
+                                      maxWidth: "10px",
                                       whiteSpace: "nowrap",
                                       overflow: "hidden",
                                       textOverflow: "ellipsis",

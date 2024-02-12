@@ -514,7 +514,7 @@ export default function LeaveForm({ setChange, id }) {
                   fontWeight: "bold",
                 }}
               >
-                Empergency Contact Details
+                Emergency Contact Details
               </Typography>
             </MDBCardHeader>
           </MDBRow>

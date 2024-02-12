@@ -265,7 +265,18 @@ export default function EnployeeLeave() {
 
               {data && data.length > 0 ? (
                 <>
-                  <TableContainer component={Paper}>
+                  <TableContainer
+                    component={Paper}
+                    style={{
+                      display: "block",
+                      maxHeight: "calc(100vh - 300px)",
+                      overflowY: "auto",
+                      scrollbarWidth: "thin",
+                      scrollbarColor: "#888 #f5f5f5",
+                      scrollbarTrackColor: "#f5f5f5",
+                      boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)",
+                    }}
+                  >
                     <Table
                       sx={{ width: "100%" }}
                       size="small"
@@ -288,18 +299,13 @@ export default function EnployeeLeave() {
                                 sx={{
                                   padding: "4px",
                                   border: "1px solid #ddd",
-                                  minWidth:
-                                    header === "RejectedRemark"
-                                      ? "300px"
-                                      : "140px",
-                                  maxWidth:
-                                    header === "RejectedRemark"
-                                      ? "400px"
-                                      : "200px",
+                                  minWidth: "150px",
+                                  maxWidth: "auto",
                                   whiteSpace: "nowrap",
                                   overflow: "hidden",
                                   textOverflow: "ellipsis",
                                 }}
+                                component="th" scope="row"
                                 align="center"
                                 padding="normal"
                               >
@@ -312,12 +318,13 @@ export default function EnployeeLeave() {
                             sx={{
                               padding: "4px",
                               border: "1px solid #ddd",
-                              minWidth: "180px",
-                              maxWidth: "100px",
+                              minWidth: "150px",
+                              maxWidth: "auto",
                               whiteSpace: "nowrap",
                               overflow: "hidden",
                               textOverflow: "ellipsis",
                             }}
+                            component="th" scope="row"
                             align="center"
                             padding="normal"
                           >
@@ -340,7 +347,11 @@ export default function EnployeeLeave() {
                                     sx={{
                                       padding: "4px",
                                       border: "1px solid #ddd",
+                                      minWidth: "150px",
+                                      maxWidth: "auto",
                                       whiteSpace: "nowrap",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
                                     }}
                                     component="th"
                                     scope="row"
@@ -399,13 +410,16 @@ export default function EnployeeLeave() {
                                 ) : null
                               )}
                               <TableCell
+                                component="th" scope="row"
                                 sx={{
                                   padding: "4px",
                                   border: "1px solid #ddd",
+                                  minWidth: "150px",
+                                  maxWidth: "auto",
                                   whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
                                 }}
-                                component="th"
-                                scope="row"
                                 padding="normal"
                                 align="center"
                               >
