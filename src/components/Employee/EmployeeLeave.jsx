@@ -43,7 +43,7 @@ export default function EnployeeLeave() {
   const userId = localStorage.getItem("userId");
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
-  const [year, setYear] = useState(currentYear);
+  const [year, setYear] = useState(0);
   const [data, setData] = useState([]);
   const [loader, setLoader] = React.useState(false);
   const [page, setPage] = React.useState(0);
@@ -98,10 +98,10 @@ export default function EnployeeLeave() {
       return false; // Ignore other types
     })
   );
-
+  
   const fetchData = async () => {
     handleLoaderOpen();
-    if (year) {
+
       const response = await getLeaveApplicationSummary({
         iEmployee,
         iYear: year,
@@ -113,9 +113,7 @@ export default function EnployeeLeave() {
       } else {
         setData([]);
       }
-    } else {
-      setYear(currentYear);
-    }
+    
 
     handleLoaderClose();
   };
@@ -123,6 +121,12 @@ export default function EnployeeLeave() {
   useEffect(() => {
     fetchData();
   }, [iEmployee, year, navigate]);
+
+  useEffect(()=>{
+    if(!year){
+      setYear(0)
+    }
+  },[year])
 
   const headers = data.length > 0 ? Object.keys(data[0]) : [];
 

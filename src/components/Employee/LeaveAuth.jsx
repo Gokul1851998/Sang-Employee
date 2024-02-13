@@ -91,7 +91,6 @@ function EnhancedTableHead(props) {
               <TableCell
                 sx={{
                   border: "1px solid #ddd",
-                  maxWidth: "5px",
                   minWidth: "40px",
                   maxWidth: "auto",
                 }}
