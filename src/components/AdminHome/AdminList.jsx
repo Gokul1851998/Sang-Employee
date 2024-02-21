@@ -231,7 +231,7 @@ export default function AdminList({ data, name }) {
 
   const handleExcel = () => {
     const Id = ["iId"];
-    exportToExcel(data, `${name} Report`, Id);
+    exportToExcel(data, `${name? name : "Employee"} Report`, Id);
   };
 
   const handleExpand = () => {
@@ -242,8 +242,6 @@ export default function AdminList({ data, name }) {
     <Box
       sx={{
         width: "auto",
-        paddingLeft: 5,
-        paddingRight: 5,
         zIndex: 1,
       }}
     >

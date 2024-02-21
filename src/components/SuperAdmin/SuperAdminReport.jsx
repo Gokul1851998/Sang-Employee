@@ -383,7 +383,10 @@ export default function SuperAdminReport() {
             InputLabelProps={{
               shrink: true, // Set shrink to true when there is a value
             }}
-            sx={{ minWidth: 200, flex: 1 }} // Set the width for TextField
+            sx={{
+              width: 200, // Specify a fixed width
+              minWidth: 200, // Ensure it doesn't shrink below this width
+            }}
           />
           <TextField
             required
@@ -400,7 +403,10 @@ export default function SuperAdminReport() {
             InputLabelProps={{
               shrink: true, // Set shrink to true when there is a value
             }}
-            sx={{ minWidth: 200, flex: 1 }} // Set the width for TextField
+            sx={{
+              width: 200, // Specify a fixed width
+              minWidth: 200, // Ensure it doesn't shrink below this width
+            }}
           />
 
           <Autocomplete
@@ -538,7 +544,12 @@ export default function SuperAdminReport() {
       </Box>
       {data && data.length ? (
         <>
+        <Box sx={{
+                  paddingLeft: 5,
+                  paddingRight: 5,
+        }}>
           <AdminList data={data} name={employee?.sName} />
+          </Box>
         </>
       ) : null}
       {/* <Loader open={open} handleClose={handleClose} /> */}
