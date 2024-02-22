@@ -206,8 +206,8 @@ export default function Employee() {
         iEmployee: iEmployee,
         FromDate,
         ToDate,
-        iCustomer: customerId,
-        iTaskType: taskId,
+        iCustomer: customerId2,
+        iTaskType: taskId2,
       });
       if (response.Status === "Success") {
         const myObject = JSON.parse(response.ResultData);

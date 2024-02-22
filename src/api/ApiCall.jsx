@@ -34,6 +34,7 @@ export const getLogin = async (payload) => {
 
   export const getDailyTaskReport = async (payload) => {
     try {
+      console.log(payload);
       const response = await axios.get(`${baseUrl}GetDailyTaskReport`, {
         params: payload,
       });
