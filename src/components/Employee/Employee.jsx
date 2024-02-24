@@ -199,7 +199,7 @@ export default function Employee() {
 
   const handleSubmit = async () => {
     handleOpen();
-    if (from && to) {
+    if (from && to && iEmployee) {
       const FromDate = formatDate(from);
       const ToDate = formatDate(to);
       const response = await getDailyTaskReport({
@@ -220,7 +220,7 @@ export default function Employee() {
         }
       }
     } else {
-      setMessage(`Fill both From & To date`);
+      setMessage(`Something went wrong`);
       handleWarningOpen();
     }
     handleClose();

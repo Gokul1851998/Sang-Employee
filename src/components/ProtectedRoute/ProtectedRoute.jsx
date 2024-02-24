@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 const events = ["load", "mousemove", "mousedown", "click", "scroll", "keypress"];
 const idleTime = 10 * 60 * 1000;
@@ -7,7 +7,9 @@ const idleTime = 10 * 60 * 1000;
 const ProtectedRoute = (props) => {
   const userId = localStorage.getItem("userId");
   const userName = localStorage.getItem("userName");
+  const iEmployee = Number(localStorage.getItem("iEmployee"));
   const location = useLocation();
+  const navigate = useNavigate()
   const [isOnline, setIsOnline] = useState(window.navigator.onLine);
   const handleLogout = useCallback(() => {
     if (userId && userName) {
@@ -39,6 +41,19 @@ const ProtectedRoute = (props) => {
       window.removeEventListener("offline", goOffline);
     };
   }, []);
+
+  const onClickLog = () => {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("iEmployee");
+    navigate("/");
+  };
+
+  useEffect(()=>{
+    if(!userId || !iEmployee){
+      onClickLog()
+    }
+  },[userId, iEmployee])
 
   useEffect(() => {
     if (location.pathname === "/") {
