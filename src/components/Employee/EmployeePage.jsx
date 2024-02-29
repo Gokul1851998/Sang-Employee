@@ -13,6 +13,9 @@ import SuperAdminReport from "../SuperAdmin/SuperAdminReport";
 import { getMenuWeb } from "../../api/ApiCall";
 import LeaveAuth from "./LeaveAuth";
 import Loader from "../Loader/Loader";
+import Complaints from "./Complaints";
+import ComplaintsReport from "./ComplaintsReport";
+import CompliantsAuth from "./CompliantsAuth";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -53,15 +56,15 @@ export default function EmployeePage() {
   };
   React.useEffect(() => {
     const fetchData = async () => {
-        handleLoaderOpen()
+      handleLoaderOpen();
       const response = await getMenuWeb({ iUser: userId });
       if (response.Status === "Success") {
         const myObject = JSON.parse(response.ResultData);
         setChanges(myObject);
-      }else{
-        setChanges([])
+      } else {
+        setChanges([]);
       }
-      handleLoaderClose()
+      handleLoaderClose();
     };
     fetchData();
   }, []);
@@ -81,7 +84,7 @@ export default function EmployeePage() {
 
   const fabs = changes.map((change) => {
     let contentComponent;
-  
+
     switch (change.sMenuName) {
       case "DailyTask":
         contentComponent = <Employee />;
@@ -95,17 +98,33 @@ export default function EmployeePage() {
       case "Leave Authorization":
         contentComponent = <LeaveAuth />;
         break;
+      case "Complaint":
+        contentComponent = <Complaints />;
+        break;
+      case "Complaint Leave Authorization":
+        contentComponent = <CompliantsAuth />;
+        break;
       default:
         contentComponent = null;
     }
-  
+
     return {
       color: "",
-      content: <Box sx={{ maxWidth: "100%", minHeight: "100%" }}>{contentComponent}</Box>,
+      content: (
+        <Box
+          sx={{
+            maxWidth: "100%",
+            minHeight: "100%",
+            padding: theme.spacing(2), // Add padding for responsiveness
+          }}
+        >
+          {contentComponent}
+        </Box>
+      ),
       label: change.sMenuName,
     };
   });
-  
+
   return (
     <Box
       sx={{
@@ -153,7 +172,7 @@ export default function EmployeePage() {
           {fab.content}
         </Zoom>
       ))}
-       <Loader open={loader} handleClose={handleLoaderClose} />
+      <Loader open={loader} handleClose={handleLoaderClose} />
     </Box>
   );
 }

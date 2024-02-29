@@ -163,6 +163,46 @@ export const getLogin = async (payload) => {
       console.log('LeaveAuthorization', error);
     }
   };
+
+  export const getComplaintType= async () => {
+    try {
+      const response = await axios.get(`${baseUrl}GetComplaintType`);
+      return response?.data;
+    } catch (error) {
+      console.log('GetComplaintType',error);
+    }
+  };
+
+  export const postComplaints = async (payload) => {
+    try {
+      const response = await axios.post(`${baseUrl}PostComplaints`,payload);
+      return response?.data;
+    } catch (error) {
+      console.log('PostComplaints',error);
+    }
+  };
+
+  export const getComplaints = async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}GetComplaints`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('GetComplaints',error);
+    }
+  };
+
+  export const complaintSummary = async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}ComplaintSummary`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('ComplaintSummary',error);
+    }
+  };
   
 
 
