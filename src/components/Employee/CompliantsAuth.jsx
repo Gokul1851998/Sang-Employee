@@ -115,7 +115,7 @@ EnhancedTableHead.propTypes = {
 };
 
 function EnhancedTableToolbar(props) {
-  const { numSelected, values, changes, action, expandAction, expand } = props;
+  const { numSelected, values, changes, action, expandAction, expand, data } = props;
 
   return (
     <Toolbar
@@ -132,7 +132,9 @@ function EnhancedTableToolbar(props) {
         Complaints
       </Typography>
 
-      <TextField
+      {data && data.length? (
+        <>
+        <TextField
         id="search"
         label="Search"
         variant="outlined"
@@ -160,6 +162,8 @@ function EnhancedTableToolbar(props) {
           </IconButton>
         </Tooltip>
       </Toolbar>
+        </>
+      ): null}
     </Toolbar>
   );
 }
@@ -317,9 +321,11 @@ export default function ComplaintsAuth({ name }) {
           changes={handleSearch}
           expand={expand}
           expandAction={handleExpand}
+          data={data}
         />
 
         {data && data.length > 0 ? (
+            <>
           <TableContainer
             style={{
               display: "block",
@@ -460,21 +466,7 @@ export default function ComplaintsAuth({ name }) {
               </TableBody>
             </Table>
           </TableContainer>
-        ) : (
-            <>
-            <TableContainer component={Paper}>
-              <img
-                className="p-5"
-                srcSet={`${empty}`}
-                src={`${empty}`}
-                alt={empty}
-                loading="lazy"
-                style={{ width: "500px" }}
-              />
-            </TableContainer>
-          </>
-        )}
-        <div
+          <div
           style={{
             display: "flex",
             alignItems: "center",
@@ -491,6 +483,22 @@ export default function ComplaintsAuth({ name }) {
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </div>
+          </>
+        ) : (
+            <>
+            <TableContainer component={Paper}>
+              <img
+                className="p-5"
+                srcSet={`${empty}`}
+                src={`${empty}`}
+                alt={empty}
+                loading="lazy"
+                style={{ width: "500px" }}
+              />
+            </TableContainer>
+          </>
+        )}
+        
       </Paper>
       <Loader open={open} handleClose={handleClose} />
     </Box>
