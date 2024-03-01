@@ -55,6 +55,7 @@ export default function Compliants() {
   const [type, setType] = React.useState("");
   const [remark, setRemark] = React.useState("");
   const [suggestionType, setSuggestionType] = React.useState([]);
+  const [dataId, setDataId] = React.useState(0);
 
   const handleClose = () => {
     setOpen(false);
@@ -78,11 +79,11 @@ export default function Compliants() {
   const handleData = async (e) => {
     e.preventDefault();
     const saveData = {
-        iId:0,
-        iEmployee,
-        sRemark:remark,
-        
-    }
+      iId: dataId,
+      iUser,
+      sRemarks: remark,
+      iType: type?.iId,
+    };
     Swal.fire({
       text: "Are you sure you want to continue?",
       showCancelButton: true,
@@ -92,11 +93,11 @@ export default function Compliants() {
     }).then(async (result) => {
       if (result.value) {
         handleOpen();
-        const response = await postComplaints({});
+        const response = await postComplaints(saveData);
         if (response?.Status === "Success") {
           Swal.fire({
-            title: "Updated",
-            text: "Task Updated!",
+            title: "Saved",
+            text: "Complaint Updated!",
             icon: "success",
             showConfirmButton: false,
             timer: 1500,
@@ -104,6 +105,7 @@ export default function Compliants() {
           newData();
         }
         handleClose();
+        handleClear()
       }
     });
   };
@@ -121,13 +123,30 @@ export default function Compliants() {
     fetchData();
   }, []);
 
+  const handleChildData = (data) => {
+    const newType = suggestionType.filter(
+      (item) => item.iId === data.ComplaintType
+    );
+    setType(newType[0]);
+    setRemark(data?.Remarks);
+    setDataId(data?.iId);
+    setHistory(true);
+  };
+
+  const handleClear = () => {
+    setDataId(0)
+    setType("");
+    setRemark("");
+    setHistory(false);
+  };
+
   return (
     <>
       <div style={{ display: "flex", alignItems: "center" }}>
         {history ? (
           <Button
             size="small"
-            onClick={() => setHistory(false)}
+            onClick={handleClear}
             sx={{
               backgroundColor: "#3b71ca",
               color: "white",
@@ -198,19 +217,22 @@ export default function Compliants() {
                           setType(newValue);
                         }}
                         options={suggestionType.map((data) => ({
-                          sName: data.ComplaintType,
-                          sCode: data.ComplaintTypeCode,
+                          ComplaintType: data.ComplaintType,
+                          ComplaintTypeCode: data.ComplaintTypeCode,
+                          iId: data.iId,
                         }))}
                         filterOptions={(options, { inputValue }) => {
                           return options.filter((option) =>
-                            option.sName
-                              .toLowerCase()
-                              .includes(inputValue.toLowerCase())
+                            option.ComplaintType.toLowerCase().includes(
+                              inputValue.toLowerCase()
+                            )
                           );
                         }}
                         autoHighlight
                         getOptionLabel={(option) =>
-                          option && option.sName ? option.sName : ""
+                          option && option.ComplaintType
+                            ? option.ComplaintType
+                            : ""
                         }
                         renderOption={(props, option) => (
                           <li {...props}>
@@ -229,7 +251,7 @@ export default function Compliants() {
                                   fontWeight: "normal",
                                 }}
                               >
-                                {option.sName}
+                                {option.ComplaintType}
                               </Typography>
                             </div>
                           </li>
@@ -241,7 +263,7 @@ export default function Compliants() {
                             {...params}
                             inputProps={{
                               ...params.inputProps,
-                              autoComplete: "new-password", // disable autocomplete and autofill
+                              autoComplete: "off", // disable autocomplete and autofill
                               style: {
                                 borderWidth: "1px",
                                 borderColor: "#ddd",
@@ -253,13 +275,14 @@ export default function Compliants() {
                             }}
                           />
                         )}
-                        style={{ width: `25rem` }}
+                        style={{ width: `15rem` }}
                       />
                     </MDBCol>
                   </MDBRow>
                   <MDBTextArea
                     required
                     value={remark}
+                    autoComplete="off"
                     label="Remark"
                     maxLength={300}
                     id="textAreaExample"
@@ -275,7 +298,11 @@ export default function Compliants() {
           </>
         ) : (
           <>
-            <ComplaintsReport name={userName} />
+            <ComplaintsReport
+              name={userName}
+              changes={history}
+              handleChildData={handleChildData}
+            />
           </>
         )}
 

@@ -20,7 +20,14 @@ import { exportToExcel } from "../Excel/ExcelForm";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import ZoomInMapIcon from "@mui/icons-material/ZoomInMap";
 import empty from "../../assets/empty.png";
-import { complaintSummary } from "../../api/ApiCall";
+import {
+  complaintSummary,
+  deleteComplaints,
+  getComplaints,
+} from "../../api/ApiCall";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Swal from "sweetalert2";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -97,6 +104,20 @@ function EnhancedTableHead(props) {
             );
           }
         })}
+        <TableCell
+          sx={{
+            padding: "4px",
+            border: " 1px solid #ddd",
+
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+          align="center" // Set the alignment to left
+          padding="normal"
+        >
+          Action
+        </TableCell>
       </TableRow>
     </TableHead>
   );
@@ -163,12 +184,12 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function ComplaintsReport({ name }) {
+export default function ComplaintsReport({ name, changes, handleChildData }) {
   const iUser = localStorage.getItem("userId");
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState(0);
   const [selected, setSelected] = React.useState([]);
-  const [data, setData] = React.useState([])
+  const [data, setData] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(true);
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -176,8 +197,7 @@ export default function ComplaintsReport({ name }) {
   const [open, setOpen] = React.useState(false);
   const [expand, setExpand] = React.useState(false);
 
-  React.useEffect(()=>{
-   const fetchData = async()=>{
+  const fetchData = async () => {
     handleOpen();
     const response = await complaintSummary({ iUser });
     handleClose();
@@ -185,14 +205,15 @@ export default function ComplaintsReport({ name }) {
       const myObject = JSON.parse(response.ResultData);
       if (myObject && myObject.Table.length) {
         setData(myObject.Table);
-      }else{
-        setData([])
+      } else {
+        setData([]);
       }
     }
-  
-   }
-   fetchData()
-  },[])
+  };
+
+  React.useEffect(() => {
+    fetchData();
+  }, [changes]);
 
   const handleClose = () => {
     setOpen(false);
@@ -252,11 +273,45 @@ export default function ComplaintsReport({ name }) {
 
   const handleExcel = () => {
     const Id = ["iId"];
-    exportToExcel(data, `${name? name : "Employee"} Report`, Id);
+    exportToExcel(data, `${name ? name : "Employee"} Report`, Id);
   };
 
   const handleExpand = () => {
     setExpand(!expand);
+  };
+
+  const handleDelete = async (iId) => {
+    Swal.fire({
+      text: "Are you sure you want to Delete?",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+    }).then(async (result) => {
+      if (result.value) {
+        handleOpen();
+        const response = await deleteComplaints({ iId, iUser });
+        if (response?.Status === "Success") {
+          Swal.fire({
+            title: "Deleted",
+            text: "Complaint Deleted!",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          fetchData();
+        }
+        handleClose();
+      }
+    });
+  };
+
+  const handleEdit = async (iId) => {
+    const response = await getComplaints({ iId });
+    if (response?.Status === "Success") {
+      const myObject = JSON.parse(response?.ResultData);
+      handleChildData(myObject?.Table[0]);
+    }
   };
 
   return (
@@ -288,6 +343,7 @@ export default function ComplaintsReport({ name }) {
             style={{
               display: "block",
               maxHeight: "calc(100vh - 400px)",
+              maxWidth: "calc(140vh - 100px)",
               overflowY: "auto",
               scrollbarWidth: "thin",
               scrollbarColor: "#888 #f5f5f5",
@@ -296,7 +352,7 @@ export default function ComplaintsReport({ name }) {
             }}
           >
             <Table
-              sx={{ minWidth: 900 }}
+              sx={{ minWidth: 900, maxWidth: 900 }}
               aria-labelledby="tableTitle"
               size={dense ? "small" : "medium"}
             >
@@ -330,6 +386,7 @@ export default function ComplaintsReport({ name }) {
                                     padding: "4px",
                                     border: "1px solid #ddd",
                                     whiteSpace: "nowrap",
+                                    minWidth: "100px",
                                   }}
                                   key={index + labelId}
                                   component="th"
@@ -342,15 +399,14 @@ export default function ComplaintsReport({ name }) {
                                 </TableCell>
                               ) : (
                                 <TableCell
-                                  
                                   style={{
-                                      padding: "4px",
-                                      border: " 1px solid #ddd",
-                                      minWidth: "10px",
-                                      maxWidth: "20px",
-                                      whiteSpace: "nowrap",
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
+                                    padding: "4px",
+                                    border: " 1px solid #ddd",
+                                    minWidth: "100px",
+                                    maxWidth: "150px",
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
                                   }}
                                   key={index + labelId}
                                   component="th"
@@ -366,6 +422,58 @@ export default function ComplaintsReport({ name }) {
                           );
                         }
                       })}
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        sx={{
+                          padding: "4px",
+                          border: "1px solid #ddd",
+
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                        padding="normal"
+                        align="center"
+                      >
+                        <>
+                        {row["AdminRemarks"] ? null : (
+                            <>
+                            <Tooltip title="Edit" arrow>
+                            <IconButton
+                              aria-label="edit"
+                              size="small"
+                              onClick={() => handleEdit(row.iId)}
+                            >
+                              <EditIcon
+                                fontSize="small"
+                                sx={{
+                                  fontSize: 16,
+                                  color: "#1b77e9",
+                                }}
+                              />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete" arrow>
+                            <IconButton
+                              aria-label="delete"
+                              size="small"
+                              onClick={() => handleDelete(row.iId)}
+                            >
+                              <DeleteIcon
+                                fontSize="small"
+                                sx={{
+                                  fontSize: 16,
+                                  color: "#1b77e9",
+                                }}
+                              />
+                            </IconButton>
+                          </Tooltip>
+                          </>
+                        )}
+                        </>
+                        
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -373,7 +481,7 @@ export default function ComplaintsReport({ name }) {
             </Table>
           </TableContainer>
         ) : (
-            <>
+          <>
             <TableContainer component={Paper}>
               <img
                 className="p-5"

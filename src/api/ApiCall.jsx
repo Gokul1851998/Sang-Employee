@@ -34,7 +34,6 @@ export const getLogin = async (payload) => {
 
   export const getDailyTaskReport = async (payload) => {
     try {
-      console.log(payload);
       const response = await axios.get(`${baseUrl}GetDailyTaskReport`, {
         params: payload,
       });
@@ -202,6 +201,26 @@ export const getLogin = async (payload) => {
     } catch (error) {
       console.log('ComplaintSummary',error);
     }
+  };
+
+  export const deleteComplaints = async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}DeleteComplaints`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('DeleteComplaints',error);
+    }
+  };
+
+  export const postComplaintAuth = async (payload) => {
+    try {
+      const response = await axios.post(`${baseUrl}PostComplaintAuth`,payload);
+      return response?.data;
+    } catch (error) {
+      console.log('PostComplaintAuth',error);
+    } 
   };
   
 

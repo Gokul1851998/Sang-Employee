@@ -324,6 +324,13 @@ export default function Employee() {
                       value={date}
                       type="date"
                       readOnly
+                      style={{
+                        cursor: "text",
+                        color: "inherit",
+                        backgroundColor: "transparent",
+                        border: "none",
+                        borderBottom: "1px solid #ced4da",
+                      }}
                     />
                   </MDBCol>
                   <MDBCol>
