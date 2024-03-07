@@ -20,11 +20,15 @@ import { exportToExcel } from "../Excel/ExcelForm";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import ZoomInMapIcon from "@mui/icons-material/ZoomInMap";
 import empty from "../../assets/empty.png";
-import { complaintSummary, deleteComplaints, getComplaints, postComplaintAuth } from "../../api/ApiCall";
+import {
+  complaintSummary,
+  deleteComplaints,
+  getComplaints,
+  postComplaintAuth,
+} from "../../api/ApiCall";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
-
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -101,7 +105,6 @@ function EnhancedTableHead(props) {
             );
           }
         })}
-        
       </TableRow>
     </TableHead>
   );
@@ -115,7 +118,8 @@ EnhancedTableHead.propTypes = {
 };
 
 function EnhancedTableToolbar(props) {
-  const { numSelected, values, changes, action, expandAction, expand, data } = props;
+  const { numSelected, values, changes, action, expandAction, expand, data } =
+    props;
 
   return (
     <Toolbar
@@ -132,38 +136,38 @@ function EnhancedTableToolbar(props) {
         Complaints
       </Typography>
 
-      {data && data.length? (
+      {data && data.length ? (
         <>
-        <TextField
-        id="search"
-        label="Search"
-        variant="outlined"
-        value={values}
-        onChange={changes}
-        size="small"
-      />
-      <Toolbar
-        sx={{
-          pl: { sm: 2 },
-          pr: { xs: 1, sm: 1 },
-        }}
-      >
-        <button onClick={expandAction} className="btn pl-1">
-          {expand ? (
-            <ZoomInMapIcon style={{ fontSize: "large" }} />
-          ) : (
-            <ZoomOutMapIcon style={{ fontSize: "large" }} />
-          )}
-        </button>
-        {/* Add Tooltip to IconButton */}
-        <Tooltip title="Excel" arrow>
-          <IconButton onClick={action} aria-label="Excel">
-            <SaveIcon />
-          </IconButton>
-        </Tooltip>
-      </Toolbar>
+          <TextField
+            id="search"
+            label="Search"
+            variant="outlined"
+            value={values}
+            onChange={changes}
+            size="small"
+          />
+          <Toolbar
+            sx={{
+              pl: { sm: 2 },
+              pr: { xs: 1, sm: 1 },
+            }}
+          >
+            <button onClick={expandAction} className="btn pl-1">
+              {expand ? (
+                <ZoomInMapIcon style={{ fontSize: "large" }} />
+              ) : (
+                <ZoomOutMapIcon style={{ fontSize: "large" }} />
+              )}
+            </button>
+            {/* Add Tooltip to IconButton */}
+            <Tooltip title="Excel" arrow>
+              <IconButton onClick={action} aria-label="Excel">
+                <SaveIcon />
+              </IconButton>
+            </Tooltip>
+          </Toolbar>
         </>
-      ): null}
+      ) : null}
     </Toolbar>
   );
 }
@@ -177,7 +181,7 @@ export default function ComplaintsAuth({ name }) {
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState(0);
   const [selected, setSelected] = React.useState([]);
-  const [data, setData] = React.useState([])
+  const [data, setData] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(true);
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -185,25 +189,25 @@ export default function ComplaintsAuth({ name }) {
   const [open, setOpen] = React.useState(false);
   const [expand, setExpand] = React.useState(false);
 
-  React.useEffect(()=>{
-  
-   fetchData()
-  },[])
+  React.useEffect(() => {
+    setSearchQuery("");
+    setPage(0);
+    fetchData();
+  }, []);
 
-  const fetchData = async()=>{
+  const fetchData = async () => {
     handleOpen();
-    const response = await complaintSummary({ iUser:0 });
+    const response = await complaintSummary({ iUser: 0 });
     handleClose();
     if (response.Status === "Success") {
       const myObject = JSON.parse(response.ResultData);
       if (myObject && myObject.Table.length) {
         setData(myObject.Table);
-      }else{
-        setData([])
+      } else {
+        setData([]);
       }
     }
-  
-   }
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -234,20 +238,13 @@ export default function ComplaintsAuth({ name }) {
   // Avoid a layout jump when reaching the last page with empty rows.
   const ignoredField = "iId";
   const filteredRows = data.filter((row) =>
-    Object.entries(row).some(([key, value]) => {
-      // Ignore the specified field from filtering
-      if (key === ignoredField) {
-        return false;
-      }
-
+    Object.values(row).some((value) => {
       if (typeof value === "string") {
         return value.toLowerCase().includes(searchQuery.toLowerCase());
       }
-
       if (typeof value === "number") {
         return value.toString().includes(searchQuery.toLowerCase());
       }
-
       return false; // Ignore other types
     })
   );
@@ -260,10 +257,10 @@ export default function ComplaintsAuth({ name }) {
       ),
     [order, orderBy, page, rowsPerPage, filteredRows]
   );
-
+  console.log(visibleRows);
   const handleExcel = () => {
     const Id = ["iId"];
-    exportToExcel(data, `${name? name : "Employee"} Report`, Id);
+    exportToExcel(data, `${name ? name : "Employee"} Report`, Id);
   };
 
   const handleExpand = () => {
@@ -284,9 +281,13 @@ export default function ComplaintsAuth({ name }) {
       confirmButtonText: `Add`,
       showLoaderOnConfirm: true,
       preConfirm: async (login) => {
-        const response = await postComplaintAuth({iUser,sRemarks:login,iComplaint:id})
-        if(response.Status === "Success"){
-            fetchData()
+        const response = await postComplaintAuth({
+          iUser,
+          sRemarks: login,
+          iComplaint: id,
+        });
+        if (response.Status === "Success") {
+          fetchData();
         }
         Swal.fire({
           title: `Added`,
@@ -325,167 +326,165 @@ export default function ComplaintsAuth({ name }) {
         />
 
         {data && data.length > 0 ? (
-            <>
-          <TableContainer
-            style={{
-              display: "block",
-              maxHeight: "calc(100vh - 340px)",
-              maxWidth: "calc(140vh - 100px)",
-              overflowY: "auto",
-              scrollbarWidth: "thin",
-              scrollbarColor: "#888 #f5f5f5",
-              scrollbarTrackColor: "#f5f5f5",
-              boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <Table
-              sx={{ minWidth: 900, maxWidth:900 }}
-              aria-labelledby="tableTitle"
-              size={dense ? "small" : "medium"}
+          <>
+            <TableContainer
+              style={{
+                display: "block",
+                maxHeight: "calc(100vh - 340px)",
+                maxWidth: "calc(140vh - 100px)",
+                overflowY: "auto",
+                scrollbarWidth: "thin",
+                scrollbarColor: "#888 #f5f5f5",
+                scrollbarTrackColor: "#f5f5f5",
+                boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)",
+              }}
             >
-              <EnhancedTableHead
-                order={order}
-                orderBy={orderBy}
-                onRequestSort={handleRequestSort}
-                rowCount={filteredRows.length}
-                rows={Object.keys(data[0])}
+              <Table
+                sx={{ minWidth: 900, maxWidth: 900 }}
+                aria-labelledby="tableTitle"
+                size={dense ? "small" : "medium"}
+              >
+                <EnhancedTableHead
+                  order={order}
+                  orderBy={orderBy}
+                  onRequestSort={handleRequestSort}
+                  rowCount={filteredRows.length}
+                  rows={Object.keys(data[0])}
+                />
+
+                <TableBody>
+                {stableSort(filteredRows, getComparator(order, orderBy))
+    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+    .map((row, index) => {
+      const labelId = `enhanced-table-checkbox-${index}`;
+
+                      return (
+                        <TableRow
+                          key={row.iId}
+                          hover
+                          className={`table-row `}
+                          tabIndex={-1}
+                          sx={{ cursor: "pointer" }}
+                        >
+                               {Object.keys(row).map((column, columnIndex) => {
+                            if (column !== "iId") {
+                              return (
+                                <>
+                                  {expand ? (
+                                    <>
+                                      {column === "AdminRemarks" ? (
+                                        <TableCell
+                                          sx={{
+                                            padding: "4px",
+                                            border: "1px solid #ddd",
+                                            whiteSpace: "nowrap",
+                                            minWidth: "100px",
+                                          }}
+                                          key={columnIndex + labelId}
+                                          component="th"
+                                          onClick={() => handleRemark(row.iId)}
+                                          id={labelId}
+                                          scope="row"
+                                          padding="normal"
+                                          align="left"
+                                        >
+                                          {row[column]}
+                                        </TableCell>
+                                      ) : (
+                                        <TableCell
+                                          sx={{
+                                            padding: "4px",
+                                            border: "1px solid #ddd",
+                                            whiteSpace: "nowrap",
+                                            minWidth: "100px",
+                                          }}
+                                          key={columnIndex + labelId}
+                                          component="th"
+                                          id={labelId}
+                                          scope="row"
+                                          padding="normal"
+                                          align="left"
+                                        >
+                                          {row[column]}
+                                        </TableCell>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <>
+                                      {column === "AdminRemarks" ? (
+                                        <TableCell
+                                          style={{
+                                            padding: "4px",
+                                            border: " 1px solid #ddd",
+                                            minWidth: "100px",
+                                            maxWidth: "150px",
+                                            whiteSpace: "nowrap",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                          }}
+                                          key={columnIndex + labelId}
+                                          component="th"
+                                          onClick={() => handleRemark(row.iId)}
+                                          id={labelId}
+                                          scope="row"
+                                          padding="normal"
+                                          align="left"
+                                        >
+                                          {row[column]}
+                                        </TableCell>
+                                      ) : (
+                                        <TableCell
+                                          style={{
+                                            padding: "4px",
+                                            border: " 1px solid #ddd",
+                                            minWidth: "100px",
+                                            maxWidth: "150px",
+                                            whiteSpace: "nowrap",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                          }}
+                                          key={columnIndex + labelId}
+                                          component="th"
+                                          id={labelId}
+                                          scope="row"
+                                          padding="normal"
+                                          align="left"
+                                        >
+                                          {row[column]}
+                                        </TableCell>
+                                      )}
+                                    </>
+                                  )}
+                                </>
+                              );
+                            }
+                          })}
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+              }}
+            >
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 50, 100]}
+                component="div"
+                count={data.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
               />
-
-              <TableBody>
-                {visibleRows.map((row, index) => {
-                  const labelId = `enhanced-table-checkbox-${index}`;
-
-                  return (
-                    <TableRow
-                      key={row.iId}
-                      hover
-                      className={`table-row `}
-                      tabIndex={-1}
-                      sx={{ cursor: "pointer" }}
-                    >
-                      {Object.keys(data[0]).map((column, index) => {
-                        if (column !== "iId") {
-                          return (
-                            <>
-                              {expand ? (
-                                <>
-                                {column === "AdminRemarks" ? (
-                                     <TableCell
-                                     sx={{
-                                       padding: "4px",
-                                       border: "1px solid #ddd",
-                                       whiteSpace: "nowrap",
-                                       minWidth: "100px",
-                                     }}
-                                     key={index + labelId}
-                                     component="th"
-                                     onClick={() => handleRemark(row.iId)}
-                                     id={labelId}
-                                     scope="row"
-                                     padding="normal"
-                                     align="left"
-                                   >
-                                     {row[column]}
-                                   </TableCell>
-                                ): (
-                                    <TableCell
-                                    sx={{
-                                      padding: "4px",
-                                      border: "1px solid #ddd",
-                                      whiteSpace: "nowrap",
-                                      minWidth: "100px",
-                                    }}
-                                    key={index + labelId}
-                                    component="th"
-                                    id={labelId}
-                                    scope="row"
-                                    padding="normal"
-                                    align="left"
-                                  >
-                                    {row[column]}
-                                  </TableCell> 
-                                )}
-                               
-                                </>
-                              ) : (
-                                <>
-                                 {column === "AdminRemarks" ? (
-                                     <TableCell
-                                     style={{
-                                        padding: "4px",
-                                        border: " 1px solid #ddd",
-                                        minWidth: "100px",
-                                        maxWidth: "150px",
-                                        whiteSpace: "nowrap",
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                    }}
-                                     key={index + labelId}
-                                     component="th"
-                                     onClick={() => handleRemark(row.iId)}
-                                     id={labelId}
-                                     scope="row"
-                                     padding="normal"
-                                     align="left"
-                                   >
-                                     {row[column]}
-                                   </TableCell>
-                                ): (
-                                    <TableCell
-                                  
-                                    style={{
-                                        padding: "4px",
-                                        border: " 1px solid #ddd",
-                                        minWidth: "100px",
-                                        maxWidth: "150px",
-                                        whiteSpace: "nowrap",
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                    }}
-                                    key={index + labelId}
-                                    component="th"
-                                    id={labelId}
-                                    scope="row"
-                                    padding="normal"
-                                    align="left"
-                                  >
-                                    {row[column]}
-                                  </TableCell>
-                                )}
-                               
-                                </>
-                              )}
-                            </>
-                          );
-                        }
-                      })}
-                        
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-          }}
-        >
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 50, 100]}
-            component="div"
-            count={data.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </div>
+            </div>
           </>
         ) : (
-            <>
+          <>
             <TableContainer component={Paper}>
               <img
                 className="p-5"
@@ -498,7 +497,6 @@ export default function ComplaintsAuth({ name }) {
             </TableContainer>
           </>
         )}
-        
       </Paper>
       <Loader open={open} handleClose={handleClose} />
     </Box>
