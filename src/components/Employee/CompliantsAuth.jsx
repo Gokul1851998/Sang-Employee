@@ -14,7 +14,7 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import { visuallyHidden } from "@mui/utils";
 import Loader from "../Loader/Loader";
-import { IconButton, TextField, Tooltip } from "@mui/material";
+import { Button, IconButton, Stack, TextField, Tooltip } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { exportToExcel } from "../Excel/ExcelForm";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
@@ -29,6 +29,24 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
+
+const buttonStyle = {
+  textTransform: "none", // Set text transform to none for normal case
+  color: ` #fff`, // Set text color
+  backgroundColor: `#1b77e9`, // Set background color
+  boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
+  fontSize: "12px",
+  padding: "6px 10px",
+};
+
+const buttonStyle2 = {
+  textTransform: "none", // Set text transform to none for normal case
+  color: `#1b77e9`, // Set text color
+  backgroundColor: `#fff`, // Set background color
+  boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
+  fontSize: "12px",
+  padding: "6px 10px",
+};
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -65,7 +83,13 @@ function EnhancedTableHead(props) {
   };
 
   return (
-    <TableHead>
+    <TableHead 
+    style={{
+      background: `#1976d2`,
+      position: "sticky",
+      top: 0,
+      zIndex: "5",
+    }} >
       <TableRow>
         {rows.map((header, index) => {
           if (header !== "iId") {
@@ -87,7 +111,7 @@ function EnhancedTableHead(props) {
                 sortDirection={orderBy === header ? order : false}
               >
                 <TableSortLabel
-                  className="text-dark"
+                  className="text-white"
                   active={orderBy === header}
                   direction={orderBy === header ? order : "asc"}
                   onClick={createSortHandler(header)}
@@ -146,26 +170,7 @@ function EnhancedTableToolbar(props) {
             onChange={changes}
             size="small"
           />
-          <Toolbar
-            sx={{
-              pl: { sm: 2 },
-              pr: { xs: 1, sm: 1 },
-            }}
-          >
-            <button onClick={expandAction} className="btn pl-1">
-              {expand ? (
-                <ZoomInMapIcon style={{ fontSize: "large" }} />
-              ) : (
-                <ZoomOutMapIcon style={{ fontSize: "large" }} />
-              )}
-            </button>
-            {/* Add Tooltip to IconButton */}
-            <Tooltip title="Excel" arrow>
-              <IconButton onClick={action} aria-label="Excel">
-                <SaveIcon />
-              </IconButton>
-            </Tooltip>
-          </Toolbar>
+       
         </>
       ) : null}
     </Toolbar>
@@ -302,16 +307,51 @@ export default function ComplaintsAuth({ name }) {
 
   return (
     <Box
+    sx={{
+      width: "auto",
+      paddingLeft: 2,
+      paddingRight: 2,
+      paddingBottom: 8,
+      zIndex: 1,
+      minHeight: "590px",
+    }}
+  >
+    <Stack direction="row" spacing={1} padding={1} justifyContent="flex-end">
+      <Button
+        size="small"
+        disabled={data?.length === 0}
+        onClick={handleExpand}
+        variant="contained"
+        sx={data?.length? buttonStyle : buttonStyle2}
+      >
+        {expand ? (
+          <ZoomInMapIcon style={{ fontSize: "large" }} />
+        ) : (
+          <ZoomOutMapIcon style={{ fontSize: "large" }} />
+        )}
+      </Button>
+      <Button
+          size="small"
+          disabled={data?.length === 0}
+          onClick={handleExcel}
+          variant="contained"
+          startIcon={<SaveIcon />}
+          sx={data?.length? buttonStyle : buttonStyle2}
+        >
+          Excel
+        </Button>
+     
+    </Stack>
+    <Box
       sx={{
         width: "auto",
         zIndex: 1,
+        marginTop: 1,
       }}
     >
       <Paper
         sx={{
           width: "100%",
-          paddingLeft: 2,
-          paddingRight: 2,
           boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
         }}
       >
@@ -330,8 +370,7 @@ export default function ComplaintsAuth({ name }) {
             <TableContainer
               style={{
                 display: "block",
-                maxHeight: "calc(100vh - 340px)",
-                maxWidth: "calc(140vh - 100px)",
+                maxHeight: "calc(100vh - 400px)",
                 overflowY: "auto",
                 scrollbarWidth: "thin",
                 scrollbarColor: "#888 #f5f5f5",
@@ -340,7 +379,7 @@ export default function ComplaintsAuth({ name }) {
               }}
             >
               <Table
-                sx={{ minWidth: 900, maxWidth: 900 }}
+                sx={{ minWidth: 750 }}
                 aria-labelledby="tableTitle"
                 size={dense ? "small" : "medium"}
               >
@@ -353,10 +392,10 @@ export default function ComplaintsAuth({ name }) {
                 />
 
                 <TableBody>
-                {stableSort(filteredRows, getComparator(order, orderBy))
-    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-    .map((row, index) => {
-      const labelId = `enhanced-table-checkbox-${index}`;
+                  {stableSort(filteredRows, getComparator(order, orderBy))
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row, index) => {
+                      const labelId = `enhanced-table-checkbox-${index}`;
 
                       return (
                         <TableRow
@@ -366,7 +405,7 @@ export default function ComplaintsAuth({ name }) {
                           tabIndex={-1}
                           sx={{ cursor: "pointer" }}
                         >
-                               {Object.keys(row).map((column, columnIndex) => {
+                          {Object.keys(row).map((column, columnIndex) => {
                             if (column !== "iId") {
                               return (
                                 <>
@@ -374,12 +413,12 @@ export default function ComplaintsAuth({ name }) {
                                     <>
                                       {column === "AdminRemarks" ? (
                                         <TableCell
-                                          sx={{
-                                            padding: "4px",
-                                            border: "1px solid #ddd",
-                                            whiteSpace: "nowrap",
-                                            minWidth: "100px",
-                                          }}
+                                        sx={{
+                                          padding: "4px",
+                                          border: "1px solid #ddd",
+                                          whiteSpace: "nowrap",
+                                          width: "calc(100% / 4)",
+                                        }}
                                           key={columnIndex + labelId}
                                           component="th"
                                           onClick={() => handleRemark(row.iId)}
@@ -392,12 +431,12 @@ export default function ComplaintsAuth({ name }) {
                                         </TableCell>
                                       ) : (
                                         <TableCell
-                                          sx={{
-                                            padding: "4px",
-                                            border: "1px solid #ddd",
-                                            whiteSpace: "nowrap",
-                                            minWidth: "100px",
-                                          }}
+                                        sx={{
+                                          padding: "4px",
+                                          border: "1px solid #ddd",
+                                          whiteSpace: "nowrap",
+                                          width: "calc(100% / 4)",
+                                        }}
                                           key={columnIndex + labelId}
                                           component="th"
                                           id={labelId}
@@ -413,15 +452,16 @@ export default function ComplaintsAuth({ name }) {
                                     <>
                                       {column === "AdminRemarks" ? (
                                         <TableCell
-                                          style={{
-                                            padding: "4px",
-                                            border: " 1px solid #ddd",
-                                            minWidth: "100px",
-                                            maxWidth: "150px",
-                                            whiteSpace: "nowrap",
-                                            overflow: "hidden",
-                                            textOverflow: "ellipsis",
-                                          }}
+                                        style={{
+                                          padding: "4px",
+                                          border: "1px solid #ddd",
+                                          whiteSpace: "nowrap",
+                                          overflow: "hidden",
+                                          textOverflow: "ellipsis",
+                                          width: "calc(100% / 4)",
+                                          minWidth: "100px",
+                                          maxWidth: 150,
+                                        }}
                                           key={columnIndex + labelId}
                                           component="th"
                                           onClick={() => handleRemark(row.iId)}
@@ -434,15 +474,16 @@ export default function ComplaintsAuth({ name }) {
                                         </TableCell>
                                       ) : (
                                         <TableCell
-                                          style={{
-                                            padding: "4px",
-                                            border: " 1px solid #ddd",
-                                            minWidth: "100px",
-                                            maxWidth: "150px",
-                                            whiteSpace: "nowrap",
-                                            overflow: "hidden",
-                                            textOverflow: "ellipsis",
-                                          }}
+                                        style={{
+                                          padding: "4px",
+                                          border: "1px solid #ddd",
+                                          whiteSpace: "nowrap",
+                                          overflow: "hidden",
+                                          textOverflow: "ellipsis",
+                                          width: "calc(100% / 4)",
+                                          minWidth: "100px",
+                                          maxWidth: 150,
+                                        }}
                                           key={columnIndex + labelId}
                                           component="th"
                                           id={labelId}
@@ -465,23 +506,44 @@ export default function ComplaintsAuth({ name }) {
                 </TableBody>
               </Table>
             </TableContainer>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-end",
-              }}
-            >
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 50, 100]}
-                component="div"
-                count={data.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </div>
+            <TablePagination
+          rowsPerPageOptions={[10, 25, 50, 100]}
+          component="div"
+          count={data.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            display: "flex", // Use flexbox for the container
+            justifyContent: "space-between", // Space between the elements
+            alignItems: "center", // Center the elements vertically
+            ".MuiTablePagination-toolbar": {
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%", // Ensure the toolbar takes the full width
+            },
+            ".MuiTablePagination-spacer": {
+              flex: "1 1 100%", // Force the spacer to take up all available space
+            },
+            ".MuiTablePagination-selectLabel": {
+              margin: 0, // Adjust or remove margin as needed
+            },
+            ".MuiTablePagination-select": {
+              textAlign: "center", // Center the text inside the select input
+            },
+            ".MuiTablePagination-selectIcon": {},
+            ".MuiTablePagination-displayedRows": {
+              textAlign: "left", // Align the "1-4 of 4" text to the left
+              flexShrink: 0, // Prevent the text from shrinking
+              order: -1, // Place it at the beginning
+            },
+            ".MuiTablePagination-actions": {
+              flexShrink: 0, // Prevent the actions from shrinking
+            },
+            // Add other styles as needed
+          }}
+        />
           </>
         ) : (
           <>
@@ -499,6 +561,7 @@ export default function ComplaintsAuth({ name }) {
         )}
       </Paper>
       <Loader open={open} handleClose={handleClose} />
+      </Box>
     </Box>
   );
 }

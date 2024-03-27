@@ -544,12 +544,9 @@ export default function SuperAdminReport() {
       </Box>
       {data && data.length ? (
         <>
-        <Box sx={{
-                  paddingLeft: 5,
-                  paddingRight: 5,
-        }}>
-          <AdminList data={data} name={employee?.sName} />
-          </Box>
+       
+          <AdminList data={data} name={employee?.sName} count={8} hideEmployee={true}  />
+      
         </>
       ) : null}
       {/* <Loader open={open} handleClose={handleClose} /> */}

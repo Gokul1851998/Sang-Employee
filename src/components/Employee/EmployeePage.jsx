@@ -13,9 +13,9 @@ import SuperAdminReport from "../SuperAdmin/SuperAdminReport";
 import { getMenuWeb } from "../../api/ApiCall";
 import LeaveAuth from "./LeaveAuth";
 import Loader from "../Loader/Loader";
-import Complaints from "./Complaints";
-import ComplaintsReport from "./ComplaintsReport";
 import CompliantsAuth from "./CompliantsAuth";
+import ProjectEmp from "./ProjectEmp";
+import ProjectMangement from "./ProjectMangement";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -98,11 +98,15 @@ export default function EmployeePage() {
       case "Leave Authorization":
         contentComponent = <LeaveAuth />;
         break;
-      case "Complaint":
-        contentComponent = <Complaints />;
-        break;
+    
       case "Complaint Leave Authorization":
         contentComponent = <CompliantsAuth />;
+        break;
+      case "ProjectManagement":
+        contentComponent = <ProjectMangement />;
+        break;
+      case "ProjectMangement_EMP":
+        contentComponent = <ProjectEmp />;
         break;
       default:
         contentComponent = null;

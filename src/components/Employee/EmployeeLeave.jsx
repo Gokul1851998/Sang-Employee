@@ -20,6 +20,7 @@ import {
   Box,
   Button,
   IconButton,
+  Stack,
   TextField,
   Toolbar,
   Tooltip,
@@ -32,13 +33,14 @@ import Swal from "sweetalert2";
 
 const buttonStyle = {
   textTransform: "none", // Set text transform to none for normal case
-  color: `#fff`, // Set text color
-  backgroundColor: `#1b77e9 `, // Set background color
-  boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)",
-  margin: 5,
+  color: ` #fff`, // Set text color
+  backgroundColor: `#1b77e9`, // Set background color
+  boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
+  fontSize: "12px",
+  padding: "6px 10px",
 };
 
-export default function EnployeeLeave() {
+export default function EmployeeLeave() {
   const iEmployee = Number(localStorage.getItem("iEmployee"));
   const userId = localStorage.getItem("userId");
   const currentDate = new Date();
@@ -98,22 +100,21 @@ export default function EnployeeLeave() {
       return false; // Ignore other types
     })
   );
-  
+
   const fetchData = async () => {
     handleLoaderOpen();
 
-      const response = await getLeaveApplicationSummary({
-        iEmployee,
-        iYear: year,
-      });
+    const response = await getLeaveApplicationSummary({
+      iEmployee,
+      iYear: year,
+    });
 
-      if (response?.Status === "Success") {
-        const myObject = JSON.parse(response?.ResultData);
-        setData(myObject);
-      } else {
-        setData([]);
-      }
-    
+    if (response?.Status === "Success") {
+      const myObject = JSON.parse(response?.ResultData);
+      setData(myObject);
+    } else {
+      setData([]);
+    }
 
     handleLoaderClose();
   };
@@ -122,11 +123,11 @@ export default function EnployeeLeave() {
     fetchData();
   }, [iEmployee, year, navigate]);
 
-  useEffect(()=>{
-    if(!year){
-      setYear(0)
+  useEffect(() => {
+    if (!year) {
+      setYear(0);
     }
-  },[year])
+  }, [year]);
 
   const headers = data.length > 0 ? Object.keys(data[0]) : [];
 
@@ -171,46 +172,23 @@ export default function EnployeeLeave() {
 
   return (
     <>
-      <Box
-        sx={{
-          width: "100%",
-          padding: 2,
-          zIndex: 1,
-          textAlign: "center",
-        }}
-      >
-        <Paper
-          sx={{
-            width: "100%",
-            mb: 2,
-            boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
-          }}
-        >
+     
           {navigate ? (
             <LeaveForm setChange={setNavigate} id={id} />
           ) : (
             <>
-              <Toolbar
-                sx={{
-                  pl: { xs: 1, sm: 2 }, // Adjust left padding for different screen sizes
-                  pr: { xs: 1, sm: 1 },
-                  display: "flex",
-                  flexDirection: { xs: "column", sm: "row" }, // Stack items vertically on small screens
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <Typography
-                    variant="h6"
-                    id="tableTitle"
-                    component="div"
-                    marginRight={{ xs: 0, sm: 2 }} // Adjust right margin for different screen sizes
-                    marginBottom={{ xs: 2, sm: 0 }} // Adjust bottom margin for different screen sizes
-                  >
-                    Leave History
-                  </Typography>
-                  <Autocomplete
+             <Box
+      sx={{
+        width: "auto",
+        paddingLeft: 2,
+        paddingRight: 2,
+        paddingBottom: 8,
+        zIndex: 1,
+        minHeight: "590px",
+      }}
+    >
+      <Stack direction="row" spacing={1} padding={1} justifyContent="flex-end">
+      <Autocomplete
                     disablePortal
                     id="combo-box-demo"
                     size="small"
@@ -241,18 +219,57 @@ export default function EnployeeLeave() {
                     )}
                     style={{ width: `150px` }}
                   />
+        <Button
+          size="small"
+          onClick={handleNew}
+          variant="contained"
+         
+          sx={buttonStyle}
+        >
+          Add
+        </Button>
+       
+      
+      </Stack>
+      <Box
+        sx={{
+          width: "auto",
+          zIndex: 1,
+          marginTop: 1,
+        }}
+      >
+        <Paper
+          sx={{
+            width: "100%",
+            mb: 2,
+            boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
+          }}
+        >
+              <Toolbar
+                sx={{
+                  pl: { xs: 1, sm: 2 }, // Adjust left padding for different screen sizes
+                  pr: { xs: 1, sm: 1 },
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" }, // Stack items vertically on small screens
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <Typography
+                    variant="h6"
+                    id="tableTitle"
+                    component="div"
+                    marginRight={{ xs: 0, sm: 2 }} // Adjust right margin for different screen sizes
+                    marginBottom={{ xs: 2, sm: 0 }} // Adjust bottom margin for different screen sizes
+                  >
+                    Leave History
+                  </Typography>
+                
                 </div>
 
                 <div>
-                  <Button
-                    onClick={handleNew}
-                    variant="contained"
-                    style={buttonStyle}
-                    size="small"
-                    sx={{ marginBottom: { xs: 2, sm: 0 } }} // Adjust margin for different screen sizes
-                  >
-                    Leave Apply
-                  </Button>
+               
                   {data && data.length ? (
                     <TextField
                       id="search"
@@ -309,7 +326,8 @@ export default function EnployeeLeave() {
                                   overflow: "hidden",
                                   textOverflow: "ellipsis",
                                 }}
-                                component="th" scope="row"
+                                component="th"
+                                scope="row"
                                 align="center"
                                 padding="normal"
                               >
@@ -328,7 +346,8 @@ export default function EnployeeLeave() {
                               overflow: "hidden",
                               textOverflow: "ellipsis",
                             }}
-                            component="th" scope="row"
+                            component="th"
+                            scope="row"
                             align="center"
                             padding="normal"
                           >
@@ -414,7 +433,8 @@ export default function EnployeeLeave() {
                                 ) : null
                               )}
                               <TableCell
-                                component="th" scope="row"
+                                component="th"
+                                scope="row"
                                 sx={{
                                   padding: "4px",
                                   border: "1px solid #ddd",
@@ -491,11 +511,40 @@ export default function EnployeeLeave() {
                   <TablePagination
                     rowsPerPageOptions={[10, 25, 50, 100]}
                     component="div"
-                    count={filteredRows.length}
+                    count={data.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
+                    sx={{
+                      display: "flex", // Use flexbox for the container
+                      justifyContent: "space-between", // Space between the elements
+                      alignItems: "center", // Center the elements vertically
+                      ".MuiTablePagination-toolbar": {
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%", // Ensure the toolbar takes the full width
+                      },
+                      ".MuiTablePagination-spacer": {
+                        flex: "1 1 100%", // Force the spacer to take up all available space
+                      },
+                      ".MuiTablePagination-selectLabel": {
+                        margin: 0, // Adjust or remove margin as needed
+                      },
+                      ".MuiTablePagination-select": {
+                        textAlign: "center", // Center the text inside the select input
+                      },
+                      ".MuiTablePagination-selectIcon": {},
+                      ".MuiTablePagination-displayedRows": {
+                        textAlign: "left", // Align the "1-4 of 4" text to the left
+                        flexShrink: 0, // Prevent the text from shrinking
+                        order: -1, // Place it at the beginning
+                      },
+                      ".MuiTablePagination-actions": {
+                        flexShrink: 0, // Prevent the actions from shrinking
+                      },
+                      // Add other styles as needed
+                    }}
                   />
                 </>
               ) : (
@@ -512,10 +561,12 @@ export default function EnployeeLeave() {
                   </TableContainer>
                 </>
               )}
+              </Paper>
+      </Box>
+      </Box>
             </>
           )}
-        </Paper>
-      </Box>
+        
 
       <Loader open={loader} handleClose={handleLoaderClose} />
     </>

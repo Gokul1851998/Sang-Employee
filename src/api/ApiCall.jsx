@@ -222,6 +222,28 @@ export const getLogin = async (payload) => {
       console.log('PostComplaintAuth',error);
     } 
   };
+
+  export const getProjectSummary= async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}ProjectSummary`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('ProjectSummary',error);
+    }
+  };
+
+  export const getAssignedProject= async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}GetAssignedProject`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('GetAssignedProject',error);
+    }
+  };
   
 
 

@@ -14,7 +14,7 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import { visuallyHidden } from "@mui/utils";
 import Loader from "../Loader/Loader";
-import { IconButton, TextField, Tooltip } from "@mui/material";
+import { Button, IconButton, TextField, Tooltip } from "@mui/material";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import ZoomInMapIcon from "@mui/icons-material/ZoomInMap";
 import {
@@ -27,6 +27,15 @@ import Swal from "sweetalert2";
 import PreviewIcon from "@mui/icons-material/Preview";
 import { useNavigate } from "react-router-dom";
 import empty from "../../assets/empty.png";
+
+const buttonStyle = {
+  textTransform: "none", // Set text transform to none for normal case
+  color: ` #fff`, // Set text color
+  backgroundColor: `#1b77e9`, // Set background color
+  boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
+  fontSize: "12px",
+  padding: "6px 10px",
+};
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -89,15 +98,12 @@ function EnhancedTableHead(props) {
             // Exclude "iId", "iAssetType", and "sAltName" from the header
             return (
               <TableCell
-                sx={{
-                  border: "1px solid #ddd",
-                  minWidth: "40px",
-                  maxWidth: "auto",
-                }}
-                key={header}
-                align="center"
-                padding="normal"
-                sortDirection={orderBy === header ? order : false}
+              sx={{ border: "1px solid #ddd",  cursor:"pointer" }}
+              key={`${index}-${header}`}
+              align={header === "Authorization"? "center" : header === "link"? "center" : "left"}   
+              padding="normal"
+              sortDirection={orderBy === header ? order : false}
+             
               >
                 <TableSortLabel
                   className="text-white"
@@ -164,13 +170,13 @@ function EnhancedTableToolbar(props) {
           size="small"
           sx={{ marginBottom: { xs: 2, sm: 0 }, marginRight: { xs: 0, sm: 2 } }} // Adjust margins for different screen sizes
         />
-        <button onClick={expandAction} className="btn pl-1">
+        <Button onClick={expandAction} size="small"    variant="contained" sx={buttonStyle}>
           {expand ? (
             <ZoomInMapIcon style={{ fontSize: "large" }} />
           ) : (
             <ZoomOutMapIcon style={{ fontSize: "large" }} />
           )}
-        </button>
+        </Button>
         {/* Add Tooltip to IconButton */}
       </div>
     </Toolbar>
@@ -342,7 +348,7 @@ export default function LeaveAuth() {
             <TableContainer
               style={{
                 display: "block",
-                maxHeight: "calc(100vh - 300px)",
+                maxHeight: "calc(100vh - 385px)",
                 overflowY: "auto",
                 scrollbarWidth: "thin",
                 scrollbarColor: "#888 #f5f5f5",
@@ -393,20 +399,20 @@ export default function LeaveAuth() {
                                       padding: "4px",
                                       border: "1px solid #ddd",
                                       whiteSpace: "nowrap",
-                                    
+                                      width: `calc(100% / 10)`,
                                     }}
                                     key={index + labelId}
                                     component="th"
                                     id={labelId}
                                     scope="row"
                                     padding="normal"
-                                    align="center"
+                                    align={column === "Authorization"? "center" : column === "link"? "center" : "left"}
                                   >
                                     {column === "link" ? (
                                       <>
                                         {row[column] ? (
                                           <Tooltip title="View" arrow>
-                                            <IconButton
+                                            <IconButton     sx={{margin:0, padding:0}}
                                               aria-label="edit"
                                               size="small"
                                               onClick={() =>
@@ -431,6 +437,7 @@ export default function LeaveAuth() {
                                       <>
                                         <Tooltip title="Approve" arrow>
                                           <IconButton
+                                               sx={{margin:0, padding:0}}
                                             aria-label="edit"
                                             size="small"
                                             onClick={() =>
@@ -452,6 +459,7 @@ export default function LeaveAuth() {
                                         </Tooltip>
                                         <Tooltip title="Reject" arrow>
                                           <IconButton
+                                               sx={{margin:0, padding:0}}
                                             onClick={() =>
                                               handleApprove(
                                                 2,
@@ -480,15 +488,16 @@ export default function LeaveAuth() {
                                   <TableCell
                                     scope="row"
                                     padding="normal"
-                                    align="center"
+                                    align={column === "Authorization"? "center" : column === "link"? "center" : "left"}
                                     sx={{
                                       padding: "4px",
-                                      border: " 1px solid #ddd",
-                                      minWidth: "10px",
-                                      maxWidth: "10px",
+                                      border: "1px solid #ddd",
                                       whiteSpace: "nowrap",
                                       overflow: "hidden",
                                       textOverflow: "ellipsis",
+                                      width: `calc(100% /10)`,
+                                      minWidth: "50px",
+                                      maxWidth:"60px",
                                     }}
                                     key={index + labelId}
                                   >
@@ -497,6 +506,7 @@ export default function LeaveAuth() {
                                         {row[column] ? (
                                           <Tooltip title="View" arrow>
                                             <IconButton
+                                            sx={{margin:0, padding:0}}
                                               aria-label="edit"
                                               size="small"
                                               onClick={() =>
@@ -521,6 +531,7 @@ export default function LeaveAuth() {
                                       <>
                                         <Tooltip title="Approve" arrow>
                                           <IconButton
+                                           sx={{margin:0, padding:0}}
                                             aria-label="edit"
                                             size="small"
                                             onClick={() =>
@@ -542,6 +553,7 @@ export default function LeaveAuth() {
                                         </Tooltip>
                                         <Tooltip title="Reject" arrow>
                                           <IconButton
+                                           sx={{margin:0, padding:0}}
                                             onClick={() =>
                                               handleApprove(
                                                 2,
@@ -577,23 +589,45 @@ export default function LeaveAuth() {
                 </TableBody>
               </Table>
             </TableContainer>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-end",
-              }}
-            >
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 50, 100]}
-                component="div"
-                count={data.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </div>
+            <TablePagination
+          rowsPerPageOptions={[10, 25, 50, 100]}
+          component="div"
+          count={data.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            display: "flex", // Use flexbox for the container
+            justifyContent: "space-between", // Space between the elements
+            alignItems: "center", // Center the elements vertically
+            ".MuiTablePagination-toolbar": {
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%", // Ensure the toolbar takes the full width
+            },
+            ".MuiTablePagination-spacer": {
+              flex: "1 1 100%", // Force the spacer to take up all available space
+            },
+            ".MuiTablePagination-selectLabel": {
+              margin: 0, // Adjust or remove margin as needed
+            },
+            ".MuiTablePagination-select": {
+              textAlign: "center", // Center the text inside the select input
+            },
+            ".MuiTablePagination-selectIcon": {},
+            ".MuiTablePagination-displayedRows": {
+              textAlign: "left", // Align the "1-4 of 4" text to the left
+              flexShrink: 0, // Prevent the text from shrinking
+              order: -1, // Place it at the beginning
+            },
+            ".MuiTablePagination-actions": {
+              flexShrink: 0, // Prevent the actions from shrinking
+            },
+            // Add other styles as needed
+          }}
+        />
+         
           </>
         ) : (
           <>

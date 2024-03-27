@@ -252,253 +252,268 @@ export default function Employee() {
   };
 
   return (
-    <Box
-      sx={{
-        width: "auto",
-        zIndex: 1,
-        textAlign: "center", // Center content within this Box
-        margin: 2,
-      }}
-    >
+    <>
       {!history ? (
         <>
-          <Button
-            size="small"
-            onClick={() => setHistory(true)}
+          <Box
             sx={{
-              backgroundColor: "#3b71ca",
-              color: "white",
-              float: "right",
-              pl: 1,
-              pr: 1,
-              textTransform: "none", // Set to 'none' to avoid automatic capitalization
-              "&:hover": {
-                backgroundColor: "#1f4e8a", // Your desired hover color
-              },
-            }}
-          >
-            Task History
-          </Button>
-          <Paper
-            sx={{
-              width: "100%",
-              mt: 2,
-              boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
-              textAlign: "center",
-              display: "inline-block", // Add this to prevent the Paper from taking full width
+              width: "auto",
+              zIndex: 1,
+              marginTop: 1,
+              display: "flex", // Set display to flex
+              justifyContent: "center", // Align content to the center horizontally
             }}
           >
             <Box
               sx={{
-                p: 5,
+                width: { xs: "100%", md: "500px" }, // Set width to 100% on extra small screens and 500px on medium screens and up
+                paddingLeft: 2,
+                paddingRight: 2,
+                paddingBottom: 8,
+                zIndex: 1,
+                minHeight: "590px",
               }}
             >
-              <form onSubmit={handleData}>
-                <MDBRow className="mb-4">
-                  <MDBCol>
-                    <MDBInput
-                      required
-                      value={start}
-                      id="form3Example7"
-                      label="Start Time"
-                      onChange={(e) => setStart(e.target.value)}
-                      type="time"
-                    />
-                  </MDBCol>
-                  <MDBCol>
-                    <MDBInput
-                      value={end}
-                      id="form3Example8"
-                      label="End Time"
-                      onChange={(e) => setEnd(e.target.value)}
-                      type="time"
-                    />
-                  </MDBCol>
-                </MDBRow>
-                <MDBRow className="mb-4">
-                  <MDBCol>
-                    <MDBInput
-                      required
-                      id="form3Example1"
-                      label="Date"
-                      value={date}
-                      type="date"
-                      readOnly
-                      style={{
-                        cursor: "text",
-                        color: "inherit",
-                        backgroundColor: "transparent",
-                        border: "none",
-                        borderBottom: "1px solid #ced4da",
-                      }}
-                    />
-                  </MDBCol>
-                  <MDBCol>
-                    <MDBInput
-                      required
-                      id="form3Example2"
-                      value={hour}
-                      label="No of Hrs"
-                      onChange={(e) => setHour(Number(e.target.value))}
-                      type="number"
-                    />
-                  </MDBCol>
-                </MDBRow>
-                <MDBRow className="mb-4">
-                  <MDBCol>
-                    <Autocomplete
-                      id={`size-small-filled-assetType`}
-                      size="small"
-                      value={taskName}
-                      onChange={(event, newValue) => {
-                        setTaskId(newValue?.iId || 0), setTaskName(newValue);
-                      }}
-                      options={suggestionTask.map((data) => ({
-                        sName: data.sName,
-                        sCode: data.sCode,
-                        iId: data?.iId,
-                      }))}
-                      filterOptions={(options, { inputValue }) => {
-                        return options.filter((option) =>
-                          option.sName
-                            .toLowerCase()
-                            .includes(inputValue.toLowerCase())
-                        );
-                      }}
-                      autoHighlight
-                      getOptionLabel={(option) =>
-                        option && option.sName ? option.sName : ""
-                      }
-                      renderOption={(props, option) => (
-                        <li {...props}>
-                          <div
-                            className=""
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              width: "100%",
-                            }}
-                          >
-                            <Typography
-                              style={{
-                                marginRight: "auto",
-                                fontSize: "12px",
-                                fontWeight: "normal",
-                              }}
-                            >
-                              {option.sName}
-                            </Typography>
-                          </div>
-                        </li>
-                      )}
-                      renderInput={(params) => (
-                        <TextField
+              <Button
+                size="small"
+                onClick={() => setHistory(true)}
+                sx={{
+                  backgroundColor: "#3b71ca",
+                  color: "white",
+                  float: "right",
+                  pl: 1,
+                  pr: 1,
+                  textTransform: "none", // Set to 'none' to avoid automatic capitalization
+                  "&:hover": {
+                    backgroundColor: "#1f4e8a", // Your desired hover color
+                  },
+                }}
+              >
+                Task History
+              </Button>
+              <Paper
+                sx={{
+                  width: "100%",
+                  mt: 2,
+                  boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
+                  textAlign: "center",
+                  display: "inline-block", // Add this to prevent the Paper from taking full width
+                }}
+              >
+                <Box
+                  sx={{
+                    p: 5,
+                  }}
+                >
+                  <form onSubmit={handleData}>
+                    <MDBRow className="mb-4">
+                      <MDBCol>
+                        <MDBInput
                           required
-                          label="Task Type"
-                          {...params}
-                          inputProps={{
-                            ...params.inputProps,
-                            autoComplete: "new-password", // disable autocomplete and autofill
-                            style: {
-                              borderWidth: "1px",
-                              borderColor: "#ddd",
-                              borderRadius: "10px",
-                              fontSize: "15px",
-                              height: "20px",
-                              paddingLeft: "6px",
-                            },
+                          value={start}
+                          id="form3Example7"
+                          label="Start Time"
+                          onChange={(e) => setStart(e.target.value)}
+                          type="time"
+                        />
+                      </MDBCol>
+                      <MDBCol>
+                        <MDBInput
+                          value={end}
+                          id="form3Example8"
+                          label="End Time"
+                          onChange={(e) => setEnd(e.target.value)}
+                          type="time"
+                        />
+                      </MDBCol>
+                    </MDBRow>
+                    <MDBRow className="mb-4">
+                      <MDBCol>
+                        <MDBInput
+                          required
+                          id="form3Example1"
+                          label="Date"
+                          value={date}
+                          type="date"
+                          readOnly
+                          style={{
+                            cursor: "text",
+                            color: "inherit",
+                            backgroundColor: "transparent",
+                            border: "none",
+                            borderBottom: "1px solid #ced4da",
                           }}
                         />
-                      )}
-                      style={{ width: `auto` }}
-                    />
-                  </MDBCol>
-                  <MDBCol>
-                    <Autocomplete
-                      id={`size-small-filled-assetType`}
-                      size="small"
-                      value={customer}
-                      onChange={(event, newValue) => {
-                        setCustomerId(newValue?.iId || 0),
-                          setCustomer(newValue);
-                      }}
-                      options={suggestionCustomer.map((data) => ({
-                        sName: data.sName,
-                        sCode: data.sCode,
-                        iId: data?.iId,
-                      }))}
-                      filterOptions={(options, { inputValue }) => {
-                        return options.filter((option) =>
-                          option.sName
-                            .toLowerCase()
-                            .includes(inputValue.toLowerCase())
-                        );
-                      }}
-                      autoHighlight
-                      getOptionLabel={(option) =>
-                        option && option.sName ? option.sName : ""
-                      }
-                      renderOption={(props, option) => (
-                        <li {...props}>
-                          <div
-                            className=""
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              width: "100%",
-                            }}
-                          >
-                            <Typography
-                              style={{
-                                marginRight: "auto",
-                                fontSize: "12px",
-                                fontWeight: "normal",
-                              }}
-                            >
-                              {option.sName}
-                            </Typography>
-                          </div>
-                        </li>
-                      )}
-                      renderInput={(params) => (
-                        <TextField
+                      </MDBCol>
+                      <MDBCol>
+                        <MDBInput
                           required
-                          label="Customer"
-                          {...params}
-                          inputProps={{
-                            ...params.inputProps,
-                            autoComplete: "new-password", // disable autocomplete and autofill
-                            style: {
-                              borderWidth: "1px",
-                              borderColor: "#ddd",
-                              borderRadius: "10px",
-                              fontSize: "15px",
+                          id="form3Example2"
+                          value={hour}
+                          label="No of Hrs"
+                          onChange={(e) => setHour(Number(e.target.value))}
+                          type="number"
+                        />
+                      </MDBCol>
+                    </MDBRow>
+                    <MDBRow className="mb-4">
+                      <MDBCol>
+                        <Autocomplete
+                          id={`size-small-filled-assetType`}
+                          size="small"
+                          value={taskName}
+                          onChange={(event, newValue) => {
+                            setTaskId(newValue?.iId || 0),
+                              setTaskName(newValue);
+                          }}
+                          options={suggestionTask.map((data) => ({
+                            sName: data.sName,
+                            sCode: data.sCode,
+                            iId: data?.iId,
+                          }))}
+                          filterOptions={(options, { inputValue }) => {
+                            return options.filter((option) =>
+                              option.sName
+                                .toLowerCase()
+                                .includes(inputValue.toLowerCase())
+                            );
+                          }}
+                          autoHighlight
+                          getOptionLabel={(option) =>
+                            option && option.sName ? option.sName : ""
+                          }
+                          renderOption={(props, option) => (
+                            <li {...props}>
+                              <div
+                                className=""
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  width: "100%",
+                                }}
+                              >
+                                <Typography
+                                  style={{
+                                    marginRight: "auto",
+                                    fontSize: "12px",
+                                    fontWeight: "normal",
+                                  }}
+                                >
+                                  {option.sName}
+                                </Typography>
+                              </div>
+                            </li>
+                          )}
+                          renderInput={(params) => (
+                            <TextField
+                              required
+                              label="Task Type"
+                              {...params}
+                              inputProps={{
+                                ...params.inputProps,
+                                autoComplete: "new-password", // disable autocomplete and autofill
+                                style: {
+                                  borderWidth: "1px",
+                                  borderColor: "#ddd",
+                                  borderRadius: "10px",
+                                  fontSize: "15px",
+                                  height: "20px",
+                                  paddingLeft: "6px",
+                                },
+                              }}
+                            />
+                          )}
+                          style={{ width: `auto` }}
+                        />
+                      </MDBCol>
+                      <MDBCol>
+                        <Autocomplete
+                          id={`size-small-filled-assetType`}
+                          size="small"
+                          value={customer}
+                          onChange={(event, newValue) => {
+                            setCustomerId(newValue?.iId || 0),
+                              setCustomer(newValue);
+                          }}
+                          options={suggestionCustomer.map((data) => ({
+                            sName: data.sName,
+                            sCode: data.sCode,
+                            iId: data?.iId,
+                          }))}
+                          filterOptions={(options, { inputValue }) => {
+                            return options.filter((option) =>
+                              option.sName
+                                .toLowerCase()
+                                .includes(inputValue.toLowerCase())
+                            );
+                          }}
+                          autoHighlight
+                          getOptionLabel={(option) =>
+                            option && option.sName ? option.sName : ""
+                          }
+                          renderOption={(props, option) => (
+                            <li {...props}>
+                              <div
+                                className=""
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  width: "100%",
+                                }}
+                              >
+                                <Typography
+                                  style={{
+                                    marginRight: "auto",
+                                    fontSize: "12px",
+                                    fontWeight: "normal",
+                                  }}
+                                >
+                                  {option.sName}
+                                </Typography>
+                              </div>
+                            </li>
+                          )}
+                          renderInput={(params) => (
+                            <TextField
+                              required
+                              label="Customer"
+                              {...params}
+                              inputProps={{
+                                ...params.inputProps,
+                                autoComplete: "new-password", // disable autocomplete and autofill
+                                style: {
+                                  borderWidth: "1px",
+                                  borderColor: "#ddd",
+                                  borderRadius: "10px",
+                                  fontSize: "15px",
 
-                              height: "20px",
-                              paddingLeft: "6px",
-                            },
-                          }}
+                                  height: "20px",
+                                  paddingLeft: "6px",
+                                },
+                              }}
+                            />
+                          )}
+                          style={{ width: `auto` }}
                         />
-                      )}
-                      style={{ width: `auto` }}
+                      </MDBCol>
+                    </MDBRow>
+                    <MDBTextArea
+                      required
+                      value={task}
+                      label="Task"
+                      maxLength={300}
+                      id="textAreaExample"
+                      onChange={(e) => setTask(e.target.value)}
+                      rows={4}
                     />
-                  </MDBCol>
-                </MDBRow>
-                <MDBTextArea
-                  required
-                  value={task}
-                  label="Task"
-                  maxLength={300}
-                  id="textAreaExample"
-                  onChange={(e) => setTask(e.target.value)}
-                  rows={4}
-                />
-                <MDBBtn type="submit" className="mb-4 mt-4" block>
-                  Submit
-                </MDBBtn>
-              </form>
+                    <MDBBtn type="submit" className="mb-4 mt-4" block>
+                      Submit
+                    </MDBBtn>
+                  </form>
+                </Box>
+              </Paper>
             </Box>
-          </Paper>
+          </Box>
         </>
       ) : (
         <>
@@ -507,6 +522,7 @@ export default function Employee() {
             alignItems="center"
             spacing={2}
             padding={2}
+            marginTop={2}
             sx={{
               mx: "auto", // Centers the stack by setting the left and right margins to auto
               boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
@@ -743,7 +759,12 @@ export default function Employee() {
           </Stack>
           {data && data.length ? (
             <>
-              <AdminList data={data} name={userName} />
+              <AdminList
+                data={data}
+                name={userName}
+                count={7}
+                hideEmployee={true}
+              />
             </>
           ) : null}
         </>
@@ -755,6 +776,6 @@ export default function Employee() {
         handleClose={handleWarningClose}
         message={message}
       />
-    </Box>
+    </>
   );
 }

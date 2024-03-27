@@ -79,7 +79,7 @@ export default function LeaveForm({ setChange, id }) {
 
   useEffect(() => {
     const fetchData = async () => {
-        handleLoaderOpen()
+      handleLoaderOpen();
       if (id) {
         const response = await getLeaveApplicationDetails({ iTransId: id });
         if (response?.Status === "Success") {
@@ -123,7 +123,7 @@ export default function LeaveForm({ setChange, id }) {
         setEnd(formattedDate);
         setCreatedDate(formattedDate);
       }
-      handleLoaderClose()
+      handleLoaderClose();
     };
     fetchData();
   }, [suggestionLeave]);
@@ -142,7 +142,7 @@ export default function LeaveForm({ setChange, id }) {
 
   useEffect(() => {
     const fetchData = async () => {
-        handleLoaderOpen()
+      handleLoaderOpen();
       const response1 = await getLeave_Type();
       if (response1?.Status === "Success") {
         const myObject = JSON.parse(response1?.ResultData);
@@ -150,7 +150,7 @@ export default function LeaveForm({ setChange, id }) {
       } else {
         setSuggestionLeave([]);
       }
-      handleLoaderClose()
+      handleLoaderClose();
     };
     fetchData();
   }, []);
@@ -188,7 +188,7 @@ export default function LeaveForm({ setChange, id }) {
     setTableData(dateArray);
   }, [start, end]);
 
-  useEffect(()=>{
+  useEffect(() => {
     let totalHalfDay = 0;
 
     tableData.forEach((entry) => {
@@ -198,9 +198,9 @@ export default function LeaveForm({ setChange, id }) {
         totalHalfDay += 1;
       }
     });
-    
-    setTotal(totalHalfDay)
-  },[tableData])
+
+    setTotal(totalHalfDay);
+  }, [tableData]);
 
   const updateType = () => {
     handleModalClose();
@@ -227,7 +227,7 @@ export default function LeaveForm({ setChange, id }) {
     };
     const formData = new FormData();
     formData.append("data", JSON.stringify(data));
-    formData.append("imageFiles",selectedFile);
+    formData.append("imageFiles", selectedFile);
 
     Swal.fire({
       text: "Are you sure you want to continue?",
@@ -237,7 +237,7 @@ export default function LeaveForm({ setChange, id }) {
       confirmButtonText: "Yes",
     }).then(async (result) => {
       if (result.value) {
-        handleLoaderOpen()
+        handleLoaderOpen();
         const response = await postLeaveApplication(formData);
         if (response?.Status === "Success") {
           Swal.fire({
@@ -255,7 +255,7 @@ export default function LeaveForm({ setChange, id }) {
             text: `${response?.MessageDescription}`,
           });
         }
-        handleLoaderClose()
+        handleLoaderClose();
       }
     });
   };
@@ -274,575 +274,621 @@ export default function LeaveForm({ setChange, id }) {
     return `${year}-${month}-${day}`;
   };
 
-  useEffect(()=>{
-     if(total <= 0){
-      setEnd(start)
-     }
-  },[total])
- 
+  useEffect(() => {
+    if (total <= 0) {
+      setEnd(start);
+    }
+  }, [total]);
+
   return (
     <>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <Button
-          onClick={handleCloseLeave}
-          size="small"
-          startIcon={<ReplyIcon />}
-          style={{ backgroundColor: "#3b71ca", color: "white" }}
-        ></Button>
-        {/* Other content goes here */}
-      </div>
       <Box
         sx={{
-          p: 2,
+          width: "auto",
+          zIndex: 1,
+          marginTop: 1,
+          display: "flex", // Set display to flex
+          justifyContent: "center", // Align content to the center horizontally
         }}
       >
-        <form onSubmit={handleSave}>
-          
-          <MDBRow className="mb-2">
-            <MDBCol>
-              <MDBInput
-                required
-                value={start}
-                id="form3Example1"
-                label="Start Date"
-                onChange={(e) => setStart(e.target.value)}
-                type="date"
-                min={getCurrentDate()}
-                style={{ marginBottom: 10 }}
-              />
-            </MDBCol>
-            <MDBCol>
-              <MDBInput
-                required
-                value={end}
-                id="form3Example1"
-                label="End Date"
-                onChange={(e) => setEnd(e.target.value)}
-                min={getCurrentDate()}
-                type="date"
-              />
-            </MDBCol>
-          </MDBRow>
-          <MDBRow className="mb-3">
-            <MDBCol>
-              <Autocomplete
-                id={`size-small-filled-assetType`}
-                size="small"
-                value={leaveType}
-                onChange={(event, newValue) => {
-                  setLeaveType(newValue);
-                }}
-                options={suggestionLeave.map((data) => ({
-                  sName: data.sName,
-                  sCode: data.sCode,
-                  iId: data?.iid,
-                }))}
-                filterOptions={(options, { inputValue }) => {
-                  return options.filter((option) =>
-                    option.sName
-                      .toLowerCase()
-                      .includes(inputValue.toLowerCase())
-                  );
-                }}
-                autoHighlight
-                getOptionLabel={(option) =>
-                  option && option.sName ? option.sName : ""
-                }
-                renderOption={(props, option) => (
-                  <li {...props}>
-                    <div
-                      className=""
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        width: "100%",
-                      }}
-                    >
-                      <Typography
-                        style={{
-                          marginRight: "auto",
-                          fontSize: "12px",
-                          fontWeight: "normal",
-                        }}
-                      >
-                        {option.sName}
-                      </Typography>
-                    </div>
-                  </li>
-                )}
-                renderInput={(params) => (
-                  <TextField
-                    required
-                    label="Leave Type"
-                    {...params}
-                    inputProps={{
-                      ...params.inputProps,
-                      autoComplete: "new-password", // disable autocomplete and autofill
-                      style: {
-                        borderWidth: "1px",
-                        borderColor: "#ddd",
-                        borderRadius: "10px",
-                        fontSize: "15px",
-                        height: "20px",
-                        paddingLeft: "6px",
-                      },
-                    }}
-                  />
-                )}
-                style={{ width: `auto` }}
-              />
-            </MDBCol>
-            <MDBCol>
-              <MDBInput
-                required
-                id="form3Example2"
-                value={total}
-                label="Total Leave"
-                onChange={(e) => setTotal(e.target.value)}
-                type="number"
-              />
-            </MDBCol>
-          </MDBRow>
-          <MDBRow className="mb-3">
-            <MDBCol>
-              <MDBBtn
-                onClick={handleModalOpen}
-                type="button"
-                size="sm"
-                style={{ width: "50%" }}
-              >
-                View Leave
-              </MDBBtn>
-            </MDBCol>
-          </MDBRow>
-          <MDBRow className="mb-3">
-            <MDBCol>
-              <MDBTextArea
-                required
-                value={reason}
-                label="Reason"
-                maxLength={200}
-                id="textAreaExample"
-                onChange={(e) => setReason(e.target.value)}
-                rows={2}
-              />
-            </MDBCol>
-          </MDBRow>
-
-          <MDBRow className="mb-3">
-            <MDBCol>
-              <div className="app">
-                <div
-                  className="parent"
-                  style={{
-                    width: "80%",
-                    margin: "auto",
-                    padding: "1rem",
-                    background: "#ffffff",
-                    borderRadius: "15px",
-                    border: "1px solid #adacac",
-                    maxWidth: "500px",
-                  }}
-                >
-                  {selectedFile ? (
-                    <>
-                      <div>
-                        <strong>Selected File:</strong> {selectedFile.name}
-                      </div>
-                      <Button
-                        onClick={handleUpload}
-                        type="button"
-                        size="sm"
-                        style={{ width: "50%" }}
-                      >
-                        Clear
-                      </Button>
-                    </>
-                  ) : (
-                    <div
-                      className="file-upload-container"
-                      style={{
-                        textAlign: "center",
-                        border: "3px dashed rgb(210, 227, 244)",
-                        padding: "1rem",
-                        position: "relative",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <div>
-                        <CloudUploadIcon style={{ color: "#adacac" }} />
-                        <h3 style={{ fontSize: "1rem", color: "#adacac" }}>
-                          Attachments
-                        </h3>
-                      </div>
-                      <input
-                        type="file"
-                        aria-label="Choose a file to upload"
-                        onChange={handleFileChange}
-                        style={{
-                          display: "block",
-                          height: "100%",
-                          width: "100%",
-                          position: "absolute",
-                          top: "0",
-                          bottom: "0",
-                          left: "0",
-                          right: "0",
-                          opacity: "0",
-                          cursor: "pointer",
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </MDBCol>
-          </MDBRow>
-          <MDBRow className="mb-3">
-            <MDBCardHeader
-              style={{
-                display: "flex",
-                justifyContent: "center", // Align content center
-              }}
-            >
-              <Typography
-                variant="h6"
-                component="h6"
-                style={{
-                  fontSize: "16px",
-                  textAlign: "center",
-                  fontWeight: "bold",
-                }}
-              >
-                Emergency Contact Details
-              </Typography>
-            </MDBCardHeader>
-          </MDBRow>
-          <MDBRow className="mb-2">
-            <MDBCol>
-              <MDBInput
-                required
-                value={email}
-                id="form3Example1"
-                label="Email Id"
-                onChange={(e) => setEmail(e.target.value)}
-                type="email"
-              />
-            </MDBCol>
-            <MDBCol>
-              <MDBInput
-                required
-                id="form3Example2"
-                value={phone}
-                label="Mobile"
-                onChange={(e) => setPhone(e.target.value)}
-                type="tel"
-              />
-            </MDBCol>
-          </MDBRow>
-          <MDBBtn type="submit" className="mt-3" block>
-            Submit
-          </MDBBtn>
-        </form>
-      </Box>
-      <div>
-        <div
-          className={`modal-backdrop fade ${isOpen ? "show" : ""}`}
-          style={{
-            display: isOpen ? "block" : "none",
-            backgroundColor: "rgba(0, 0, 0, 0.7)",
+        <Box
+          sx={{
+            width: { xs: "100%", md: "500px" }, // Set width to 100% on extra small screens and 500px on medium screens and up
+            paddingLeft: 2,
+            paddingRight: 2,
+            paddingBottom: 8,
+            zIndex: 1,
+            minHeight: "590px",
           }}
-        ></div>
-
-        <Zoom in={isOpen} timeout={isOpen ? 400 : 300}>
-          <div
-            className={`modal ${isOpen ? "modal-open" : ""}`}
-            style={modalStyle}
-          >
-            <div className="modal-dialog modal-dialog-centered modal-md">
-              <div
-                className="modal-content"
-                style={{
-                  maxHeight: "85vh", // Adjust the maximum height as needed
-                  overflowY: "auto", // Add a scrollbar if the content exceeds the height
+        >
+            <Button
+            onClick={handleCloseLeave}
+            size="small"
+            startIcon={<ReplyIcon />}
+            sx={{
+              backgroundColor: "#3b71ca",
+              color: "white",
+              float: "right",
+              pl: 1,
+              pr: 1,
+              textTransform: "none", // Set to 'none' to avoid automatic capitalization
+              "&:hover": {
+                backgroundColor: "#1f4e8a", // Your desired hover color
+              },
+            }}
+          ></Button>
+           <Paper
+                sx={{
+                  width: "100%",
+                  mt: 2,
+                  boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
+                  textAlign: "center",
+                  display: "inline-block", // Add this to prevent the Paper from taking full width
                 }}
               >
-                <form>
-                  <Box
-                    sx={{
-                      width: "auto",
-                      paddingBottom: 3,
-                      paddingLeft: 1,
-                      paddingRight: 1,
-                      zIndex: 1,
-                      backgroundColor: "#ffff",
-                      borderRadius: 2,
-                    }}
-                  >
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      padding={2}
-                      justifyContent="flex-end"
-                    >
-                      <MDBBtn
-                        onClick={updateType}
-                        type="button"
-                        size="sm"
-                        style={{ width: "20%" }}
-                      >
-                        Apply
-                      </MDBBtn>
-                    </Stack>
+        
 
-                    <TableContainer component={Paper}>
-                      <Table size="small" aria-label="simple table">
-                        <TableHead
+          <Box
+            sx={{
+              p: 2,
+            }}
+          >
+            <form onSubmit={handleSave}>
+              <MDBRow className="mb-2">
+                <MDBCol>
+                  <MDBInput
+                    required
+                    value={start}
+                    id="form3Example1"
+                    label="Start Date"
+                    onChange={(e) => setStart(e.target.value)}
+                    type="date"
+                    min={getCurrentDate()}
+                    style={{ marginBottom: 10 }}
+                  />
+                </MDBCol>
+                <MDBCol>
+                  <MDBInput
+                    required
+                    value={end}
+                    id="form3Example1"
+                    label="End Date"
+                    onChange={(e) => setEnd(e.target.value)}
+                    min={getCurrentDate()}
+                    type="date"
+                  />
+                </MDBCol>
+              </MDBRow>
+              <MDBRow className="mb-3">
+                <MDBCol>
+                  <Autocomplete
+                    id={`size-small-filled-assetType`}
+                    size="small"
+                    value={leaveType}
+                    onChange={(event, newValue) => {
+                      setLeaveType(newValue);
+                    }}
+                    options={suggestionLeave.map((data) => ({
+                      sName: data.sName,
+                      sCode: data.sCode,
+                      iId: data?.iid,
+                    }))}
+                    filterOptions={(options, { inputValue }) => {
+                      return options.filter((option) =>
+                        option.sName
+                          .toLowerCase()
+                          .includes(inputValue.toLowerCase())
+                      );
+                    }}
+                    autoHighlight
+                    getOptionLabel={(option) =>
+                      option && option.sName ? option.sName : ""
+                    }
+                    renderOption={(props, option) => (
+                      <li {...props}>
+                        <div
+                          className=""
                           style={{
-                            position: "sticky",
-                            top: 0,
-                            zIndex: "0.5",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            width: "100%",
                           }}
                         >
-                          <TableRow>
-                            <TableCell
-                              sx={{
-                                border: "1px solid #ddd",
-                                whiteSpace: "nowrap",
+                          <Typography
+                            style={{
+                              marginRight: "auto",
+                              fontSize: "12px",
+                              fontWeight: "normal",
+                            }}
+                          >
+                            {option.sName}
+                          </Typography>
+                        </div>
+                      </li>
+                    )}
+                    renderInput={(params) => (
+                      <TextField
+                        required
+                        label="Leave Type"
+                        {...params}
+                        inputProps={{
+                          ...params.inputProps,
+                          autoComplete: "new-password", // disable autocomplete and autofill
+                          style: {
+                            borderWidth: "1px",
+                            borderColor: "#ddd",
+                            borderRadius: "10px",
+                            fontSize: "15px",
+                            height: "20px",
+                            paddingLeft: "6px",
+                          },
+                        }}
+                      />
+                    )}
+                    style={{ width: `auto` }}
+                  />
+                </MDBCol>
+                <MDBCol>
+                  <MDBInput
+                    required
+                    id="form3Example2"
+                    value={total}
+                    label="Total Leave"
+                    onChange={(e) => setTotal(e.target.value)}
+                    type="number"
+                  />
+                </MDBCol>
+              </MDBRow>
+              <MDBRow className="mb-3">
+                <MDBCol>
+                  <MDBBtn
+                    onClick={handleModalOpen}
+                    type="button"
+                    size="sm"
+                    style={{ width: "50%" }}
+                  >
+                    View Leave
+                  </MDBBtn>
+                </MDBCol>
+              </MDBRow>
+              <MDBRow className="mb-3">
+                <MDBCol>
+                  <MDBTextArea
+                    required
+                    value={reason}
+                    label="Reason"
+                    maxLength={200}
+                    id="textAreaExample"
+                    onChange={(e) => setReason(e.target.value)}
+                    rows={2}
+                  />
+                </MDBCol>
+              </MDBRow>
+
+              <MDBRow className="mb-3">
+                <MDBCol>
+                  <div className="app">
+                    <div
+                      className="parent"
+                      style={{
+                        width: "80%",
+                        margin: "auto",
+                        padding: "1rem",
+                        background: "#ffffff",
+                        borderRadius: "15px",
+                        border: "1px solid #adacac",
+                        maxWidth: "500px",
+                      }}
+                    >
+                      {selectedFile ? (
+                        <>
+                          <div>
+                            <strong>Selected File:</strong> {selectedFile.name}
+                          </div>
+                          <Button
+                            onClick={handleUpload}
+                            type="button"
+                            size="sm"
+                            style={{ width: "50%" }}
+                          >
+                            Clear
+                          </Button>
+                        </>
+                      ) : (
+                        <div
+                          className="file-upload-container"
+                          style={{
+                            textAlign: "center",
+                            border: "3px dashed rgb(210, 227, 244)",
+                            padding: "1rem",
+                            position: "relative",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <div>
+                            <CloudUploadIcon style={{ color: "#adacac" }} />
+                            <h3 style={{ fontSize: "1rem", color: "#adacac" }}>
+                              Attachments
+                            </h3>
+                          </div>
+                          <input
+                            type="file"
+                            aria-label="Choose a file to upload"
+                            onChange={handleFileChange}
+                            style={{
+                              display: "block",
+                              height: "100%",
+                              width: "100%",
+                              position: "absolute",
+                              top: "0",
+                              bottom: "0",
+                              left: "0",
+                              right: "0",
+                              opacity: "0",
+                              cursor: "pointer",
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </MDBCol>
+              </MDBRow>
+              <MDBRow className="mb-3">
+                <MDBCardHeader
+                  style={{
+                    display: "flex",
+                    justifyContent: "center", // Align content center
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    component="h6"
+                    style={{
+                      fontSize: "16px",
+                      textAlign: "center",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Emergency Contact Details
+                  </Typography>
+                </MDBCardHeader>
+              </MDBRow>
+              <MDBRow className="mb-2">
+                <MDBCol>
+                  <MDBInput
+                    required
+                    value={email}
+                    id="form3Example1"
+                    label="Email Id"
+                    onChange={(e) => setEmail(e.target.value)}
+                    type="email"
+                  />
+                </MDBCol>
+                <MDBCol>
+                  <MDBInput
+                    required
+                    id="form3Example2"
+                    value={phone}
+                    label="Mobile"
+                    onChange={(e) => setPhone(e.target.value)}
+                    type="tel"
+                  />
+                </MDBCol>
+              </MDBRow>
+              <MDBBtn type="submit" className="mt-3" block>
+                Submit
+              </MDBBtn>
+            </form>
+          </Box>
+          <div>
+            <div
+              className={`modal-backdrop fade ${isOpen ? "show" : ""}`}
+              style={{
+                display: isOpen ? "block" : "none",
+                backgroundColor: "rgba(0, 0, 0, 0.7)",
+              }}
+            ></div>
+
+            <Zoom in={isOpen} timeout={isOpen ? 400 : 300}>
+              <div
+                className={`modal ${isOpen ? "modal-open" : ""}`}
+                style={modalStyle}
+              >
+                <div className="modal-dialog modal-dialog-centered modal-md">
+                  <div
+                    className="modal-content"
+                    style={{
+                      maxHeight: "85vh", // Adjust the maximum height as needed
+                      overflowY: "auto", // Add a scrollbar if the content exceeds the height
+                    }}
+                  >
+                    <form>
+                      <Box
+                        sx={{
+                          width: "auto",
+                          paddingBottom: 3,
+                          paddingLeft: 1,
+                          paddingRight: 1,
+                          zIndex: 1,
+                          backgroundColor: "#ffff",
+                          borderRadius: 2,
+                        }}
+                      >
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          padding={2}
+                          justifyContent="flex-end"
+                        >
+                          <MDBBtn
+                            onClick={updateType}
+                            type="button"
+                            size="sm"
+                            style={{ width: "20%" }}
+                          >
+                            Apply
+                          </MDBBtn>
+                        </Stack>
+
+                        <TableContainer component={Paper}>
+                          <Table size="small" aria-label="simple table">
+                            <TableHead
+                              style={{
+                                position: "sticky",
+                                top: 0,
+                                zIndex: "0.5",
                               }}
-                              component="th"
-                              scope="row"
-                              padding="normal"
-                              align="center"
                             >
-                              Date
-                            </TableCell>
-                            <TableCell
-                              sx={{
-                                border: "1px solid #ddd",
-                                whiteSpace: "nowrap",
-                              }}
-                              component="th"
-                              scope="row"
-                              padding="normal"
-                              align="center"
-                            >
-                              Day
-                            </TableCell>
-                            <TableCell
-                              sx={{
-                                border: "1px solid #ddd",
-                                whiteSpace: "nowrap",
-                              }}
-                              component="th"
-                              scope="row"
-                              padding="normal"
-                              align="center"
-                            >
-                              Session
-                            </TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {tableData &&
-                            tableData.map((row, index) => (
-                              <TableRow key={index}>
+                              <TableRow>
                                 <TableCell
                                   sx={{
                                     border: "1px solid #ddd",
                                     whiteSpace: "nowrap",
-                                    width: "100px",
                                   }}
-                                  key={row.sDate}
                                   component="th"
                                   scope="row"
                                   padding="normal"
                                   align="center"
                                 >
-                                  {row.sDate}
+                                  Date
                                 </TableCell>
                                 <TableCell
                                   sx={{
                                     border: "1px solid #ddd",
                                     whiteSpace: "nowrap",
-                                    width: "120px",
                                   }}
                                   component="th"
                                   scope="row"
                                   padding="normal"
                                   align="center"
                                 >
-                                  <Autocomplete
-                                    id={`size-small-filled-assetType`}
-                                    size="small"
-                                    value={
-                                      row.iHalfDay == 0
-                                        ? { sName: "Full Day" }
-                                        : { sName: "Half Day" }
-                                    }
-                                    onChange={(event, newValue) => {
-                                      const update = [...tableData];
-                                      update[index].iHalfDay = newValue.iId;
-                                      setTableData(update);
-                                    }}
-                                    options={dayType.map((data) => ({
-                                      sName: data.sName,
-                                      iId: data?.iId,
-                                    }))}
-                                    filterOptions={(
-                                      options,
-                                      { inputValue }
-                                    ) => {
-                                      return options.filter((option) =>
-                                        option.sName
-                                          .toLowerCase()
-                                          .includes(inputValue.toLowerCase())
-                                      );
-                                    }}
-                                    autoHighlight
-                                    getOptionLabel={(option) =>
-                                      option && option.sName ? option.sName : ""
-                                    }
-                                    renderOption={(props, option) => (
-                                      <li {...props}>
-                                        <div
-                                          className=""
-                                          style={{
-                                            display: "flex",
-                                            justifyContent: "space-between",
-                                            width: "100%",
-                                          }}
-                                        >
-                                          <Typography
-                                            style={{
-                                              marginRight: "auto",
-                                              fontSize: "12px",
-                                              fontWeight: "normal",
-                                            }}
-                                          >
-                                            {option.sName}
-                                          </Typography>
-                                        </div>
-                                      </li>
-                                    )}
-                                    renderInput={(params) => (
-                                      <TextField
-                                        required
-                                        {...params}
-                                        inputProps={{
-                                          ...params.inputProps,
-                                          autoComplete: "new-password", // disable autocomplete and autofill
-                                          style: {
-                                            borderColor: "#ddd",
-                                            borderRadius: "10px",
-                                            fontSize: "15px",
-                                            height: "15px",
-                                          },
-                                        }}
-                                      />
-                                    )}
-                                  />
+                                  Day
                                 </TableCell>
                                 <TableCell
                                   sx={{
                                     border: "1px solid #ddd",
                                     whiteSpace: "nowrap",
-                                    width: "120px",
                                   }}
-                                  key={row.Date}
                                   component="th"
                                   scope="row"
                                   padding="normal"
                                   align="center"
                                 >
-                                  {row.iHalfDay === 0 ? null : (
-                                    <Autocomplete
-                                      id={`size-small-filled-assetType`}
-                                      size="small"
-                                      value={
-                                        row.iType == 0
-                                          ? { sName: "Morning" }
-                                          : { sName: "Afternoon" }
-                                      }
-                                      onChange={(event, newValue) => {
-                                        const update = [...tableData];
-                                        update[index].iType = newValue.iId;
-                                        setTableData(update);
-                                      }}
-                                      options={sessionType.map((data) => ({
-                                        sName: data.sName,
-                                        iId: data?.iId,
-                                      }))}
-                                      filterOptions={(
-                                        options,
-                                        { inputValue }
-                                      ) => {
-                                        return options.filter((option) =>
-                                          option.sName
-                                            .toLowerCase()
-                                            .includes(inputValue.toLowerCase())
-                                        );
-                                      }}
-                                      autoHighlight
-                                      getOptionLabel={(option) =>
-                                        option && option.sName
-                                          ? option.sName
-                                          : ""
-                                      }
-                                      renderOption={(props, option) => (
-                                        <li {...props}>
-                                          <div
-                                            className=""
-                                            style={{
-                                              display: "flex",
-                                              justifyContent: "space-between",
-                                              width: "100%",
-                                            }}
-                                          >
-                                            <Typography
-                                              style={{
-                                                marginRight: "auto",
-                                                fontSize: "12px",
-                                                fontWeight: "normal",
-                                              }}
-                                            >
-                                              {option.sName}
-                                            </Typography>
-                                          </div>
-                                        </li>
-                                      )}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          required
-                                          {...params}
-                                          inputProps={{
-                                            ...params.inputProps,
-                                            autoComplete: "new-password", // disable autocomplete and autofill
-                                            style: {
-                                              borderColor: "#ddd",
-                                              borderRadius: "10px",
-                                              fontSize: "15px",
-                                              height: "15px",
-                                            },
-                                          }}
-                                        />
-                                      )}
-                                    />
-                                  )}
+                                  Session
                                 </TableCell>
                               </TableRow>
-                            ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Box>
-                </form>
+                            </TableHead>
+                            <TableBody>
+                              {tableData &&
+                                tableData.map((row, index) => (
+                                  <TableRow key={index}>
+                                    <TableCell
+                                      sx={{
+                                        border: "1px solid #ddd",
+                                        whiteSpace: "nowrap",
+                                        width: "100px",
+                                      }}
+                                      key={row.sDate}
+                                      component="th"
+                                      scope="row"
+                                      padding="normal"
+                                      align="center"
+                                    >
+                                      {row.sDate}
+                                    </TableCell>
+                                    <TableCell
+                                      sx={{
+                                        border: "1px solid #ddd",
+                                        whiteSpace: "nowrap",
+                                        width: "120px",
+                                      }}
+                                      component="th"
+                                      scope="row"
+                                      padding="normal"
+                                      align="center"
+                                    >
+                                      <Autocomplete
+                                        id={`size-small-filled-assetType`}
+                                        size="small"
+                                        value={
+                                          row.iHalfDay == 0
+                                            ? { sName: "Full Day" }
+                                            : { sName: "Half Day" }
+                                        }
+                                        onChange={(event, newValue) => {
+                                          const update = [...tableData];
+                                          update[index].iHalfDay = newValue.iId;
+                                          setTableData(update);
+                                        }}
+                                        options={dayType.map((data) => ({
+                                          sName: data.sName,
+                                          iId: data?.iId,
+                                        }))}
+                                        filterOptions={(
+                                          options,
+                                          { inputValue }
+                                        ) => {
+                                          return options.filter((option) =>
+                                            option.sName
+                                              .toLowerCase()
+                                              .includes(
+                                                inputValue.toLowerCase()
+                                              )
+                                          );
+                                        }}
+                                        autoHighlight
+                                        getOptionLabel={(option) =>
+                                          option && option.sName
+                                            ? option.sName
+                                            : ""
+                                        }
+                                        renderOption={(props, option) => (
+                                          <li {...props}>
+                                            <div
+                                              className=""
+                                              style={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                width: "100%",
+                                              }}
+                                            >
+                                              <Typography
+                                                style={{
+                                                  marginRight: "auto",
+                                                  fontSize: "12px",
+                                                  fontWeight: "normal",
+                                                }}
+                                              >
+                                                {option.sName}
+                                              </Typography>
+                                            </div>
+                                          </li>
+                                        )}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            required
+                                            {...params}
+                                            inputProps={{
+                                              ...params.inputProps,
+                                              autoComplete: "new-password", // disable autocomplete and autofill
+                                              style: {
+                                                borderColor: "#ddd",
+                                                borderRadius: "10px",
+                                                fontSize: "15px",
+                                                height: "15px",
+                                              },
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </TableCell>
+                                    <TableCell
+                                      sx={{
+                                        border: "1px solid #ddd",
+                                        whiteSpace: "nowrap",
+                                        width: "120px",
+                                      }}
+                                      key={row.Date}
+                                      component="th"
+                                      scope="row"
+                                      padding="normal"
+                                      align="center"
+                                    >
+                                      {row.iHalfDay === 0 ? null : (
+                                        <Autocomplete
+                                          id={`size-small-filled-assetType`}
+                                          size="small"
+                                          value={
+                                            row.iType == 0
+                                              ? { sName: "Morning" }
+                                              : { sName: "Afternoon" }
+                                          }
+                                          onChange={(event, newValue) => {
+                                            const update = [...tableData];
+                                            update[index].iType = newValue.iId;
+                                            setTableData(update);
+                                          }}
+                                          options={sessionType.map((data) => ({
+                                            sName: data.sName,
+                                            iId: data?.iId,
+                                          }))}
+                                          filterOptions={(
+                                            options,
+                                            { inputValue }
+                                          ) => {
+                                            return options.filter((option) =>
+                                              option.sName
+                                                .toLowerCase()
+                                                .includes(
+                                                  inputValue.toLowerCase()
+                                                )
+                                            );
+                                          }}
+                                          autoHighlight
+                                          getOptionLabel={(option) =>
+                                            option && option.sName
+                                              ? option.sName
+                                              : ""
+                                          }
+                                          renderOption={(props, option) => (
+                                            <li {...props}>
+                                              <div
+                                                className=""
+                                                style={{
+                                                  display: "flex",
+                                                  justifyContent:
+                                                    "space-between",
+                                                  width: "100%",
+                                                }}
+                                              >
+                                                <Typography
+                                                  style={{
+                                                    marginRight: "auto",
+                                                    fontSize: "12px",
+                                                    fontWeight: "normal",
+                                                  }}
+                                                >
+                                                  {option.sName}
+                                                </Typography>
+                                              </div>
+                                            </li>
+                                          )}
+                                          renderInput={(params) => (
+                                            <TextField
+                                              required
+                                              {...params}
+                                              inputProps={{
+                                                ...params.inputProps,
+                                                autoComplete: "new-password", // disable autocomplete and autofill
+                                                style: {
+                                                  borderColor: "#ddd",
+                                                  borderRadius: "10px",
+                                                  fontSize: "15px",
+                                                  height: "15px",
+                                                },
+                                              }}
+                                            />
+                                          )}
+                                        />
+                                      )}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      </Box>
+                    </form>
+                  </div>
+                </div>
               </div>
-            </div>
+            </Zoom>
           </div>
-        </Zoom>
-      </div>
-      <Loader open={loader} handleClose={handleLoaderClose} />
+          <Loader open={loader} handleClose={handleLoaderClose} />
+          </Paper>
+        </Box>
+      </Box>
     </>
   );
 }

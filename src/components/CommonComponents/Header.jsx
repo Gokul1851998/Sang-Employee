@@ -12,8 +12,9 @@ import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Divider from "@mui/material/Divider";
 import Logout from "@mui/icons-material/Logout";
+import MenuIcon from "@mui/icons-material/Menu";
 
-function Header() {
+function Header({actionDrawer}) {
   const navigate = useNavigate();
   const userName = localStorage.getItem("userName");
   const userId = localStorage.getItem("userId");
@@ -56,6 +57,19 @@ function Header() {
       >
         <Container maxWidth="xl">
           <Toolbar disableGutters>
+          <IconButton
+     
+            color="inherit"
+            aria-label="open drawer"
+             onClick={actionDrawer(true)}
+            edge="start"
+            sx={{
+              marginRight: 2,
+            }}
+          >
+          
+            <MenuIcon />
+          </IconButton>
             <Avatar
               alt="Logo"
               src="http://103.120.178.195:82/Sang_solutions/assets/images/sang_logo.png"

@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import Header from "../CommonComponents/Header";
 import { useNavigate } from "react-router-dom";
 import EmployeePage from "../Employee/EmployeePage";
+import SideBar from "../CommonComponents/SideBar";
+
 
 export default function Home() {
   const navigate = useNavigate()
@@ -13,9 +15,7 @@ export default function Home() {
   },[userId])
   return (
     <>
-      <Header />
-
-      <EmployeePage />
+      <SideBar />
     </>
   );
 }

@@ -49,16 +49,23 @@ function stableSort(array, comparator) {
 }
 
 function EnhancedTableHead(props) {
-  const { order, orderBy, rowCount, onRequestSort, rows } = props;
+  const { order, orderBy, rowCount, onRequestSort, rows, hideEmployee } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
 
   return (
-    <TableHead>
+    <TableHead
+      style={{
+        background: `#1976d2`,
+        position: "sticky",
+        top: 0,
+        zIndex: "5",
+      }}
+    >
       <TableRow>
         {rows.map((header, index) => {
-          if (header !== "iId") {
+          if (header !== "iId" && header !== hideEmployee ?"Employee" : null) {
             // Exclude "iId", "iAssetType", and "sAltName" from the header
             return (
               <TableCell
@@ -77,7 +84,7 @@ function EnhancedTableHead(props) {
                 sortDirection={orderBy === header ? order : false}
               >
                 <TableSortLabel
-                  className="text-dark"
+                  className="text-white"
                   active={orderBy === header}
                   direction={orderBy === header ? order : "asc"}
                   onClick={createSortHandler(header)}
@@ -161,7 +168,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function AdminList({ data, name }) {
+export default function AdminList({ data, name, count, hideEmployee  }) {
   const iUser = localStorage.getItem("userId");
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState(0);
@@ -231,7 +238,7 @@ export default function AdminList({ data, name }) {
 
   const handleExcel = () => {
     const Id = ["iId"];
-    exportToExcel(data, `${name? name : "Employee"} Report`, Id);
+    exportToExcel(data, `${name ? name : "Employee"} Report`, Id);
   };
 
   const handleExpand = () => {
@@ -243,6 +250,7 @@ export default function AdminList({ data, name }) {
       sx={{
         width: "auto",
         zIndex: 1,
+        margin: 2,
       }}
     >
       <Paper
@@ -275,7 +283,7 @@ export default function AdminList({ data, name }) {
             }}
           >
             <Table
-              sx={{ minWidth: 1600 }}
+              sx={{ minWidth: 750 }}
               aria-labelledby="tableTitle"
               size={dense ? "small" : "medium"}
             >
@@ -285,6 +293,7 @@ export default function AdminList({ data, name }) {
                 onRequestSort={handleRequestSort}
                 rowCount={filteredRows.length}
                 rows={Object.keys(data[0])}
+                hideEmployee={hideEmployee}
               />
 
               <TableBody>
@@ -300,7 +309,7 @@ export default function AdminList({ data, name }) {
                       sx={{ cursor: "pointer" }}
                     >
                       {Object.keys(data[0]).map((column, index) => {
-                        if (column !== "iId") {
+                        if (column !== "iId" && column !== hideEmployee ? "Employee" : null) {
                           return (
                             <>
                               {expand ? (
@@ -309,6 +318,7 @@ export default function AdminList({ data, name }) {
                                     padding: "4px",
                                     border: "1px solid #ddd",
                                     whiteSpace: "nowrap",
+                                    width: `calc(100% / ${count})`,
                                   }}
                                   key={index + labelId}
                                   component="th"
@@ -321,15 +331,15 @@ export default function AdminList({ data, name }) {
                                 </TableCell>
                               ) : (
                                 <TableCell
-                                  
                                   style={{
-                                      padding: "4px",
-                                      border: " 1px solid #ddd",
-                                      minWidth: "10px",
-                                      maxWidth: "20px",
-                                      whiteSpace: "nowrap",
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
+                                    padding: "4px",
+                                    border: "1px solid #ddd",
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    width: `calc(100% / ${count})`,
+                                    minWidth: "100px",
+                                    maxWidth: 150,
                                   }}
                                   key={index + labelId}
                                   component="th"
@@ -352,23 +362,45 @@ export default function AdminList({ data, name }) {
             </Table>
           </TableContainer>
         )}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
+
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 50, 100]}
+          component="div"
+          count={data.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            display: "flex", // Use flexbox for the container
+            justifyContent: "space-between", // Space between the elements
+            alignItems: "center", // Center the elements vertically
+            ".MuiTablePagination-toolbar": {
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%", // Ensure the toolbar takes the full width
+            },
+            ".MuiTablePagination-spacer": {
+              flex: "1 1 100%", // Force the spacer to take up all available space
+            },
+            ".MuiTablePagination-selectLabel": {
+              margin: 0, // Adjust or remove margin as needed
+            },
+            ".MuiTablePagination-select": {
+              textAlign: "center", // Center the text inside the select input
+            },
+            ".MuiTablePagination-selectIcon": {},
+            ".MuiTablePagination-displayedRows": {
+              textAlign: "left", // Align the "1-4 of 4" text to the left
+              flexShrink: 0, // Prevent the text from shrinking
+              order: -1, // Place it at the beginning
+            },
+            ".MuiTablePagination-actions": {
+              flexShrink: 0, // Prevent the actions from shrinking
+            },
+            // Add other styles as needed
           }}
-        >
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 50, 100]}
-            component="div"
-            count={data.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </div>
+        />
       </Paper>
       <Loader open={open} handleClose={handleClose} />
     </Box>
