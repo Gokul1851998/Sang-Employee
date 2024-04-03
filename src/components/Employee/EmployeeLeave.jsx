@@ -172,324 +172,292 @@ export default function EmployeeLeave() {
 
   return (
     <>
-     
-          {navigate ? (
-            <LeaveForm setChange={setNavigate} id={id} />
-          ) : (
-            <>
-             <Box
-      sx={{
-        width: "auto",
-        paddingLeft: 2,
-        paddingRight: 2,
-        paddingBottom: 8,
-        zIndex: 1,
-        minHeight: "590px",
-      }}
-    >
-      <Stack direction="row" spacing={1} padding={1} justifyContent="flex-end">
-      <Autocomplete
-                    disablePortal
-                    id="combo-box-demo"
+      {navigate ? (
+        <LeaveForm setChange={setNavigate} id={id} />
+      ) : (
+        <>
+          <Box
+            sx={{
+              width: "auto",
+              paddingLeft: 2,
+              paddingRight: 2,
+              paddingBottom: 8,
+              zIndex: 1,
+              minHeight: "590px",
+            }}
+          >
+            <Stack
+              direction="row"
+              spacing={1}
+              padding={1}
+              justifyContent="flex-end"
+            >
+              <Autocomplete
+                disablePortal
+                id="combo-box-demo"
+                size="small"
+                options={suggestionYear}
+                onChange={(event, newValue) => {
+                  setYear(newValue?.label);
+                }}
+                getOptionLabel={(option) => option.label.toString()}
+                sx={{ width: { xs: "100%", sm: 300 } }} // Adjust width for different screen sizes
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Year"
                     size="small"
-                    options={suggestionYear}
-                    onChange={(event, newValue) => {
-                      setYear(newValue?.label);
+                    inputProps={{
+                      ...params.inputProps,
+                      autoComplete: "new-password",
+                      style: {
+                        borderWidth: "1px",
+                        borderColor: "#ddd",
+                        borderRadius: "10px",
+                        fontSize: "15px",
+                        height: "20px",
+                        paddingLeft: "6px",
+                      },
                     }}
-                    getOptionLabel={(option) => option.label.toString()}
-                    sx={{ width: { xs: "100%", sm: 300 } }} // Adjust width for different screen sizes
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Year"
-                        size="small"
-                        inputProps={{
-                          ...params.inputProps,
-                          autoComplete: "new-password",
-                          style: {
-                            borderWidth: "1px",
-                            borderColor: "#ddd",
-                            borderRadius: "10px",
-                            fontSize: "15px",
-                            height: "20px",
-                            paddingLeft: "6px",
-                          },
-                        }}
-                      />
-                    )}
-                    style={{ width: `150px` }}
                   />
-        <Button
-          size="small"
-          onClick={handleNew}
-          variant="contained"
-         
-          sx={buttonStyle}
-        >
-          Add
-        </Button>
-       
-      
-      </Stack>
-      <Box
-        sx={{
-          width: "auto",
-          zIndex: 1,
-          marginTop: 1,
-        }}
-      >
-        <Paper
-          sx={{
-            width: "100%",
-            mb: 2,
-            boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
-          }}
-        >
-              <Toolbar
+                )}
+                style={{ width: `150px` }}
+              />
+              <Button
+                size="small"
+                onClick={handleNew}
+                variant="contained"
+                sx={buttonStyle}
+              >
+                Add
+              </Button>
+            </Stack>
+            <Box
+              sx={{
+                width: "auto",
+                zIndex: 1,
+                marginTop: 1,
+              }}
+            >
+              <Paper
                 sx={{
-                  pl: { xs: 1, sm: 2 }, // Adjust left padding for different screen sizes
-                  pr: { xs: 1, sm: 1 },
-                  display: "flex",
-                  flexDirection: { xs: "column", sm: "row" }, // Stack items vertically on small screens
-                  justifyContent: "space-between",
-                  alignItems: "center",
+                  width: "100%",
+                  mb: 2,
+                  boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <Typography
-                    variant="h6"
-                    id="tableTitle"
-                    component="div"
-                    marginRight={{ xs: 0, sm: 2 }} // Adjust right margin for different screen sizes
-                    marginBottom={{ xs: 2, sm: 0 }} // Adjust bottom margin for different screen sizes
-                  >
-                    Leave History
-                  </Typography>
-                
-                </div>
-
-                <div>
-               
-                  {data && data.length ? (
-                    <TextField
-                      id="search"
-                      className="p"
-                      label="Search"
-                      variant="outlined"
-                      value={searchQuery}
-                      onChange={handleSearch}
-                      size="small"
-                    />
-                  ) : null}
-                </div>
-              </Toolbar>
-
-              {data && data.length > 0 ? (
-                <>
-                  <TableContainer
-                    component={Paper}
-                    style={{
-                      display: "block",
-                      maxHeight: "calc(100vh - 300px)",
-                      overflowY: "auto",
-                      scrollbarWidth: "thin",
-                      scrollbarColor: "#888 #f5f5f5",
-                      scrollbarTrackColor: "#f5f5f5",
-                      boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)",
-                    }}
-                  >
-                    <Table
-                      sx={{ width: "100%" }}
-                      size="small"
-                      aria-label="a dense table"
+                <Toolbar
+                  sx={{
+                    pl: { xs: 1, sm: 2 }, // Adjust left padding for different screen sizes
+                    pr: { xs: 1, sm: 1 },
+                    display: "flex",
+                    flexDirection: { xs: "column", sm: "row" }, // Stack items vertically on small screens
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <Typography
+                      variant="h6"
+                      id="tableTitle"
+                      component="div"
+                      marginRight={{ xs: 0, sm: 2 }} // Adjust right margin for different screen sizes
+                      marginBottom={{ xs: 2, sm: 0 }} // Adjust bottom margin for different screen sizes
                     >
-                      <TableHead
-                        style={{
-                          backgroundColor: "#119def",
-                          position: "sticky",
-                          top: 0,
-                          zIndex: "1",
-                        }}
+                      Leave History
+                    </Typography>
+                  </div>
+
+                  <div>
+                    {data && data.length ? (
+                      <TextField
+                        id="search"
+                        className="p"
+                        label="Search"
+                        variant="outlined"
+                        value={searchQuery}
+                        onChange={handleSearch}
+                        size="small"
+                      />
+                    ) : null}
+                  </div>
+                </Toolbar>
+
+                {data && data.length > 0 ? (
+                  <>
+                    <TableContainer
+                      component={Paper}
+                      style={{
+                        display: "block",
+                        maxHeight: "calc(100vh - 300px)",
+                        overflowY: "auto",
+                        scrollbarWidth: "thin",
+                        scrollbarColor: "#888 #f5f5f5",
+                        scrollbarTrackColor: "#f5f5f5",
+                        boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)",
+                      }}
+                    >
+                      <Table
+                        sx={{ width: "100%" }}
+                        size="small"
+                        aria-label="a dense table"
                       >
-                        <TableRow>
-                          {headers.map((header) =>
-                            header !== "iTransId" ? (
-                              <TableCell
-                                key={header}
-                                className="text-white"
-                                sx={{
-                                  padding: "4px",
-                                  border: "1px solid #ddd",
-                                  minWidth: "150px",
-                                  maxWidth: "auto",
-                                  whiteSpace: "nowrap",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                }}
-                                component="th"
-                                scope="row"
-                                align="center"
-                                padding="normal"
-                              >
-                                {header}
-                              </TableCell>
-                            ) : null
-                          )}
-                          <TableCell
-                            className="text-white"
-                            sx={{
-                              padding: "4px",
-                              border: "1px solid #ddd",
-                              minWidth: "150px",
-                              maxWidth: "auto",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                            }}
-                            component="th"
-                            scope="row"
-                            align="center"
-                            padding="normal"
-                          >
-                            Action
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {filteredRows
-                          .slice(
-                            page * rowsPerPage,
-                            page * rowsPerPage + rowsPerPage
-                          )
-                          .map((row, rowIndex) => (
-                            <TableRow key={rowIndex}>
-                              {headers.map((header) =>
-                                header !== "iTransId" ? (
-                                  <TableCell
-                                    key={header}
-                                    sx={{
-                                      padding: "4px",
-                                      border: "1px solid #ddd",
-                                      minWidth: "150px",
-                                      maxWidth: "auto",
-                                      whiteSpace: "nowrap",
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                    }}
-                                    component="th"
-                                    scope="row"
-                                    padding="normal"
-                                    align="center"
-                                  >
-                                    {header === "Authorization" ? (
-                                      <>
-                                        {row[header] === "Approved" ? (
-                                          <Typography
-                                            sx={{
-                                              flex: "1 1 100%",
-                                              fontWeight: "bold",
-                                            }}
-                                            className="text-success"
-                                            variant="p"
-                                            id="tableTitle"
-                                            component="div"
-                                          >
-                                            {row[header]}
-                                          </Typography>
-                                        ) : row[header] === "Rejected" ? (
-                                          <Typography
-                                            sx={{
-                                              flex: "1 1 100%",
-                                              fontWeight: "bold",
-                                            }}
-                                            className="text-danger"
-                                            variant="p"
-                                            id="tableTitle"
-                                            component="div"
-                                          >
-                                            {row[header]}
-                                          </Typography>
-                                        ) : row[header] === "Pending" ? (
-                                          <Typography
-                                            sx={{
-                                              flex: "1 1 100%",
-                                              fontWeight: "bold",
-                                            }}
-                                            className="text-warning"
-                                            variant="p"
-                                            id="tableTitle"
-                                            component="div"
-                                          >
-                                            {row[header]}
-                                          </Typography>
-                                        ) : (
-                                          row[header]
-                                        )}
-                                      </>
-                                    ) : (
-                                      row[header]
-                                    )}
-                                  </TableCell>
-                                ) : null
-                              )}
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                sx={{
-                                  padding: "4px",
-                                  border: "1px solid #ddd",
-                                  minWidth: "150px",
-                                  maxWidth: "auto",
-                                  whiteSpace: "nowrap",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                }}
-                                padding="normal"
-                                align="center"
-                              >
-                                {row?.Authorization === "Approved" ? (
-                                  "---"
-                                ) : row?.Authorization === "Rejected" ? (
-                                  <Tooltip title="Reapply" arrow>
-                                    <IconButton
-                                      onClick={() => handleEdit(row?.iTransId)}
-                                      aria-label="delete"
-                                      size="small"
+                        <TableHead
+                          style={{
+                            backgroundColor: "#1b77e9",
+                            position: "sticky",
+                            top: 0,
+                            zIndex: "1",
+                          }}
+                        >
+                          <TableRow>
+                            {headers.map((header) =>
+                              header !== "iTransId" ? (
+                                <TableCell
+                                  key={header}
+                                  className="text-white"
+                                  sx={{
+                                    padding: "4px",
+                                    border: "1px solid #ddd",
+                                    minWidth: "150px",
+                                    maxWidth: "auto",
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                  }}
+                                  component="th"
+                                  scope="row"
+                                  align="center"
+                                  padding="normal"
+                                >
+                                  {header}
+                                </TableCell>
+                              ) : null
+                            )}
+                            <TableCell
+                              className="text-white"
+                              sx={{
+                                padding: "4px",
+                                border: "1px solid #ddd",
+                                minWidth: "150px",
+                                maxWidth: "auto",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                              component="th"
+                              scope="row"
+                              align="center"
+                              padding="normal"
+                            >
+                              Action
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {filteredRows
+                            .slice(
+                              page * rowsPerPage,
+                              page * rowsPerPage + rowsPerPage
+                            )
+                            .map((row, rowIndex) => (
+                              <TableRow key={rowIndex}>
+                                {headers.map((header) =>
+                                  header !== "iTransId" ? (
+                                    <TableCell
+                                      key={header}
+                                      sx={{
+                                        padding: "4px",
+                                        border: "1px solid #ddd",
+                                        minWidth: "150px",
+                                        maxWidth: "auto",
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                      }}
+                                      component="th"
+                                      scope="row"
+                                      padding="normal"
+                                      align="center"
                                     >
-                                      <AutorenewIcon
-                                        fontSize="small"
-                                        sx={{ fontSize: 16, color: "#1b77e9" }}
-                                      />
-                                    </IconButton>
-                                  </Tooltip>
-                                ) : row?.Authorization === "Pending" ? (
-                                  <>
-                                    <Tooltip title="Edit" arrow>
+                                      {header === "Authorization" ? (
+                                        <>
+                                          {row[header] === "Approved" ? (
+                                            <Typography
+                                              sx={{
+                                                flex: "1 1 100%",
+                                                fontWeight: "bold",
+                                              }}
+                                              className="text-success"
+                                              variant="p"
+                                              id="tableTitle"
+                                              component="div"
+                                            >
+                                              {row[header]}
+                                            </Typography>
+                                          ) : row[header] === "Rejected" ? (
+                                            <Typography
+                                              sx={{
+                                                flex: "1 1 100%",
+                                                fontWeight: "bold",
+                                              }}
+                                              className="text-danger"
+                                              variant="p"
+                                              id="tableTitle"
+                                              component="div"
+                                            >
+                                              {row[header]}
+                                            </Typography>
+                                          ) : row[header] === "Pending" ? (
+                                            <Typography
+                                              sx={{
+                                                flex: "1 1 100%",
+                                                fontWeight: "bold",
+                                              }}
+                                              className="text-warning"
+                                              variant="p"
+                                              id="tableTitle"
+                                              component="div"
+                                            >
+                                              {row[header]}
+                                            </Typography>
+                                          ) : (
+                                            row[header]
+                                          )}
+                                        </>
+                                      ) : (
+                                        row[header]
+                                      )}
+                                    </TableCell>
+                                  ) : null
+                                )}
+                                <TableCell
+                                  component="th"
+                                  scope="row"
+                                  sx={{
+                                    padding: "4px",
+                                    border: "1px solid #ddd",
+                                    minWidth: "150px",
+                                    maxWidth: "auto",
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                  }}
+                                  padding="normal"
+                                  align="center"
+                                >
+                                  {row?.Authorization === "Approved" ? (
+                                    "---"
+                                  ) : row?.Authorization === "Rejected" ? (
+                                    <Tooltip title="Reapply" arrow>
                                       <IconButton
-                                        aria-label="edit"
-                                        size="small"
                                         onClick={() =>
                                           handleEdit(row?.iTransId)
                                         }
-                                      >
-                                        <EditIcon
-                                          fontSize="small"
-                                          sx={{
-                                            fontSize: 16,
-                                            color: "#1b77e9",
-                                          }}
-                                        />
-                                      </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Delete" arrow>
-                                      <IconButton
                                         aria-label="delete"
                                         size="small"
-                                        onClick={() =>
-                                          handleDelete(row?.iTransId)
-                                        }
                                       >
-                                        <DeleteIcon
+                                        <AutorenewIcon
                                           fontSize="small"
                                           sx={{
                                             fontSize: 16,
@@ -498,75 +466,110 @@ export default function EmployeeLeave() {
                                         />
                                       </IconButton>
                                     </Tooltip>
-                                  </>
-                                ) : (
-                                  "---"
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                  <TablePagination
-                    rowsPerPageOptions={[10, 25, 50, 100]}
-                    component="div"
-                    count={data.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                    sx={{
-                      display: "flex", // Use flexbox for the container
-                      justifyContent: "space-between", // Space between the elements
-                      alignItems: "center", // Center the elements vertically
-                      ".MuiTablePagination-toolbar": {
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "100%", // Ensure the toolbar takes the full width
-                      },
-                      ".MuiTablePagination-spacer": {
-                        flex: "1 1 100%", // Force the spacer to take up all available space
-                      },
-                      ".MuiTablePagination-selectLabel": {
-                        margin: 0, // Adjust or remove margin as needed
-                      },
-                      ".MuiTablePagination-select": {
-                        textAlign: "center", // Center the text inside the select input
-                      },
-                      ".MuiTablePagination-selectIcon": {},
-                      ".MuiTablePagination-displayedRows": {
-                        textAlign: "left", // Align the "1-4 of 4" text to the left
-                        flexShrink: 0, // Prevent the text from shrinking
-                        order: -1, // Place it at the beginning
-                      },
-                      ".MuiTablePagination-actions": {
-                        flexShrink: 0, // Prevent the actions from shrinking
-                      },
-                      // Add other styles as needed
-                    }}
-                  />
-                </>
-              ) : (
-                <>
-                  <TableContainer component={Paper}>
-                    <img
-                      className="p-5"
-                      srcSet={`${empty}`}
-                      src={`${empty}`}
-                      alt={empty}
-                      loading="lazy"
-                      style={{ width: "500px" }}
+                                  ) : row?.Authorization === "Pending" ? (
+                                    <>
+                                      <Tooltip title="Edit" arrow>
+                                        <IconButton
+                                          aria-label="edit"
+                                          size="small"
+                                          onClick={() =>
+                                            handleEdit(row?.iTransId)
+                                          }
+                                        >
+                                          <EditIcon
+                                            fontSize="small"
+                                            sx={{
+                                              fontSize: 16,
+                                              color: "#1b77e9",
+                                            }}
+                                          />
+                                        </IconButton>
+                                      </Tooltip>
+                                      <Tooltip title="Delete" arrow>
+                                        <IconButton
+                                          aria-label="delete"
+                                          size="small"
+                                          onClick={() =>
+                                            handleDelete(row?.iTransId)
+                                          }
+                                        >
+                                          <DeleteIcon
+                                            fontSize="small"
+                                            sx={{
+                                              fontSize: 16,
+                                              color: "#1b77e9",
+                                            }}
+                                          />
+                                        </IconButton>
+                                      </Tooltip>
+                                    </>
+                                  ) : (
+                                    "---"
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                    <TablePagination
+                      rowsPerPageOptions={[10, 25, 50, 100]}
+                      component="div"
+                      count={data.length}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
+                      sx={{
+                        display: "flex", // Use flexbox for the container
+                        justifyContent: "space-between", // Space between the elements
+                        alignItems: "center", // Center the elements vertically
+                        ".MuiTablePagination-toolbar": {
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          width: "100%", // Ensure the toolbar takes the full width
+                        },
+                        ".MuiTablePagination-spacer": {
+                          flex: "1 1 100%", // Force the spacer to take up all available space
+                        },
+                        ".MuiTablePagination-selectLabel": {
+                          margin: 0, // Adjust or remove margin as needed
+                        },
+                        ".MuiTablePagination-select": {
+                          textAlign: "center", // Center the text inside the select input
+                        },
+                        ".MuiTablePagination-selectIcon": {},
+                        ".MuiTablePagination-displayedRows": {
+                          textAlign: "left", // Align the "1-4 of 4" text to the left
+                          flexShrink: 0, // Prevent the text from shrinking
+                          order: -1, // Place it at the beginning
+                        },
+                        ".MuiTablePagination-actions": {
+                          flexShrink: 0, // Prevent the actions from shrinking
+                        },
+                        // Add other styles as needed
+                      }}
                     />
-                  </TableContainer>
-                </>
-              )}
+                  </>
+                ) : (
+                  <>
+                    <TableContainer component={Paper}>
+                      <img
+                        className="p-5"
+                        srcSet={`${empty}`}
+                        src={`${empty}`}
+                        alt={empty}
+                        loading="lazy"
+                        style={{ width: "500px" }}
+                      />
+                    </TableContainer>
+                  </>
+                )}
               </Paper>
-      </Box>
-      </Box>
-            </>
-          )}
-        
+            </Box>
+          </Box>
+        </>
+      )}
 
       <Loader open={loader} handleClose={handleLoaderClose} />
     </>

@@ -11,12 +11,14 @@ import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import EditIcon from "@mui/icons-material/Edit";
 import Paper from "@mui/material/Paper";
 import { visuallyHidden } from "@mui/utils";
 import Loader from "../Loader/Loader";
 import {
   Autocomplete,
   Button,
+  Checkbox,
   IconButton,
   Stack,
   TextField,
@@ -26,7 +28,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import { exportToExcel } from "../Excel/ExcelForm";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import ZoomInMapIcon from "@mui/icons-material/ZoomInMap";
-import { getProjectSummary, getTaskType } from "../../api/ApiCall";
+import { getAssignedProject, getProject, getProjectSummary, getTaskType } from "../../api/ApiCall";
 import empty from "../../assets/empty.png";
 import ProjectModal from "./ProjectModal";
 import ProjectDetails from "./ProjectDetails";
@@ -36,6 +38,15 @@ const buttonStyle = {
     textTransform: "none", // Set text transform to none for normal case
     color: ` #fff`, // Set text color
     backgroundColor: `#1b77e9`, // Set background color
+    boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
+    fontSize: "12px",
+    padding: "6px 10px",
+  };
+
+  const buttonStyle2 = {
+    textTransform: "none", // Set text transform to none for normal case
+    color: ` #1b77e9`, // Set text color
+    backgroundColor: `#fff`, // Set background color
     boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
     fontSize: "12px",
     padding: "6px 10px",
@@ -78,13 +89,24 @@ function EnhancedTableHead(props) {
   return (
     <TableHead
       style={{
-        background: `#1976d2`,
+        background: `#1b77e9`,
         position: "sticky",
         top: 0,
         zIndex: "5",
       }}
     >
       <TableRow>
+      <TableCell
+          className="text-white"
+          sx={{
+            padding: "4px",
+            border: "1px solid #ddd",
+            whiteSpace: "nowrap",
+            cursor: "pointer",
+            minWidth: "80px",
+          }}
+          padding="checkbox"
+        ></TableCell>
         {rows.map((header, index) => {
           if (header !== "iId") {
             // Exclude "iId", "iAssetType", and "sAltName" from the header
@@ -138,47 +160,100 @@ function EnhancedTableToolbar(props) {
     setTypeName,
     typeName,
     suggestionTask,
+    type
   } = props;
 
   return (
-    <Toolbar sx={{ mt: 2 }}>
-      <Box sx={{ display: "flex", alignItems: "center" }}>
-        <Box sx={{ marginRight: 2 }}>
-          {" "}
-          {/* Add marginRight for space */}
-          <Typography variant="h6" id="tableTitle" component="div">
-            Project Management
-          </Typography>
-        </Box>
-        <Box sx={{ marginRight: 2 }}> {/* Add marginRight for space */}</Box>
-      </Box>
-
-      <Box
-        sx={{
-          flex: "1",
-          display: "flex",
-          justifyContent: "flex-end",
-          paddingRight: 2,
+    <Toolbar sx={{ mt: 2, flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'start', sm: 'center' } }}>
+    <Box sx={{ display: "flex", alignItems: "center", marginRight: { xs: 0, sm: 2 }, marginBottom: { xs: 2, sm: 0 } }}>
+      <Typography variant="h6" id="tableTitle" component="div">
+        Project Management
+      </Typography>
+    </Box>
+  
+    <Box
+      sx={{
+        flex: { xs: "auto", sm: "1" },
+        display: "flex",
+        justifyContent: "flex-end",
+        gap: "10px",
+      }}
+    >
+      <Autocomplete
+        id={`size-small-filled-assetType`}
+        size="small"
+        value={typeName}
+        onChange={(event, newValue) => {
+          setTypeName(newValue);
         }}
-      >
-        <TextField
-          id="search"
-          label="Search"
-          variant="outlined"
-          value={values}
-          onChange={changes}
-          size="small"
-          sx={{ marginRight: 1 }} // Add margin to create space
-        />
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Tooltip title="Excel" arrow>
-            <IconButton onClick={action} aria-label="Excel">
-              <SaveIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      </Box>
-    </Toolbar>
+        options={type.map((data) => ({
+          sName: data?.sProject,
+          iId: data?.iId,
+        }))}
+        filterOptions={(options, { inputValue }) => {
+          return options.filter((option) =>
+            option.sName.toLowerCase().includes(inputValue.toLowerCase())
+          );
+        }}
+        autoHighlight
+        getOptionLabel={(option) =>
+          option && option.sName ? option.sName : ""
+        }
+        renderOption={(props, option) => (
+          <li {...props}>
+            <div
+              className=""
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <Typography
+                style={{
+                  marginRight: "auto",
+                  fontSize: "12px",
+                  fontWeight: "normal",
+                }}
+              >
+                {option.sName}
+              </Typography>
+            </div>
+          </li>
+        )}
+        renderInput={(params) => (
+          <TextField
+            required
+            label="Task Type"
+            {...params}
+            inputProps={{
+              ...params.inputProps,
+              autoComplete: "new-password", // disable autocomplete and autofill
+              style: {
+                borderWidth: "1px",
+                borderColor: "#ddd",
+                borderRadius: "10px",
+                fontSize: "15px",
+                height: "20px",
+                paddingLeft: "6px",
+              },
+            }}
+          />
+        )}
+        style={{ width: `200px` }}
+      />
+      <TextField
+        id="search"
+        label="Search"
+        variant="outlined"
+        value={values}
+        onChange={changes}
+        size="small"
+        sx={{ marginRight: { xs: 0, sm: 1 } }} // Adjust margin for responsiveness
+      />
+    </Box>
+  </Toolbar>
+  
   );
 }
 
@@ -188,6 +263,7 @@ EnhancedTableToolbar.propTypes = {
 
 export default function ProjectMangement() {
   const iUser = localStorage.getItem("userId");
+  const iEmployee = Number(localStorage.getItem("iEmployee"));
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState(0);
   const [selected, setSelected] = React.useState([]);
@@ -206,6 +282,7 @@ export default function ProjectMangement() {
   const handleAdd = () => {
     setDataId(0);
     setDetails(true);
+    setSelected([])
   };
   const handleNavigate = () => {
     setDetails(false);
@@ -213,13 +290,16 @@ export default function ProjectMangement() {
   };
   const handleEdit = () => {
     const iId = selected.join();
-    setDataId(Number(iId));
+    setDataId(iId);
     setDetails(true);
+    setSelected([])
   };
 
   React.useEffect(() => {   
     const fetchData = async () => {
-      const response = await getTaskType();
+      handleClose()
+      const response = await getProject();
+      handleClose()
       if (response.Status === "Success") {
         const myObject = JSON.parse(response.ResultData);
         setType(myObject);
@@ -233,11 +313,18 @@ export default function ProjectMangement() {
   }, [typeName]);
 
   const fetchData = async () => {
+    handleOpen()
     const response = await getProjectSummary({
       iUser,
-      iTaskType: type?.iId ? type?.iId : 0,
+      iProject: typeName?.iId ? typeName?.iId : 0,
+      iEmployee
     });
-    console.log(response);
+    handleClose()
+    if(response.Status === "Success"){
+      const myObject = JSON.parse(response.ResultData) 
+      setData(myObject.Table)
+    }
+
   };
 
   const handleClose = () => {
@@ -266,7 +353,7 @@ export default function ProjectMangement() {
     setSearchQuery(event.target.value);
   };
 
-  // Avoid a layout jump when reaching the last page with empty rows.
+  const isSelected = (id) => selected.indexOf(id) !== -1;
   const ignoredField = "iId";
   const filteredRows = data.filter((row) =>
     Object.entries(row).some(([key, value]) => {
@@ -307,83 +394,42 @@ export default function ProjectMangement() {
 
   const handleSaveSubmit = () => {};
 
+  const handleClick = (event, id) => {
+    const selectedIndex = selected.indexOf(id);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
+    }
+    setSelected(newSelected);
+  };
+
   return (
     <Box
-      sx={{
-        width: "auto",
-        zIndex: 1,
-        margin: 2,
-      }}
-    >
+    sx={{
+      width: "auto",
+      paddingLeft: 2,
+      paddingRight: 2,
+      paddingBottom: 2,
+      zIndex: 1,
+      minHeight: "590px",
+    }}
+  >
       {details ? (
-        <ProjectDetails handleNavigate={handleNavigate} />
+        <ProjectDetails handleNavigate={handleNavigate} data={dataId} />
       ) : (
         <>
            <Stack direction="row" spacing={1} padding={1} justifyContent="flex-end">
-            <Autocomplete
-              id={`size-small-filled-assetType`}
-              size="small"
-              value={typeName}
-              onChange={(event, newValue) => {
-                setTypeName(newValue);
-              }}
-              options={type.map((data) => ({
-                sName: data?.sName,
-                sCode: data?.sCode,
-                iId: data?.iId,
-              }))}
-              filterOptions={(options, { inputValue }) => {
-                return options.filter((option) =>
-                  option.sName.toLowerCase().includes(inputValue.toLowerCase())
-                );
-              }}
-              autoHighlight
-              getOptionLabel={(option) =>
-                option && option.sName ? option.sName : ""
-              }
-              renderOption={(props, option) => (
-                <li {...props}>
-                  <div
-                    className=""
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      width: "100%",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        marginRight: "auto",
-                        fontSize: "12px",
-                        fontWeight: "normal",
-                      }}
-                    >
-                      {option.sName}
-                    </Typography>
-                  </div>
-                </li>
-              )}
-              renderInput={(params) => (
-                <TextField
-                  required
-                  label="Task Type"
-                  {...params}
-                  inputProps={{
-                    ...params.inputProps,
-                    autoComplete: "new-password", // disable autocomplete and autofill
-                    style: {
-                      borderWidth: "1px",
-                      borderColor: "#ddd",
-                      borderRadius: "10px",
-                      fontSize: "15px",
-                      height: "20px",
-                      paddingLeft: "6px",
-                    },
-                  }}
-                />
-              )}
-              style={{ width: `200px` }}
-            />
+       
             <Button
               onClick={handleExpand}
               size="small"
@@ -406,17 +452,34 @@ export default function ProjectMangement() {
             >
               Add
             </Button>
+            <Button
+              size="small"
+              disabled={selected.length !== 1}
+              variant="contained"
+              onClick={handleEdit}
+              startIcon={<EditIcon />}
+              style={selected.length === 1 ? buttonStyle : buttonStyle2}
+            >
+              Edit
+            </Button>
+            <Button
+              size="small"
+              disabled={data.length === 0}
+              variant="contained"
+              onClick={handleExcel}
+              startIcon={<SaveIcon />}
+              style={data.length !== 0 ? buttonStyle : buttonStyle2}
+            >
+              Excel
+            </Button>
           </Stack>
           <Paper
             sx={{
               width: "100%",
-              paddingLeft: 2,
-              paddingRight: 2,
               boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
             }}
           >
             <EnhancedTableToolbar
-              action={handleExcel}
               numSelected={selected.length}
               values={searchQuery}
               changes={handleSearch}
@@ -424,6 +487,7 @@ export default function ProjectMangement() {
               expandAction={handleExpand}
               setTypeName={setTypeName}
               typeName={typeName}
+              type={type}
             />
 
             {data && data.length > 0 ? (
@@ -454,16 +518,37 @@ export default function ProjectMangement() {
 
                     <TableBody>
                       {visibleRows.map((row, index) => {
+                        const isItemSelected = isSelected(row.iId);
                         const labelId = `enhanced-table-checkbox-${index}`;
-
+  
+                        const handleRowDoubleClick = async (event, iId) => {
+                          setDataId(iId);
+                          setDetails(true);
+                        };
                         return (
                           <TableRow
                             key={row.iId}
                             hover
+                            onClick={(event) => handleClick(event, row.iId)}
+                            onDoubleClick={(event) =>
+                              handleRowDoubleClick(event, row.iId)
+                            }
+                            role="checkbox"
+                            aria-checked={isItemSelected}
                             className={`table-row `}
                             tabIndex={-1}
+                            selected={isItemSelected}
                             sx={{ cursor: "pointer" }}
                           >
+                               <TableCell padding="checkbox" align="center">
+                            <Checkbox
+                              color="primary"
+                              checked={isItemSelected}
+                              inputProps={{
+                                "aria-labelledby": labelId,
+                              }}
+                            />
+                          </TableCell>
                             {Object.keys(data[0]).map((column, index) => {
                               if (column !== "iId") {
                                 return (

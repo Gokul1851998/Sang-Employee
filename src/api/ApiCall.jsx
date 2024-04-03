@@ -244,6 +244,28 @@ export const getLogin = async (payload) => {
       console.log('GetAssignedProject',error);
     }
   };
+
+  export const getProject= async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}GetProject`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('GetProject',error);
+    }
+  };
+
+  export const getProjectDetails= async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}GetProjectDetails`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('GetProjectDetails',error);
+    }
+  };
   
 
 

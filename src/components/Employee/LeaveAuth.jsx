@@ -79,7 +79,7 @@ function EnhancedTableHead(props) {
   return (
     <TableHead
       style={{
-        backgroundColor: "#119def",
+        backgroundColor: "#1b77e9",
         position: "sticky",
         top: 0,
         zIndex: "1",

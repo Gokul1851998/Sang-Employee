@@ -17,8 +17,9 @@ import {
   MDBInput,
   MDBRow,
 } from "mdb-react-ui-kit";
-import { getAssignedProject } from "../../api/ApiCall";
+import {  getProject, getProjectDetails } from "../../api/ApiCall";
 import CloseIcon from "@mui/icons-material/Close";
+import ProjectTableList from "./ProjectTableList";
 
 const buttonStyle = {
   textTransform: "none", // Set text transform to none for normal case
@@ -29,7 +30,7 @@ const buttonStyle = {
   padding: "6px 10px",
 };
 
-export default function ProjectDetails({ handleNavigate }) {
+export default function ProjectDetails({ handleNavigate, data }) {
   const iUser = localStorage.getItem("userId");
   const [open, setOpen] = React.useState(false);
   const [dataId, setDataId] = useState(0);
@@ -37,10 +38,12 @@ export default function ProjectDetails({ handleNavigate }) {
   const [suggestionProject, setSuggestionProject] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [cutOfDate, setCutOfDate] = useState("");
+  const [childData, setChildData] = useState()
+  const [body, setBody] = useState([])
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await getAssignedProject({ iUser });
+      const response = await getProject();
       if (response.Status === "Success") {
         const myObject = JSON.parse(response.ResultData);
         setSuggestionProject(myObject);
@@ -48,6 +51,27 @@ export default function ProjectDetails({ handleNavigate }) {
         setSuggestionProject([]);
       }
     };
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    handleOpen();
+    if (data !== 0) {
+      const response = await getProjectDetails({ iId: data });
+      if (response.Status === "Success") {
+        const myObject = JSON.parse(response.ResultData);
+        setStartDate(myObject?.Table[0]?.Project_StartDate?.split("T")[0] || null);
+        setCutOfDate(myObject?.Table[0]?.Project_CutOffDate?.split("T")[0] || null);
+        setDataId(data)
+        setBody(myObject.Table1)
+      }
+    } else {
+      handleClear();
+    }
+    handleClose();
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -73,6 +97,11 @@ export default function ProjectDetails({ handleNavigate }) {
     setCutOfDate(formattedDate);
     setProject("");
   };
+
+  const handleChildData = (data) => {
+    setChildData(data);
+  };
+
   return (
     <form onSubmit={handleSave}>
       <Stack direction="row" spacing={1} padding={1} justifyContent="flex-end">
@@ -127,7 +156,7 @@ export default function ProjectDetails({ handleNavigate }) {
                     <MDBInput
                       required
                       id={`form3Example`}
-                      type="text"
+                      type="date"
                       size="small"
                       autoComplete="off"
                       label="Start Date"
@@ -231,7 +260,7 @@ export default function ProjectDetails({ handleNavigate }) {
         </>
       </MDBCard>
 
-      {/* <DetailsTable data={body} handleChildData={handleChildData} /> */}
+      <ProjectTableList data={body} handleChildData={handleChildData} />
 
       <Loader open={open} handleClose={handleClose} />
     </form>

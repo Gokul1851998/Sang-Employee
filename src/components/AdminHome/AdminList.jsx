@@ -256,8 +256,6 @@ export default function AdminList({ data, name, count, hideEmployee  }) {
       <Paper
         sx={{
           width: "100%",
-          paddingLeft: 2,
-          paddingRight: 2,
           boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
         }}
       >

@@ -25,11 +25,17 @@ import {
 } from "../../api/ApiCall";
 import Swal from "sweetalert2";
 
-export default function ProjectModal({ isOpen, handleCloseModal, data, handleSaveSubmit }) {
+export default function ProjectModal({
+  isOpen,
+  handleCloseModal,
+  data,
+  handleRowData,
+  rowIndex,
+}) {
   const [type, setType] = useState("");
   const [remark, setRemark] = React.useState("");
-  const [startDate, setStartDate] = useState("")
-  const [cutOfDate, setCutOfDate] = useState("")
+  const [startDate, setStartDate] = useState("");
+  const [cutOfDate, setCutOfDate] = useState("");
   const [suggestionType, setSuggestionType] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const [dataId, setDataId] = useState(0);
@@ -47,26 +53,20 @@ export default function ProjectModal({ isOpen, handleCloseModal, data, handleSav
     backgroundColor: `#1b77e9`,
     boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
   };
-
-
-
+  console.log(data);
   const fetchData = async () => {
     handleOpen();
-    console.log(data);
-    if (data !== 0) {
-      const response = await getComplaints({ iId: data });
-      if (response.Status === "Success") {
-        const myObject = JSON.parse(response.ResultData);
-        setDataId(myObject?.Table[0]?.iId)  
-        setType({
-            ComplaintType: myObject?.Table[0]?.sComplaintType,
-          iId: myObject?.Table[0]?.ComplaintType,
-        });
-        setRemark(myObject?.Table[0]?.Remarks);
-      }
-    } else {
-      handleClear();
-    }
+    // console.log(data);
+    // if (data !== 0) {
+    //   const response = await getComplaints({ iId: data });
+    //   if (response.Status === "Success") {
+    //     const myObject = JSON.parse(response.ResultData);
+    //     setDataId(myObject?.Table[0]?.iId)
+
+    //   }
+    // } else {
+    //   handleClear();
+    // }
     handleClose();
   };
 
@@ -76,13 +76,13 @@ export default function ProjectModal({ isOpen, handleCloseModal, data, handleSav
 
   React.useEffect(() => {
     const fetchData = async () => {
-      handleOpen();
-      const response1 = await getComplaintType();
-      if (response1.Status === "Success") {
-        const myObject1 = JSON.parse(response1.ResultData);
-        setSuggestionType(myObject1);
-      }
-      handleClose();
+      // handleOpen();
+      // const response1 = await getComplaintType();
+      // if (response1.Status === "Success") {
+      //   const myObject1 = JSON.parse(response1.ResultData);
+      //   setSuggestionType(myObject1);
+      // }
+      // handleClose();
     };
     fetchData();
   }, []);
@@ -116,7 +116,7 @@ export default function ProjectModal({ isOpen, handleCloseModal, data, handleSav
         const response = await postComplaints(saveData);
         console.log(response);
         handleClose();
-        if (response?.Status === "Success"){
+        if (response?.Status === "Success") {
           Swal.fire({
             title: "Saved",
             text: "Complaint Updated!",
@@ -124,7 +124,6 @@ export default function ProjectModal({ isOpen, handleCloseModal, data, handleSav
             showConfirmButton: false,
             timer: 1500,
           });
-          handleSaveSubmit()
           handleAllClear();
         }
       }
@@ -156,8 +155,8 @@ export default function ProjectModal({ isOpen, handleCloseModal, data, handleSav
     const day = String(currentDate.getDate()).padStart(2, "0");
     const formattedDate = `${year}-${month}-${day}`;
     setDataId(0);
-   setStartDate(formattedDate)
-   setCutOfDate(formattedDate)
+    setStartDate(formattedDate);
+    setCutOfDate(formattedDate);
   };
 
   const handleAllClear = () => {
@@ -216,7 +215,7 @@ export default function ProjectModal({ isOpen, handleCloseModal, data, handleSav
                     borderRadius: 2,
                   }}
                 >
-                    <MDBRow className="mb-4">
+                  <MDBRow className="mb-4">
                     <MDBCol>
                       <MDBInput
                         required

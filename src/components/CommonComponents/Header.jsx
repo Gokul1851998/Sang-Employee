@@ -13,6 +13,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Divider from "@mui/material/Divider";
 import Logout from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
+import sangImage from "../../assets/sangsolution.png";
 
 function Header({actionDrawer}) {
   const navigate = useNavigate();
@@ -70,10 +71,10 @@ function Header({actionDrawer}) {
           
             <MenuIcon />
           </IconButton>
-            <Avatar
+            <img
               alt="Logo"
-              src="http://103.120.178.195:82/Sang_solutions/assets/images/sang_logo.png"
-              sx={{ mr: 2, width: 60, height: 60 }}
+              src={sangImage}
+              style={{marginRight:10, width: 45, height: 50 }}
             />
             <Typography
               variant="h5"
@@ -113,7 +114,7 @@ function Header({actionDrawer}) {
               <IconButton onClick={handleClick} sx={{ p: 0 }}>
                 <Tooltip title={userName} arrow>
                   <Stack direction="row" spacing={2}>
-                    <Avatar>{truncatedName}</Avatar>
+                  <Avatar sx={{background:"gray",boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.5)",}} >{userName?.substring(0, 2)?.toUpperCase()}</Avatar>
                   </Stack>
                 </Tooltip>
               </IconButton>
