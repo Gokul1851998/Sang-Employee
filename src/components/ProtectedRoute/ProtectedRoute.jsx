@@ -1,19 +1,26 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
-const events = ["load", "mousemove", "mousedown", "click", "scroll", "keypress"];
+const events = [
+  "load",
+  "mousemove",
+  "mousedown",
+  "click",
+  "scroll",
+  "keypress",
+];
 const idleTime = 10 * 60 * 1000;
 
 const ProtectedRoute = (props) => {
-  const userId = localStorage.getItem("userId");
+  const userId = localStorage.getItem("userId")? Number(localStorage.getItem("userId")) : ""
   const userName = localStorage.getItem("userName");
   const iEmployee = Number(localStorage.getItem("iEmployee"));
   const location = useLocation();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [isOnline, setIsOnline] = useState(window.navigator.onLine);
   const handleLogout = useCallback(() => {
     if (userId && userName) {
-        localStorage.removeItem("userId");
+      localStorage.removeItem("userId");
       localStorage.removeItem("userName");
       localStorage.removeItem("iEmployee");
     }
@@ -25,12 +32,14 @@ const ProtectedRoute = (props) => {
       setIsOnline(true);
       // Optionally, reload the page
       //window.location.reload();
-      alert('Success is walking from failure to failure with no loss of enthusiam.')
+      alert(
+        "Success is walking from failure to failure with no loss of enthusiam."
+      );
     };
 
     const goOffline = () => {
       setIsOnline(false);
-      alert('Please verify your network connection and try again.')
+      alert("Please verify your network connection and try again.");
     };
 
     window.addEventListener("online", goOnline);
@@ -45,15 +54,14 @@ const ProtectedRoute = (props) => {
   const onClickLog = () => {
     localStorage.removeItem("userId");
     localStorage.removeItem("userName");
-    localStorage.removeItem("iEmployee");
     navigate("/");
   };
 
-  useEffect(()=>{
-    if(!userId || !iEmployee){
-      onClickLog()
+  useEffect(() => {
+    if (!userId) {
+      onClickLog();
     }
-  },[userId, iEmployee])
+  }, [userId]);
 
   useEffect(() => {
     if (location.pathname === "/") {
@@ -90,11 +98,17 @@ const ProtectedRoute = (props) => {
 
     return () => {
       clearTimeout(timer);
-      events.forEach((event) => window.removeEventListener(event, handleActivity));
+      events.forEach((event) =>
+        window.removeEventListener(event, handleActivity)
+      );
     };
   }, [handleLogout, location.pathname, userId, userName]);
 
-  return userId ? props.children : <Navigate to={"/"} />;
+  if (localStorage.getItem("userId")) {
+    return props.children;
+  } else {
+    return <Navigate to={"/"} />;
+  }
 };
 
 export default ProtectedRoute;
