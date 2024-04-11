@@ -91,13 +91,7 @@ function EnhancedTableHead(props) {
         </TableCell>
         {rows.map((header, index) => {
           if (
-            header !== "iTransId" &&
-            header !== "sNarration" &&
-            header !== "iTransDtId" &&
-            header !== "sPath" &&
-            header !== "sImages" &&
-            header !== "iActionBy" &&
-            header !== "imageFiles"
+            header !== "iId"
           ) {
             // Exclude "iId", "iAssetType", and "sAltName" from the header
             return (
@@ -108,8 +102,7 @@ function EnhancedTableHead(props) {
                 padding="normal"
                 onClick={() => setDisplay(!display)}
               >
-           
-                  {header === "TargetDate" ? header : header?.slice(1)}
+                  {header}
              
               </TableCell>
             );
@@ -129,7 +122,6 @@ export default function ProjectTableList({ data, handleChildData }) {
   const iUser = localStorage.getItem("userId");
   const location = useLocation();
   const details = location.state;
-
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(true);
   const [open, setOpen] = React.useState(false);
@@ -171,24 +163,8 @@ export default function ProjectTableList({ data, handleChildData }) {
 
   const fetchData = async () => {
     if (Array.isArray(data) && data.length > 0) {
-      const formattedData = [...data].map((item) => {
-        // Split the original date string by "-"
-        const dateComponents = item.TargetDate.split("-");
-
-        // Create a new Date object with the components (year, month - 1, day)
-        const formattedDateObject = new Date(
-          parseInt(dateComponents[2]), // year
-          parseInt(dateComponents[1]) - 1, // month (subtract 1 as months are zero-based)
-          parseInt(dateComponents[0]) // day
-        );
-
-        // Format the date as "yyyy-mm-dd"
-        const formattedDate = formattedDateObject.toISOString().split("T")[0];
-
-        // Return the updated object with the formatted date
-        return { ...item, TargetDate: formattedDate };
-      });
-      setTableData(formattedData);
+      
+      setTableData(data);
     } else {
       setTableData([]);
       setPopup([]);
@@ -270,7 +246,7 @@ export default function ProjectTableList({ data, handleChildData }) {
       }
     });
   };
-
+ console.log(tableData,'--++');
   return (
     <>
       <>
@@ -304,7 +280,7 @@ export default function ProjectTableList({ data, handleChildData }) {
                         component="h6"
                         style={{ fontSize: "16px" }}
                       >
-                        General Conditions
+                        Sub Task
                       </Typography>
                     </MDBCardHeader>
                   </AccordionSummary>
@@ -338,12 +314,17 @@ export default function ProjectTableList({ data, handleChildData }) {
 
                           <TableBody>
                             {tableData.map((row, index) => {
-                              const labelId = `enhanced-table-checkbox-${row.iTransDtId}`;
-
+                              const labelId = `enhanced-table-checkbox-${row.iId}`;
+                              const handleRowDoubleClick = async (event, iId) => {
+                                handleEdit(event, row, index)
+                              };
                               return (
                                 <TableRow
-                                  key={row.iTransDtId}
+                                  key={row.iId}
                                   hover
+                                  onDoubleClick={(event) =>
+                                    handleRowDoubleClick(event, row.iId)
+                                  }
                                   className={`table-row `}
                                   role="checkbox"
                                   tabIndex={-1}
@@ -446,13 +427,7 @@ export default function ProjectTableList({ data, handleChildData }) {
                                   {Object.keys(tableData[0]).map(
                                     (column, index) => {
                                       if (
-                                        column !== "iTransId" &&
-                                        column !== "sNarration" &&
-                                        column !== "iTransDtId" &&
-                                        column !== "sImages" &&
-                                        column !== "sPath" &&
-                                        column !== "iActionBy" &&
-                                        column !== "imageFiles"
+                                        column !== "iId" 
                                       ) {
                                         return (
                                           <>
@@ -483,7 +458,7 @@ export default function ProjectTableList({ data, handleChildData }) {
                                                   whiteSpace: "nowrap",
                                                   overflow: "hidden",
                                                   textOverflow: "ellipsis",
-                                                  width: "calc(100% / 8)",
+                                                  width: "calc(100% / 6)",
                                                   minWidth: "100px",
                                                   maxWidth: 150,
                                                 }}
@@ -567,7 +542,7 @@ export default function ProjectTableList({ data, handleChildData }) {
       </>
       <ProjectModal
         isOpen={isModalOpen}
-        data={isNewPage ? null : popup}
+        data={isNewPage ? 0 : popup}
         handleCloseModal={handleCloseModal}
         handleRowData={handleRowData}
         rowIndex={rowIndex}

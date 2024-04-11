@@ -225,6 +225,7 @@ export const getLogin = async (payload) => {
 
   export const getProjectSummary= async (payload) => {
     try {
+      console.log(payload);
       const response = await axios.get(`${baseUrl}ProjectSummary`,{
         params: payload,
       });
@@ -265,6 +266,25 @@ export const getLogin = async (payload) => {
     } catch (error) {
       console.log('GetProjectDetails',error);
     }
+  };
+
+  export const postProject = async (payload) => {
+    try {
+      const response = await axios.post(`${baseUrl}PostProject`,payload);
+      return response?.data;
+    } catch (error) {
+      console.log('PostProject',error);
+    } 
+  };
+
+
+  export const postSubTask = async (payload) => {
+    try {
+      const response = await axios.post(`${baseUrl}PostSubTask`,payload);
+      return response?.data;
+    } catch (error) {
+      console.log('PostSubTask',error);
+    } 
   };
   
 

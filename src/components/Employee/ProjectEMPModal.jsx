@@ -21,13 +21,22 @@ import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import {
   getComplaintType,
   getComplaints,
+  getProjectDetails,
   postComplaints,
 } from "../../api/ApiCall";
 import Swal from "sweetalert2";
 
-export default function ComplaintModal({ isOpen, handleCloseModal, data, handleSaveSubmit }) {
+export default function ProjectEMPModal({
+  isOpen,
+  handleCloseModal,
+  data,
+  handleRowData,
+  rowIndex,
+}) {
   const [type, setType] = useState("");
   const [remark, setRemark] = React.useState("");
+  const [startDate, setStartDate] = useState("");
+  const [cutOfDate, setCutOfDate] = useState("");
   const [suggestionType, setSuggestionType] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const [dataId, setDataId] = useState(0);
@@ -46,20 +55,14 @@ export default function ComplaintModal({ isOpen, handleCloseModal, data, handleS
     boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
   };
 
-
-
   const fetchData = async () => {
     handleOpen();
+
     if (data !== 0) {
-      const response = await getComplaints({ iId: data });
+      const response = await getProjectDetails({ iId: data });
       if (response.Status === "Success") {
         const myObject = JSON.parse(response.ResultData);
-        setDataId(myObject?.Table[0]?.iId)  
-        setType({
-            ComplaintType: myObject?.Table[0]?.sComplaintType,
-          iId: myObject?.Table[0]?.ComplaintType,
-        });
-        setRemark(myObject?.Table[0]?.Remarks);
+        setDataId(myObject?.Table[0]?.iId);
       }
     } else {
       handleClear();
@@ -70,19 +73,6 @@ export default function ComplaintModal({ isOpen, handleCloseModal, data, handleS
   useEffect(() => {
     fetchData();
   }, [isOpen]);
-
-  React.useEffect(() => {
-    const fetchData = async () => {
-      handleOpen();
-      const response1 = await getComplaintType();
-      if (response1.Status === "Success") {
-        const myObject1 = JSON.parse(response1.ResultData);
-        setSuggestionType(myObject1);
-      }
-      handleClose();
-    };
-    fetchData();
-  }, []);
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -111,9 +101,8 @@ export default function ComplaintModal({ isOpen, handleCloseModal, data, handleS
       if (result.value) {
         handleOpen();
         const response = await postComplaints(saveData);
-  
         handleClose();
-        if (response?.Status === "Success"){
+        if (response?.Status === "Success") {
           Swal.fire({
             title: "Saved",
             text: "Complaint Updated!",
@@ -121,7 +110,6 @@ export default function ComplaintModal({ isOpen, handleCloseModal, data, handleS
             showConfirmButton: false,
             timer: 1500,
           });
-          handleSaveSubmit()
           handleAllClear();
         }
       }
@@ -147,9 +135,14 @@ export default function ComplaintModal({ isOpen, handleCloseModal, data, handleS
   };
 
   const handleClear = () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    const formattedDate = `${year}-${month}-${day}`;
     setDataId(0);
-    setType("");
-    setRemark("");
+    setStartDate(formattedDate);
+    setCutOfDate(formattedDate);
   };
 
   const handleAllClear = () => {
@@ -172,7 +165,7 @@ export default function ComplaintModal({ isOpen, handleCloseModal, data, handleS
           className={`modal ${isOpen ? "modal-open" : ""}`}
           style={modalStyle}
         >
-          <div className="modal-dialog modal-dialog-centered modal-sm">
+          <div className="modal-dialog modal-dialog-centered modal-lg">
             <div className="modal-content">
               <form>
                 <Stack
@@ -210,85 +203,45 @@ export default function ComplaintModal({ isOpen, handleCloseModal, data, handleS
                 >
                   <MDBRow className="mb-4">
                     <MDBCol>
-                      <Autocomplete
-                        id={`size-small-filled-assetType`}
-                        size="small"
-                        value={type}
-                        onChange={(event, newValue) => {
-                          setType(newValue);
+                      <MDBInput
+                        required
+                        value={startDate}
+                        id="form6Example3"
+                        type="date"
+                        label="Start Date"
+                        onChange={(e) => setStartDate(e.target.value)}
+                        labelStyle={{
+                          fontSize: "15px",
                         }}
-                        options={suggestionType.map((data) => ({
-                          ComplaintType: data.ComplaintType,
-                          iId: data.iId,
-                        }))}
-                        filterOptions={(options, { inputValue }) => {
-                          return options.filter((option) =>
-                            option.ComplaintType.toLowerCase().includes(
-                              inputValue.toLowerCase()
-                            )
-                          );
-                        }}
-                        autoHighlight
-                        getOptionLabel={(option) =>
-                          option && option.ComplaintType
-                            ? option.ComplaintType
-                            : ""
-                        }
-                        renderOption={(props, option) => (
-                          <li {...props}>
-                            <div
-                              className=""
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                width: "100%",
-                              }}
-                            >
-                              <Typography
-                                style={{
-                                  marginRight: "auto",
-                                  fontSize: "12px",
-                                  fontWeight: "normal",
-                                }}
-                              >
-                                {option.ComplaintType}
-                              </Typography>
-                            </div>
-                          </li>
-                        )}
-                        renderInput={(params) => (
-                          <TextField
-                            required
-                            label="Type"
-                            {...params}
-                            inputProps={{
-                              ...params.inputProps,
-                              autoComplete: "off", // disable autocomplete and autofill
-                              style: {
-                                borderWidth: "1px",
-                                borderColor: "#ddd",
-                                borderRadius: "10px",
-                                fontSize: "15px",
-                                height: "20px",
-                              },
-                            }}
-                          />
-                        )}
-                        style={{ width: `15.8rem` }}
+                        autoComplete="off"
                       />
                     </MDBCol>
-                  </MDBRow>
-                  <MDBRow className="mb-4">
                     <MDBCol>
-                      <MDBTextArea
+                      <MDBInput
                         required
-                        value={remark}
+                        value={cutOfDate}
+                        id="form6Example6"
+                        type="date"
+                        label="Cut Off Date"
+                        onChange={(e) => setCutOfDate(e.target.value)}
+                        labelStyle={{
+                          fontSize: "15px",
+                        }}
                         autoComplete="off"
-                        label="Remark"
-                        maxLength={300}
-                        id="textAreaExample"
-                        onChange={(e) => setRemark(e.target.value)}
-                        rows={4}
+                      />
+                    </MDBCol>
+                    <MDBCol>
+                      <MDBInput
+                        required
+                        value={cutOfDate}
+                        id="form6Example6"
+                        type="date"
+                        label="Cut Off Date"
+                        onChange={(e) => setCutOfDate(e.target.value)}
+                        labelStyle={{
+                          fontSize: "15px",
+                        }}
+                        autoComplete="off"
                       />
                     </MDBCol>
                   </MDBRow>

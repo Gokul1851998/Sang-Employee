@@ -12,10 +12,10 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import EditIcon from "@mui/icons-material/Edit";
+import CloseIcon from "@mui/icons-material/Close";
 import Paper from "@mui/material/Paper";
 import { visuallyHidden } from "@mui/utils";
 import Loader from "../Loader/Loader";
-import CloseIcon from "@mui/icons-material/Close";
 import {
   Autocomplete,
   Button,
@@ -34,6 +34,7 @@ import empty from "../../assets/empty.png";
 import ProjectModal from "./ProjectModal";
 import ProjectDetails from "./ProjectDetails";
 import AddIcon from "@mui/icons-material/Add";
+import ProjectEmp from "./ProjectEmp";
 
 const buttonStyle = {
     textTransform: "none", // Set text transform to none for normal case
@@ -109,7 +110,7 @@ function EnhancedTableHead(props) {
           padding="checkbox"
         ></TableCell>
         {rows.map((header, index) => {
-          if (header !== "iId") {
+          if (header !== "iId" && header !== "Employee") {
             // Exclude "iId", "iAssetType", and "sAltName" from the header
             return (
               <TableCell
@@ -158,7 +159,10 @@ function EnhancedTableToolbar(props) {
     action,
     expandAction,
     expand,
-  
+    setTypeName,
+    typeName,
+    suggestionTask,
+    type
   } = props;
 
   return (
@@ -197,7 +201,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function ProjectMangement({id}) {
+export default function ProjectMangementEMP({id}) {
   const iUser = localStorage.getItem("userId");
   const iEmployee = Number(localStorage.getItem("iEmployee"));
   const [order, setOrder] = React.useState("asc");
@@ -210,10 +214,10 @@ export default function ProjectMangement({id}) {
   const [open, setOpen] = React.useState(false);
   const [expand, setExpand] = React.useState(false);
   const [data, setData] = React.useState([]);
+  const [type, setType] = React.useState([]);
+  const [typeName, setTypeName] = React.useState("");
   const [details, setDetails] = React.useState(false);
   const [dataId, setDataId] = React.useState(0);
-  const [assigned, setAssigned] = React.useState("");
-  const [suggestionAssiged, setSuggestionAssigned] = React.useState([]);
 
   const handleAdd = () => {
     setDataId(0);
@@ -231,7 +235,18 @@ export default function ProjectMangement({id}) {
     setSelected([])
   };
 
-
+  React.useEffect(() => {   
+    const fetchData = async () => {
+      handleClose()
+      const response = await getProject();
+      handleClose()
+      if (response.Status === "Success") {
+        const myObject = JSON.parse(response.ResultData);
+        setType(myObject);
+      }
+    };
+    fetchData();
+  }, []);
 
   React.useEffect(() => {
     fetchData();
@@ -241,8 +256,8 @@ export default function ProjectMangement({id}) {
     setDetails(false)
     handleOpen()
     const response = await getProjectSummary({
-      iUser:0,
-      iEmployee:0
+      iUser:id === 0 ? 0 : iUser,
+      iEmployee
     });
     handleClose()
     if(response.Status === "Success"){
@@ -350,7 +365,7 @@ export default function ProjectMangement({id}) {
     }}
   >
       {details ? (
-        <ProjectDetails handleNavigate={handleNavigate} data={dataId} />
+        <ProjectEmp handleNavigate={handleNavigate} data={dataId} />
       ) : (
         <>
            <Stack direction="row" spacing={1} padding={1} justifyContent="flex-end">
@@ -368,15 +383,7 @@ export default function ProjectMangement({id}) {
                 <ZoomOutMapIcon style={{ fontSize: "large" }} />
               )}
             </Button>
-            <Button
-              size="small"
-              variant="contained"
-              onClick={handleAdd}
-              startIcon={<AddIcon />}
-              style={buttonStyle}
-            >
-              Add
-            </Button>
+           
             <Button
               size="small"
               disabled={selected.length !== 1}
@@ -419,6 +426,9 @@ export default function ProjectMangement({id}) {
               changes={handleSearch}
               expand={expand}
               expandAction={handleExpand}
+              setTypeName={setTypeName}
+              typeName={typeName}
+              type={type}
             />
 
             {data && data.length > 0 ? (
@@ -481,7 +491,7 @@ export default function ProjectMangement({id}) {
                             />
                           </TableCell>
                             {Object.keys(data[0]).map((column, index) => {
-                              if (column !== "iId") {
+                              if (column !== "iId" && column !== "Employee") {
                                 return (
                                   <>
                                     {expand ? (
@@ -490,7 +500,7 @@ export default function ProjectMangement({id}) {
                                           padding: "4px",
                                           border: "1px solid #ddd",
                                           whiteSpace: "nowrap",
-                                          width: `calc(100% / 5)`,
+                                          width: `calc(100% / 4)`,
                                         }}
                                         key={index + labelId}
                                         component="th"
@@ -509,7 +519,7 @@ export default function ProjectMangement({id}) {
                                           whiteSpace: "nowrap",
                                           overflow: "hidden",
                                           textOverflow: "ellipsis",
-                                          width: `calc(100% / 5)`,
+                                          width: `calc(100% / 4)`,
                                           minWidth: "100px",
                                           maxWidth: 150,
                                         }}

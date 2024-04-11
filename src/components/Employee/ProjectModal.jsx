@@ -32,8 +32,9 @@ export default function ProjectModal({
   handleRowData,
   rowIndex,
 }) {
-  const [type, setType] = useState("");
-  const [remark, setRemark] = React.useState("");
+  const [taskName, setTaskName] = useState("");
+  const [day, setDay] = useState("");
+  const [progress, setProgress] = useState("");
   const [startDate, setStartDate] = useState("");
   const [cutOfDate, setCutOfDate] = useState("");
   const [suggestionType, setSuggestionType] = React.useState([]);
@@ -41,6 +42,7 @@ export default function ProjectModal({
   const [dataId, setDataId] = useState(0);
   const [warning, setWarning] = useState(false);
   const [message, setMessage] = useState("");
+  const [newRowIndex, setNewRowIndex] = useState(0)
   const modalStyle = {
     display: isOpen ? "block" : "none",
   };
@@ -53,20 +55,20 @@ export default function ProjectModal({
     backgroundColor: `#1b77e9`,
     boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
   };
-  console.log(data);
+
   const fetchData = async () => {
     handleOpen();
-    // console.log(data);
-    // if (data !== 0) {
-    //   const response = await getComplaints({ iId: data });
-    //   if (response.Status === "Success") {
-    //     const myObject = JSON.parse(response.ResultData);
-    //     setDataId(myObject?.Table[0]?.iId)
-
-    //   }
-    // } else {
-    //   handleClear();
-    // }
+    if (data !== 0) {
+      setNewRowIndex(rowIndex)
+      setDataId(data?.iId);
+      setTaskName(data?.TaskName);
+      setDay(data?.Days);
+      setCutOfDate(data?.CutOffDate?.substring(0, 10));
+      setStartDate(data?.StartDate?.substring(0, 10));
+      setProgress(data?.sProgress);
+    } else {
+      handleClear();
+    }
     handleClose();
   };
 
@@ -90,8 +92,11 @@ export default function ProjectModal({
   const handleSave = (e) => {
     e.preventDefault();
     const emptyFields = [];
-    if (!type.iId) emptyFields.push("Type");
-    if (!remark) emptyFields.push("Remark");
+
+    if (!taskName) emptyFields.push("Task Name");
+    if (!day) emptyFields.push("Days");
+    if (!startDate) emptyFields.push("Start Date");
+    if (!cutOfDate) emptyFields.push("Cut Off Date");
 
     if (emptyFields.length > 0) {
       handleOpenAlert();
@@ -100,9 +105,11 @@ export default function ProjectModal({
     }
     const saveData = {
       iId: dataId,
-      iUser,
-      sRemarks: remark,
-      iType: type?.iId,
+      CutOffDate: cutOfDate,
+      StartDate: startDate,
+      Days: Number(day),
+      sProgress:progress,
+      TaskName:taskName
     };
     Swal.fire({
       text: "Are you sure you want to continue?",
@@ -112,20 +119,8 @@ export default function ProjectModal({
       confirmButtonText: "Yes",
     }).then(async (result) => {
       if (result.value) {
-        handleOpen();
-        const response = await postComplaints(saveData);
-        console.log(response);
-        handleClose();
-        if (response?.Status === "Success") {
-          Swal.fire({
-            title: "Saved",
-            text: "Complaint Updated!",
-            icon: "success",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          handleAllClear();
-        }
+        handleRowData(saveData, newRowIndex);
+        handleAllClear();
       }
     });
   };
@@ -154,9 +149,13 @@ export default function ProjectModal({
     const month = String(currentDate.getMonth() + 1).padStart(2, "0");
     const day = String(currentDate.getDate()).padStart(2, "0");
     const formattedDate = `${year}-${month}-${day}`;
+    setNewRowIndex(-1)
     setDataId(0);
-    setStartDate(formattedDate);
-    setCutOfDate(formattedDate);
+    setStartDate("");
+    setCutOfDate("");
+    setProgress("");
+    setDay("");
+    setTaskName("");
   };
 
   const handleAllClear = () => {
@@ -219,6 +218,37 @@ export default function ProjectModal({
                     <MDBCol>
                       <MDBInput
                         required
+                        value={taskName}
+                        id="form6Example3"
+                        type="text"
+                        label="Task Name"
+                        onChange={(e) => setTaskName(e.target.value)}
+                        labelStyle={{
+                          fontSize: "15px",
+                        }}
+                        autoComplete="off"
+                      />
+                    </MDBCol>
+                    <MDBCol>
+                      <MDBInput
+                        required
+                        value={day}
+                        id="form6Example6"
+                        type="number"
+                        label="Days"
+                        onChange={(e) => setDay(e.target.value)}
+                        labelStyle={{
+                          fontSize: "15px",
+                        }}
+                        autoComplete="off"
+                      />
+                    </MDBCol>
+                  </MDBRow>
+
+                  <MDBRow className="mb-4">
+                    <MDBCol>
+                      <MDBInput
+                        required
                         value={startDate}
                         id="form6Example3"
                         type="date"
@@ -244,6 +274,24 @@ export default function ProjectModal({
                         autoComplete="off"
                       />
                     </MDBCol>
+                  </MDBRow>
+
+                  <MDBRow className="mb-4">
+                    <MDBCol>
+                      <MDBInput
+                        required
+                        value={progress}
+                        id="form6Example3"
+                        type="text"
+                        label="Progress"
+                        onChange={(e) => setProgress(e.target.value)}
+                        labelStyle={{
+                          fontSize: "15px",
+                        }}
+                        autoComplete="off"
+                      />
+                    </MDBCol>
+                    <MDBCol> </MDBCol>
                   </MDBRow>
                 </Box>
               </form>

@@ -262,7 +262,7 @@ export default function ComplaintsAuth({ name }) {
       ),
     [order, orderBy, page, rowsPerPage, filteredRows]
   );
-  console.log(visibleRows);
+
   const handleExcel = () => {
     const Id = ["iId"];
     exportToExcel(data, `${name ? name : "Employee"} Report`, Id);

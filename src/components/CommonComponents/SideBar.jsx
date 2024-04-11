@@ -28,6 +28,8 @@ import EmployeeLeave from '../Employee/EmployeeLeave';
 import LeaveAuth from '../Employee/LeaveAuth';
 import ProjectMangement from '../Employee/ProjectMangement';
 import ComplaintsReport from '../Employee/ComplaintsReport';
+import ProjectManagementEMP from '../Employee/ProjectManagementEMP';
+import ProjectMangementEMP from '../Employee/ProjectManagementEMP';
 
 export default function SideBar() {
   const [open, setOpen] = React.useState(false);
@@ -64,7 +66,6 @@ export default function SideBar() {
   };
 
   const handlePages =(id)=>{
-    console.log(id);
     setPage(id)
   }
 
@@ -123,8 +124,10 @@ export default function SideBar() {
        ) : page === 3? (
         <LeaveAuth />
        ) :  page === 14? (
-        <ProjectMangement />
-       ) : null}
+        <ProjectMangement id={0} />
+       ) :  page === 15? (
+        <ProjectMangementEMP id={1} />
+       ): null}
       <Loader open={loader} handleClose={handleLoaderClose} />
     </div>
   );
