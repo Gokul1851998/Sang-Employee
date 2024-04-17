@@ -67,12 +67,11 @@ function EnhancedTableHead(props) {
             border: "1px solid #ddd",
             whiteSpace: "nowrap",
             color: "white",
-            cursor:"pointer"
+            cursor: "pointer",
           }}
-          
           align="center" // Set the alignment to left
         >
-        Sl No
+          Sl No
         </TableCell>
         <TableCell
           onClick={() => setDisplay(!display)}
@@ -80,7 +79,7 @@ function EnhancedTableHead(props) {
             border: "1px solid #ddd",
             whiteSpace: "nowrap",
             color: "white",
-            cursor:"pointer"
+            cursor: "pointer",
           }}
           component="th"
           scope="row"
@@ -90,20 +89,22 @@ function EnhancedTableHead(props) {
           Conditions
         </TableCell>
         {rows.map((header, index) => {
-          if (
-            header !== "iId"
-          ) {
+          if (header !== "iId") {
             // Exclude "iId", "iAssetType", and "sAltName" from the header
             return (
               <TableCell
-                sx={{ border: "1px solid #ddd", color: "white",   whiteSpace: "nowrap", cursor:"pointer" }}
+                sx={{
+                  border: "1px solid #ddd",
+                  color: "white",
+                  whiteSpace: "nowrap",
+                  cursor: "pointer",
+                }}
                 key={index + header}
                 align="left" // Set the alignment to left
                 padding="normal"
                 onClick={() => setDisplay(!display)}
               >
-                  {header}
-             
+               {header === "sProgress" ? "Status" : header}
               </TableCell>
             );
           }
@@ -155,15 +156,8 @@ export default function ProjectTableList({ data, handleChildData }) {
     setOpen(true);
   };
 
-  const suggestionRistLevel = [
-    { iId: 1, sName: "Low" },
-    { iId: 2, sName: "Medium" },
-    { iId: 3, sName: "High" },
-  ];
-
   const fetchData = async () => {
     if (Array.isArray(data) && data.length > 0) {
-      
       setTableData(data);
     } else {
       setTableData([]);
@@ -246,7 +240,35 @@ export default function ProjectTableList({ data, handleChildData }) {
       }
     });
   };
- console.log(tableData,'--++');
+
+  const handleStatus = async (index) => {
+    Swal.fire({
+      text: "Enter Working Status",
+      input: "text",
+      inputAttributes: {
+        autocapitalize: "off",
+        maxlength: 200,
+      },
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      showCancelButton: true,
+      confirmButtonText: `Update`,
+      showLoaderOnConfirm: true,
+      preConfirm: async (login) => {
+        let update = [...tableData];
+        update[index].sProgress = login;
+        setTableData([...update]);
+        Swal.fire({
+          title: `Updated`,
+          text: `Status Updated.`,
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      },
+    });
+  };
+
   return (
     <>
       <>
@@ -315,16 +337,17 @@ export default function ProjectTableList({ data, handleChildData }) {
                           <TableBody>
                             {tableData.map((row, index) => {
                               const labelId = `enhanced-table-checkbox-${row.iId}`;
-                              const handleRowDoubleClick = async (event, iId) => {
-                                handleEdit(event, row, index)
+                              const handleRowDoubleClick = async (
+                                event,
+                                iId
+                              ) => {
+                                handleEdit(event, row, index);
                               };
                               return (
                                 <TableRow
                                   key={row.iId}
                                   hover
-                                  onDoubleClick={(event) =>
-                                    handleRowDoubleClick(event, row.iId)
-                                  }
+                                 
                                   className={`table-row `}
                                   role="checkbox"
                                   tabIndex={-1}
@@ -353,25 +376,23 @@ export default function ProjectTableList({ data, handleChildData }) {
                                     }}
                                     align="center"
                                   >
-                                    <HtmlTooltip
-                                      title={
-                                        <React.Fragment>
-                                          <Tooltip title="Add row">
-                                            <IconButton
-                                              onClick={handleNewPage}
-                                              size="small"
-                                              style={{
-                                                color: `#fff`, // Set text color
-                                                backgroundColor: `#1b77e9`,
-                                                marginRight: 2,
-                                              }}
-                                            >
-                                              <AddIcon
-                                                style={{ fontSize: "16px" }}
-                                              />
-                                            </IconButton>
-                                          </Tooltip>
-                                          <Tooltip title="Edit row">
+                                    <React.Fragment>
+                                      <Tooltip title="Add row">
+                                        <IconButton
+                                          onClick={handleNewPage}
+                                          size="small"
+                                          style={{
+                                            color: `#fff`, // Set text color
+                                            backgroundColor: `#1b77e9`,
+                                            marginRight: 2,
+                                          }}
+                                        >
+                                          <AddIcon
+                                            style={{ fontSize: "16px" }}
+                                          />
+                                        </IconButton>
+                                      </Tooltip>
+                                      {/* <Tooltip title="Edit row">
                                             <IconButton
                                               onClick={(e) =>
                                                 handleEdit(e, row, index)
@@ -387,101 +408,80 @@ export default function ProjectTableList({ data, handleChildData }) {
                                                 style={{ fontSize: "16px" }}
                                               />
                                             </IconButton>
-                                          </Tooltip>
-                                          <Tooltip title="Delete row">
-                                            <IconButton
-                                              onClick={(e) =>
-                                                handleDeleteRow(e, index)
-                                              }
-                                              size="small"
-                                              style={{
-                                                color: `#fff`, // Set text color
-                                                backgroundColor: `#1b77e9`,
-                                                marginRight: 2,
-                                              }}
-                                            >
-                                              <DeleteIcon
-                                                style={{ fontSize: "16px" }}
-                                              />
-                                            </IconButton>
-                                          </Tooltip>
-                                        </React.Fragment>
-                                      }
-                                    >
-                                      <Avatar
-                                        sx={{
-                                          bgcolor: `#1b77e9`,
-                                          width: 25,
-                                          height: 25,
-                                        }}
-                                      >
-                                        <SettingsIcon
+                                          </Tooltip> */}
+                                      <Tooltip title="Delete row">
+                                        <IconButton
+                                          onClick={(e) =>
+                                            handleDeleteRow(e, index)
+                                          }
+                                          size="small"
                                           style={{
-                                            color: `#fff`,
-                                            fontSize: 16,
+                                            color: `#fff`, // Set text color
+                                            backgroundColor: `#1b77e9`,
+                                            marginRight: 2,
                                           }}
-                                        />
-                                      </Avatar>
-                                    </HtmlTooltip>
+                                        >
+                                          <DeleteIcon
+                                            style={{ fontSize: "16px" }}
+                                          />
+                                        </IconButton>
+                                      </Tooltip>
+                                    </React.Fragment>
                                   </TableCell>
-                                  {Object.keys(tableData[0]).map(
-                                    (column, index) => {
-                                      if (
-                                        column !== "iId" 
-                                      ) {
-                                        return (
-                                          <>
-                                            {display ? (
-                                              <TableCell
-                                                sx={{
-                                                  border: "1px solid #ddd",
-                                                  whiteSpace: "nowrap",
-                                                }}
-                                                key={row[column]}
-                                                component="th"
-                                                id={labelId}
-                                                scope="row"
-                                                padding="normal"
-                                                align="left"
-                                              >
-                                                {column === "iRiskLevel"
-                                                  ? suggestionRistLevel.find(
-                                                      (item) =>
-                                                        item.iId === row[column]
-                                                    )?.sName || "Unknown"
-                                                  : row[column]}
-                                              </TableCell>
-                                            ) : (
-                                              <TableCell
-                                                sx={{
-                                                  border: "1px solid #ddd",
-                                                  whiteSpace: "nowrap",
-                                                  overflow: "hidden",
-                                                  textOverflow: "ellipsis",
-                                                  width: "calc(100% / 6)",
-                                                  minWidth: "100px",
-                                                  maxWidth: 150,
-                                                }}
-                                                key={row[column]}
-                                                component="th"
-                                                id={labelId}
-                                                scope="row"
-                                                padding="normal"
-                                                align="left"
-                                              >
-                                                {column === "iRiskLevel"
-                                                  ? suggestionRistLevel.find(
-                                                      (item) =>
-                                                        item.iId === row[column]
-                                                    )?.sName || "Unknown"
-                                                  : row[column]}
-                                              </TableCell>
-                                            )}
-                                          </>
-                                        );
-                                      }
+                                  {Object.keys(tableData[0]).map((column) => {
+                                    if (column !== "iId") {
+                                      return (
+                                        <>
+                                          {display ? (
+                                            <TableCell
+                                              sx={{
+                                                border: "1px solid #ddd",
+                                                whiteSpace: "nowrap",
+                                              }}
+                                              onClick={
+                                                column === "sProgress"
+                                                  ? () => handleStatus(index)
+                                                  : null
+                                              }
+                                              key={row[column]}
+                                              component="th"
+                                              id={labelId}
+                                              scope="row"
+                                              padding="normal"
+                                              align="left"
+                                            >
+                                              {row[column]}
+                                            </TableCell>
+                                          ) : (
+                                            <TableCell
+                                              sx={{
+                                                border: "1px solid #ddd",
+                                                whiteSpace: "nowrap",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                width: "calc(100% / 6)",
+                                                minWidth: "100px",
+                                                maxWidth: 150,
+                                              }}
+                                              onClick={
+                                                column === "sProgress"
+                                                  ? () => handleStatus(index)
+                                                  : null
+                                              }
+                                              key={row[column]}
+                                              component="th"
+                                              id={labelId}
+                                              scope="row"
+                                              padding="normal"
+                                              align="left"
+                                            >
+                                              {row[column]}
+                                            </TableCell>
+                                          )}
+                                        </>
+                                      );
                                     }
-                                  )}
+                                  })}
                                 </TableRow>
                               );
                             })}

@@ -225,7 +225,6 @@ export const getLogin = async (payload) => {
 
   export const getProjectSummary= async (payload) => {
     try {
-      console.log(payload);
       const response = await axios.get(`${baseUrl}ProjectSummary`,{
         params: payload,
       });

@@ -240,7 +240,7 @@ export default function Admin() {
                   {...params}
                   inputProps={{
                     ...params.inputProps,
-                    autoComplete: "new-password", // disable autocomplete and autofill
+                    autoComplete: "off", // disable autocomplete and autofill
                   }}
                   sx={{ minWidth: 200 }} // Set the width for Autocomplete
                 />
@@ -260,6 +260,7 @@ export default function Admin() {
                 const inputValue = e.target.value;
                 setFrom(inputValue);
               }}
+              autoComplete="off"
               label="From Date"
               variant="outlined"
               InputLabelProps={{
@@ -273,6 +274,7 @@ export default function Admin() {
               size="small"
               className="form-control"
               value={to}
+              autoComplete="off"
               onChange={(e) => {
                 const inputValue = e.target.value;
                 setTo(inputValue);
@@ -335,7 +337,7 @@ export default function Admin() {
                   {...params}
                   inputProps={{
                     ...params.inputProps,
-                    autoComplete: "new-password", // disable autocomplete and autofill
+                    autoComplete: "off", // disable autocomplete and autofill
                   }}
                   sx={{ minWidth: 200 }} // Set the width for Autocomplete
                 />
@@ -393,7 +395,7 @@ export default function Admin() {
                   {...params}
                   inputProps={{
                     ...params.inputProps,
-                    autoComplete: "new-password", // disable autocomplete and autofill
+                    autoComplete: "off", // disable autocomplete and autofill
                   }}
                   sx={{ minWidth: 200 }} // Set the width for Autocomplete
                 />

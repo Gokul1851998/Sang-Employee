@@ -73,7 +73,7 @@ function EnhancedTableHead(props) {
         >
           Sl No
         </TableCell>
-       
+
         {rows.map((header, index) => {
           if (header !== "iId") {
             // Exclude "iId", "iAssetType", and "sAltName" from the header
@@ -90,7 +90,7 @@ function EnhancedTableHead(props) {
                 padding="normal"
                 onClick={() => setDisplay(!display)}
               >
-    {header}
+                {header === "sProgress" ? "Status" : header}
               </TableCell>
             );
           }
@@ -133,7 +133,6 @@ export default function ProjectEMPTable({ data, handleChildData }) {
     backgroundColor: `#fff`, // Set background color
     boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
   };
-  console.log(data, "++--");
   const handleClose = () => {
     setOpen(false);
   };
@@ -269,7 +268,7 @@ export default function ProjectEMPTable({ data, handleChildData }) {
                                   >
                                     {index + 1}
                                   </TableCell>
-                                  
+
                                   {Object.keys(data[0]).map((column, index) => {
                                     if (column !== "iId") {
                                       return (
@@ -337,7 +336,6 @@ export default function ProjectEMPTable({ data, handleChildData }) {
             </>
           ) : (
             <>
-       
               {/* <Stack
                 direction="row"
                 spacing={1}

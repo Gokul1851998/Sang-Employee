@@ -113,14 +113,12 @@ export default function ProjectDetails({ handleNavigate, data }) {
     }).then(async (result) => {
       if (result.value) {
         handleOpen();
-        console.log(data);
         const response = await postProject(data);
-        console.log(response);
         handleClose();
         if (response?.Status === "Success"){
           Swal.fire({
             title: "Saved",
-            text: "Complaint Updated!",
+            text: "Project Updated!",
             icon: "success",
             showConfirmButton: false,
             timer: 1500,
@@ -215,7 +213,7 @@ export default function ProjectDetails({ handleNavigate, data }) {
                       type="text"
                       size="small"
                       autoComplete="off"
-                      label="Project"
+                      label="Project *"
                       value={project}
                       onChange={(e) => setProject(e.target.value)}
                       maxLength={100}

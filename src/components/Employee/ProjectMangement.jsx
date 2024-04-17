@@ -222,7 +222,7 @@ export default function ProjectMangement({id}) {
   };
   const handleNavigate = () => {
     setDetails(false);
-    // setIsNewPage(false); // Reset the isNewPage state
+    fetchData()
   };
   const handleEdit = () => {
     const iId = selected.join();
@@ -238,6 +238,7 @@ export default function ProjectMangement({id}) {
   }, [id]);
 
   const fetchData = async () => {
+    setSelected([])
     setDetails(false)
     handleOpen()
     const response = await getProjectSummary({
@@ -310,7 +311,7 @@ export default function ProjectMangement({id}) {
 
   const handleExcel = () => {
     const Id = ["iId"];
-    // exportToExcel(data, `${name ? name : "Employee"} Report`, Id);
+    exportToExcel(data, `Project Management Report`, Id);
   };
 
   const handleExpand = () => {

@@ -3,6 +3,7 @@ import AddIcon from "@mui/icons-material/Add";
 import MuiAlert from "@mui/material/Alert";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
+import DoneIcon from '@mui/icons-material/Done';
 import {
   Autocomplete,
   Box,
@@ -92,7 +93,6 @@ export default function ProjectModal({
   const handleSave = (e) => {
     e.preventDefault();
     const emptyFields = [];
-
     if (!taskName) emptyFields.push("Task Name");
     if (!day) emptyFields.push("Days");
     if (!startDate) emptyFields.push("Start Date");
@@ -163,6 +163,16 @@ export default function ProjectModal({
     handleClear();
   };
 
+  const getCurrentDate = () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    let month = currentDate.getMonth() + 1;
+    month = month < 10 ? `0${month}` : month;
+    let day = currentDate.getDate();
+    day = day < 10 ? `0${day}` : day;
+    return `${year}-${month}-${day}`;
+  };
+
   return (
     <div>
       <div
@@ -190,10 +200,10 @@ export default function ProjectModal({
                   <Button
                     onClick={handleSave}
                     variant="contained"
-                    startIcon={<SaveIcon />}
+                    startIcon={<DoneIcon />}
                     style={buttonStyle}
                   >
-                    Save
+                    Ok
                   </Button>
                   <Button
                     onClick={handleAllClear}
@@ -235,7 +245,8 @@ export default function ProjectModal({
                         value={day}
                         id="form6Example6"
                         type="number"
-                        label="Days"
+                        label="Days"  
+                        min={0}
                         onChange={(e) => setDay(e.target.value)}
                         labelStyle={{
                           fontSize: "15px",
@@ -254,6 +265,7 @@ export default function ProjectModal({
                         type="date"
                         label="Start Date"
                         onChange={(e) => setStartDate(e.target.value)}
+                        min={getCurrentDate()}
                         labelStyle={{
                           fontSize: "15px",
                         }}
@@ -268,6 +280,7 @@ export default function ProjectModal({
                         type="date"
                         label="Cut Off Date"
                         onChange={(e) => setCutOfDate(e.target.value)}
+                        min={getCurrentDate()}
                         labelStyle={{
                           fontSize: "15px",
                         }}

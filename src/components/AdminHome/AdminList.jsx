@@ -136,6 +136,7 @@ function EnhancedTableToolbar(props) {
         id="search"
         label="Search"
         variant="outlined"
+        autoComplete="off"
         value={values}
         onChange={changes}
         size="small"

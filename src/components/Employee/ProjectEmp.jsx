@@ -56,26 +56,26 @@ export default function ProjectEmp({ handleNavigate, data }) {
 
   const fetchData = async () => {
     handleOpen();
-    const response1 = await getEmployee({ iType: 1 });
-    if (response1.Status === "Success") {
-      const myObject1 = JSON.parse(response1.ResultData);
-      setSuggestionAssigned(myObject1);
-    } else {
-      setSuggestionAssigned([]);
-    }
-    const response3 = await getTaskType();
-    if (response3.Status === "Success") {
-      const myObject3 = JSON.parse(response3.ResultData);
-      setSuggestionTask(myObject3);
-    } else {
-      setSuggestionTask([]);
-    }
+    // const response1 = await getEmployee({ iType: 1 });
+    // if (response1.Status === "Success") {
+    //   const myObject1 = JSON.parse(response1.ResultData);
+    //   setSuggestionAssigned(myObject1);
+    // } else {
+    //   setSuggestionAssigned([]);
+    // }
+    // const response3 = await getTaskType();
+    // if (response3.Status === "Success") {
+    //   const myObject3 = JSON.parse(response3.ResultData);
+    //   setSuggestionTask(myObject3);
+    // } else {
+    //   setSuggestionTask([]);
+    // }
     if (data !== 0) {
       const response = await getProjectDetails({ iId: data });
       if (response?.Status === "Success") {
         const myObject = JSON.parse(response?.ResultData);
         setProject(myObject?.Table[0]?.Project);
-        setTask({sName:myObject?.Table[0]?.TaskName})
+        setTask(myObject?.Table[0]?.TaskName)
         setDataId(myObject?.Table[0]?.iId);
         setBody(myObject?.Table1);
         setStart(myObject?.Table[0]?.StartDate);
@@ -107,7 +107,6 @@ export default function ProjectEmp({ handleNavigate, data }) {
       iUser,
       Details: childData,
     };
-
     Swal.fire({
       text: "Are you sure you want to continue?",
       showCancelButton: true,
@@ -118,12 +117,11 @@ export default function ProjectEmp({ handleNavigate, data }) {
       if (result.value) {
         handleOpen();
         const response = await postSubTask(saveData);
-        console.log(response);
         handleClose();
         if (response?.Status === "Success") {
           Swal.fire({
             title: "Saved",
-            text: "Complaint Updated!",
+            text: "Project Updated!",
             icon: "success",
             showConfirmButton: false,
             timer: 1500,
@@ -150,6 +148,16 @@ export default function ProjectEmp({ handleNavigate, data }) {
 
   const handleChildData = (data) => {
     setChildData(data);
+  };
+
+  const getCurrentDate = () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    let month = currentDate.getMonth() + 1;
+    month = month < 10 ? `0${month}` : month;
+    let day = currentDate.getDate();
+    day = day < 10 ? `0${day}` : day;
+    return `${year}-${month}-${day}`;
   };
 
   return (
@@ -211,8 +219,6 @@ export default function ProjectEmp({ handleNavigate, data }) {
                       autoComplete="off"
                       label="Project"
                       value={project}
-                      onChange={(e) => setProject(e.target.value)}
-                      maxLength={100}
                       labelStyle={{
                         fontSize: "15px",
                       }}
@@ -229,87 +235,15 @@ export default function ProjectEmp({ handleNavigate, data }) {
 
                
                 <MDBCol lg="3" md="4" sm="6" xs="12">
-                  <div className="mb-3">
-                    <Autocomplete
-                    readOnly
-                      id="size-small-filled"
-                      size="small"
-                      value={task}
-                      onChange={(event, newValue) => {
-                        setTask(newValue);
-                      }}
-                      options={suggestionTask.map((data) => ({
-                        sName: data.sName,
-                        sCode: data.sCode,
-                        iId: data?.iId,
-                      }))}
-                      filterOptions={(options, { inputValue }) => {
-                        return options.filter((option) =>
-                          option.sName
-                            .toLowerCase()
-                            .includes(inputValue.toLowerCase())
-                        );
-                      }}
-                      autoHighlight
-                      getOptionLabel={(option) =>
-                        option && option.sName ? option.sName : ""
-                      }
-                      renderOption={(props, option) => (
-                        <li {...props}>
-                          <div
-                            className=""
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              width: "100%",
-                            }}
-                          >
-                            <Typography
-                              style={{
-                                marginRight: "auto",
-                                fontSize: "12px",
-                                fontWeight: "normal",
-                              }}
-                            >
-                              {option.sName}
-                            </Typography>
-                          </div>
-                        </li>
-                      )}
-                      renderInput={(params) => (
-                        <TextField
-                          label="Task Type"
-                          className="form-control"
-                          {...params}
-                          inputProps={{
-                            ...params.inputProps,
-                            autoComplete: "off", // disable autocomplete and autofill
-                            style: {
-                              borderWidth: "1px",
-                              borderColor: "#ddd",
-                              borderRadius: "10px",
-                              fontSize: "15px",
-                              height: "20px",
-                              paddingLeft: "6px",
-                            },
-                          }}
-                          sx={{ minWidth: 200 }} // Set the width for Autocomplete
-                        />
-                      )}
-                    />
-                  </div>
-                </MDBCol>
-                <MDBCol lg="3" md="4" sm="6" xs="12">
-                  <div className="mb-3">
+                <div className="mb-3">
                     <MDBInput
+                      readOnly
                       id={`form3Example`}
-                      type="date"
+                      type="text"
                       size="small"
                       autoComplete="off"
-                      label="Start Date"
-                      value={start}
-                      onChange={(e) => setStart(e.target.value)}
-                      maxLength={100}
+                      label="Task Type"
+                      value={task}
                       labelStyle={{
                         fontSize: "15px",
                       }}
@@ -326,6 +260,34 @@ export default function ProjectEmp({ handleNavigate, data }) {
                 <MDBCol lg="3" md="4" sm="6" xs="12">
                   <div className="mb-3">
                     <MDBInput
+                      readOnly={start}
+                      required
+                      id={`form3Example`}
+                      type="date"
+                      size="small"
+                      autoComplete="off"
+                      label="Start Date"
+                      value={start}
+                      onChange={(e) => setStart(e.target.value)}
+                      min={getCurrentDate()}
+                      labelStyle={{
+                        fontSize: "15px",
+                      }}
+                      style={{
+                        cursor: "text",
+                        color: "inherit",
+                        backgroundColor: "transparent",
+                        border: "none",
+                        borderBottom: "1px solid #ced4da",
+                      }}
+                    />
+                  </div>
+                </MDBCol>
+                <MDBCol lg="3" md="4" sm="6" xs="12">
+                  <div className="mb-3">
+                    <MDBInput
+                    readOnly={cutOff}
+                    required
                       id={`form3Example`}
                       type="date"
                       size="small"
@@ -333,7 +295,7 @@ export default function ProjectEmp({ handleNavigate, data }) {
                       label="Cut off Date"
                       value={cutOff}
                       onChange={(e) => setCutOff(e.target.value)}
-                      maxLength={100}
+                      min={getCurrentDate()}
                       labelStyle={{
                         fontSize: "15px",
                       }}
