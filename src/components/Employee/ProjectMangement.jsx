@@ -16,6 +16,7 @@ import Paper from "@mui/material/Paper";
 import { visuallyHidden } from "@mui/utils";
 import Loader from "../Loader/Loader";
 import CloseIcon from "@mui/icons-material/Close";
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Autocomplete,
   Button,
@@ -29,7 +30,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import { exportToExcel } from "../Excel/ExcelForm";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import ZoomInMapIcon from "@mui/icons-material/ZoomInMap";
-import { getAssignedProject, getProject, getProjectSummary, getTaskType } from "../../api/ApiCall";
+import { deleteProject, getAssignedProject, getProject, getProjectSummary, getTaskType } from "../../api/ApiCall";
 import empty from "../../assets/empty.png";
 import ProjectModal from "./ProjectModal";
 import ProjectDetails from "./ProjectDetails";
@@ -231,7 +232,10 @@ export default function ProjectMangement({id}) {
     setSelected([])
   };
 
-
+const handleDelete =async()=>{
+  const response = await deleteProject({iUser,Body:selected})
+  console.log(response);
+}
 
   React.useEffect(() => {
     fetchData();
@@ -387,6 +391,16 @@ export default function ProjectMangement({id}) {
               style={selected.length === 1 ? buttonStyle : buttonStyle2}
             >
               Edit
+            </Button>
+            <Button
+              size="small"
+              disabled={selected.length === 0}
+              variant="contained"
+              onClick={handleDelete}
+              startIcon={<DeleteIcon />}
+              style={selected.length !== 0 ? buttonStyle : buttonStyle2}
+            >
+              Delete
             </Button>
             <Button
               size="small"

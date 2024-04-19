@@ -285,6 +285,17 @@ export const getLogin = async (payload) => {
       console.log('PostSubTask',error);
     } 
   };
+
+  export const deleteProject= async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}DeleteProject`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('DeleteProject',error);
+    }
+  };
   
 
 

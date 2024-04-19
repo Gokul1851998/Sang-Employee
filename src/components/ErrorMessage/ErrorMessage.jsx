@@ -5,7 +5,7 @@ export default function ErrorMessage({ open, handleClose, message }) {
   return (
     <Stack spacing={2} sx={{ width: '100%' }}>
       <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+        <Alert onClose={handleClose} variant="filled" severity="error" sx={{ width: '100%' }}>
           {message}
         </Alert>
       </Snackbar>
