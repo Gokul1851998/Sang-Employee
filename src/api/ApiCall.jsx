@@ -286,9 +286,10 @@ export const getLogin = async (payload) => {
     } 
   };
 
-  export const deleteProject= async (payload) => {
+  export const deleteProject= async (payload,payload2) => {
     try {
-      const response = await axios.get(`${baseUrl}DeleteProject`,{
+      console.log(payload);
+      const response = await axios.post(`${baseUrl}DeleteProject`,payload2,{
         params: payload,
       });
       return response?.data;

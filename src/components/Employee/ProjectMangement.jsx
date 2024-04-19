@@ -35,6 +35,7 @@ import empty from "../../assets/empty.png";
 import ProjectModal from "./ProjectModal";
 import ProjectDetails from "./ProjectDetails";
 import AddIcon from "@mui/icons-material/Add";
+import Swal from "sweetalert2";
 
 const buttonStyle = {
     textTransform: "none", // Set text transform to none for normal case
@@ -199,7 +200,7 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function ProjectMangement({id}) {
-  const iUser = localStorage.getItem("userId");
+  const iUser = Number(localStorage.getItem("userId"));
   const iEmployee = Number(localStorage.getItem("iEmployee"));
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState(0);
@@ -233,8 +234,35 @@ export default function ProjectMangement({id}) {
   };
 
 const handleDelete =async()=>{
-  const response = await deleteProject({iUser,Body:selected})
-  console.log(response);
+  const saveData = {
+    iUser,
+    iIds: selected
+  }
+
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You want to delete this!",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes",
+  }).then(async (result) => {
+    if (result.value) {
+      const response = await deleteProject({iUser},selected)
+       if(response?.Status === "Success"){
+        Swal.fire({
+          title: "Deleted",
+          text: "Your file has been deleted!",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+       }else{
+      
+       }
+       fetchData()
+    }
+  });
 }
 
   React.useEffect(() => {
