@@ -35,7 +35,6 @@ export default function ProjectModal({
 }) {
   const [taskName, setTaskName] = useState("");
   const [day, setDay] = useState("");
-  const [progress, setProgress] = useState("");
   const [startDate, setStartDate] = useState("");
   const [cutOfDate, setCutOfDate] = useState("");
   const [suggestionType, setSuggestionType] = React.useState([]);
@@ -66,7 +65,6 @@ export default function ProjectModal({
       setDay(data?.Days);
       setCutOfDate(data?.CutOffDate?.substring(0, 10));
       setStartDate(data?.StartDate?.substring(0, 10));
-      setProgress(data?.sProgress);
     } else {
       handleClear();
     }
@@ -108,7 +106,7 @@ export default function ProjectModal({
       CutOffDate: cutOfDate,
       StartDate: startDate,
       Days: Number(day),
-      sProgress:progress,
+      sProgress:"",
       TaskName:taskName
     };
     Swal.fire({
@@ -153,7 +151,6 @@ export default function ProjectModal({
     setDataId(0);
     setStartDate("");
     setCutOfDate("");
-    setProgress("");
     setDay("");
     setTaskName("");
   };
@@ -289,23 +286,7 @@ export default function ProjectModal({
                     </MDBCol>
                   </MDBRow>
 
-                  <MDBRow className="mb-4">
-                    <MDBCol>
-                      <MDBInput
-                        required
-                        value={progress}
-                        id="form6Example3"
-                        type="text"
-                        label="Progress"
-                        onChange={(e) => setProgress(e.target.value)}
-                        labelStyle={{
-                          fontSize: "15px",
-                        }}
-                        autoComplete="off"
-                      />
-                    </MDBCol>
-                    <MDBCol> </MDBCol>
-                  </MDBRow>
+                
                 </Box>
               </form>
             </div>
