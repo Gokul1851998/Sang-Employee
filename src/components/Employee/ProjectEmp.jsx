@@ -44,13 +44,10 @@ export default function ProjectEmp({ handleNavigate, data }) {
   const [open, setOpen] = React.useState(false);
   const [dataId, setDataId] = useState(0);
   const [task, setTask] = useState("");
-  const [suggestionTask, setSuggestionTask] = useState([]);
-  const [project, setProject] = useState("");
-  const [assigned, setAssigned] = useState("");
-  const [suggestionAssiged, setSuggestionAssigned] = useState([]);
+  const [project, setProject] = useState("");;
   const [start, setStart] = useState("");
   const [cutOff, setCutOff] = useState("");
-  const [end, setEnd] = useState("");
+  const [dateChange, setDateChange] = useState(false);
   const [childData, setChildData] = useState();
   const [body, setBody] = useState([]);
 
@@ -74,12 +71,14 @@ export default function ProjectEmp({ handleNavigate, data }) {
       const response = await getProjectDetails({ iId: data });
       if (response?.Status === "Success") {
         const myObject = JSON.parse(response?.ResultData);
+        console.log(myObject);
         setProject(myObject?.Table[0]?.Project);
         setTask(myObject?.Table[0]?.TaskName)
         setDataId(myObject?.Table[0]?.iId);
         setBody(myObject?.Table1);
         setStart(myObject?.Table[0]?.StartDate);
         setCutOff(myObject?.Table[0]?.CutOffDate);
+        setDateChange(myObject?.Table[0]?.dateUpdation)
       }
     } else {
       handleClear();
@@ -136,9 +135,9 @@ export default function ProjectEmp({ handleNavigate, data }) {
   const handleClear = () => {
     setDataId(0);
     setProject("");
-    setAssigned("");
     setTask("");
     setBody([]);
+    setDateChange(false)
   };
 
   const handleAllClear = () => {
@@ -260,7 +259,7 @@ export default function ProjectEmp({ handleNavigate, data }) {
                 <MDBCol lg="3" md="4" sm="6" xs="12">
                   <div className="mb-3">
                     <MDBInput
-                      readOnly={start}
+                      readOnly={!dateChange}
                       required
                       id={`form3Example`}
                       type="date"
@@ -286,7 +285,7 @@ export default function ProjectEmp({ handleNavigate, data }) {
                 <MDBCol lg="3" md="4" sm="6" xs="12">
                   <div className="mb-3">
                     <MDBInput
-                    readOnly={cutOff}
+                    readOnly={!dateChange}
                     required
                       id={`form3Example`}
                       type="date"
