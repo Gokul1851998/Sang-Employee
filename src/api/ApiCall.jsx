@@ -297,6 +297,28 @@ export const getLogin = async (payload) => {
       console.log('DeleteProject',error);
     }
   };
+
+  export const getExpenseSummary= async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}GetExpenseSummary`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('GetExpenseSummary',error);
+    }
+  };
+
+  export const getDeleteExpense= async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}DeleteExpense`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('DeleteExpense',error);
+    }
+  };
   
 
 

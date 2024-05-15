@@ -16,7 +16,7 @@ export default function Loader({open,handleClose}) {
         ariaLabel="hourglass-loading"
         wrapperStyle={{}}
         wrapperClass=""
-        colors={['#8c99e0', '#8c99e0']}
+        colors={['#1b77e9', '#053fc7']}
     />
   </Backdrop>
   )

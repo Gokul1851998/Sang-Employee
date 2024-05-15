@@ -30,6 +30,9 @@ import ProjectMangement from '../Employee/ProjectMangement';
 import ComplaintsReport from '../Employee/ComplaintsReport';
 import ProjectManagementEMP from '../Employee/ProjectManagementEMP';
 import ProjectMangementEMP from '../Employee/ProjectManagementEMP';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import EmployeeExpense from '../Employee/Expense/EmployeeExpense';
 
 export default function SideBar() {
   const [open, setOpen] = React.useState(false);
@@ -44,6 +47,7 @@ export default function SideBar() {
       const response = await getMenuWeb({ iUser: userId });
       if (response.Status === "Success") {
         const myObject = JSON.parse(response.ResultData);
+        console.log(myObject);
         setChanges(myObject);
       } else {
         setChanges([]);
@@ -92,6 +96,10 @@ export default function SideBar() {
                     <AssignmentIcon />
                   ) : text.iMenuId === 15 ? (
                     <QueueIcon />
+                  ): text.iMenuId === 17 ? (
+                    <AccountBalanceIcon />
+                  ): text.iMenuId === 16 ? (
+                    <AccountBalanceWalletIcon />
                   ) : (
                     <MailIcon />
                   )} </ListItemIcon>
@@ -127,6 +135,8 @@ export default function SideBar() {
         <ProjectMangement id={0} />
        ) :  page === 15? (
         <ProjectMangementEMP id={1} />
+       ):  page === 16? (
+        <EmployeeExpense  />
        ): null}
       <Loader open={loader} handleClose={handleLoaderClose} />
     </div>
