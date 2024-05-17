@@ -1,29 +1,26 @@
-import { Alert, Snackbar, Stack, IconButton, Button } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import {
+  Alert,
+  Snackbar,
+  Stack,
+  IconButton,
+  Button,
+  Typography,
+} from "@mui/material";
 import RestoreIcon from "@mui/icons-material/Restore";
 
-
 const buttonStyle = {
-  textTransform: "none", // Set text transform to none for normal case
-  color: ` #fff`, // Set text color
-  backgroundColor: `#053fc7`, // Set background color
+  textTransform: "none",
+  color: "#fff",
+  backgroundColor: "#053fc7",
   fontSize: "10px",
-  marginLeft:"20px"
+  marginLeft: "20px",
 };
 
-const events = [
-  "load",
-  "mousemove",
-  "mousedown",
-  "click",
-  "scroll",
-  "keypress",
-];
-const idleTime = 10 * 60 * 1000;
+const events = ["load", "mousemove", "mousedown", "click", "scroll", "keypress"];
+const idleTime = 10 * 60 * 1000; // 10 minutes
 
-// Placeholder for a custom dialog component
 const TimedDialog = ({ onTimeout, onConfirm, isVisible }) => {
   const [countdown, setCountdown] = useState(10);
 
@@ -36,7 +33,7 @@ const TimedDialog = ({ onTimeout, onConfirm, isVisible }) => {
       } else {
         onTimeout();
       }
-    }, 1000); // Update countdown every second
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [isVisible, countdown, onTimeout]);
@@ -46,26 +43,20 @@ const TimedDialog = ({ onTimeout, onConfirm, isVisible }) => {
   return (
     <Stack spacing={2} sx={{ width: "100%" }}>
       <Snackbar open={isVisible} onClose={onConfirm}>
-        <Alert
-          // onClose={onConfirm}
-          variant="filled"
-          severity="info"
-          sx={{ width: "100%" }}
-        >
-          {`Your session expires in ${countdown} seconds .Click OK to continue`}
-          {/* <IconButton type="button"
-            style={{ padding: 0, margin: 0, color: "white", paddingLeft: 3 }}
-            onClick={onConfirm}
-            aria-label="Restart"
-          >
-           
-          </IconButton> */}
-          <Button  size="small"
+        <Alert variant="filled" severity="info" sx={{ width: "100%" }}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography variant="body2">
+              {`Your session expires in ${countdown} seconds. Click OK to continue`}
+            </Typography>
+            <Button
+              size="small"
               variant="contained"
-             onClick={onConfirm}
-              style={buttonStyle} >
-       OK
-      </Button>
+              onClick={onConfirm}
+              style={buttonStyle}
+            >
+              OK
+            </Button>
+          </Stack>
         </Alert>
       </Snackbar>
     </Stack>
@@ -73,9 +64,7 @@ const TimedDialog = ({ onTimeout, onConfirm, isVisible }) => {
 };
 
 const ProtectedRoute = (props) => {
-  const userId = localStorage.getItem("userId")
-    ? Number(localStorage.getItem("userId"))
-    : "";
+  const userId = Number(localStorage.getItem("userId"));
   const userName = localStorage.getItem("userName");
   const location = useLocation();
   const navigate = useNavigate();
@@ -83,12 +72,10 @@ const ProtectedRoute = (props) => {
   const [showDialog, setShowDialog] = useState(false);
 
   const handleLogout = useCallback(() => {
-    // Changes here: instead of using confirm, we show the dialog
     setShowDialog(true);
   }, []);
 
   const handleDialogTimeout = () => {
-    // Logic to remove user and navigate
     if (userId && userName) {
       localStorage.removeItem("userId");
       localStorage.removeItem("userName");
@@ -96,23 +83,18 @@ const ProtectedRoute = (props) => {
     }
     navigate("/");
   };
+
   const handleDialogConfirm = () => {
-    setShowDialog(false); // Hide dialog
-    // Set new timestamp to extend session
+    setShowDialog(false);
     const currentTime = new Date().getTime();
     const expirationTime = currentTime + idleTime;
     localStorage.setItem("timeStamp", expirationTime.toString());
   };
 
-  //network errror
   useEffect(() => {
     const goOnline = () => {
       setIsOnline(true);
-      // Optionally, reload the page
-      //window.location.reload();
-      alert(
-        "Success is walking from failure to failure with no loss of enthusiam."
-      );
+      alert("Success is walking from failure to failure with no loss of enthusiasm.");
     };
 
     const goOffline = () => {
@@ -129,7 +111,6 @@ const ProtectedRoute = (props) => {
     };
   }, []);
 
-  // Automatic logout on missing userId
   useEffect(() => {
     if (!userId) {
       navigate("/");
@@ -138,7 +119,7 @@ const ProtectedRoute = (props) => {
 
   useEffect(() => {
     if (location.pathname === "/") {
-      return; // Avoid logout action if the path is "/"
+      return;
     }
 
     let timer = setTimeout(handleLogout, idleTime);
