@@ -319,6 +319,78 @@ export const getLogin = async (payload) => {
       console.log('DeleteExpense',error);
     }
   };
+
+  export const getCategory= async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}GetCategory`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('GetCategory',error);
+    }
+  };
+
+  export const getSuspendExpense= async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}SuspendExpense`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('SuspendExpense',error);
+    }
+  };
+
+  export const getExpenseDetails= async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}GetExpenseDetails`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('GetExpenseDetails',error);
+    }
+  };
+
+
+  export const postExpense = async (payload) => {
+    try {
+      const response = await axios.post(`${baseUrl}PostExpense`, payload, {
+        headers: {
+          "Content-type": "multipart/form-data",
+        },
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('PostExpense',error);
+    }
+  };
+
+
+  export const getPaymentSmmary= async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}PaymentSmmary`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('PaymentSmmary',error);
+    }
+  };
+
+  export const getBalance= async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}GetBalance`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('GetBalance',error);
+    }
+  };
+
+  
   
 
 
