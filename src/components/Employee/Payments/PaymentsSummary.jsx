@@ -244,6 +244,7 @@ export default function PaymentsSummary({ id, type }) {
   const [warning, setWarning] = React.useState(false);
   const [pettyCash, setPettyCash] = React.useState(null);
   const [hrAmount, setHrAmount] = React.useState(null);
+  const [cashType, setCashType] = React.useState(0)
 
   const handleWarningClose = () => {
     setWarning(false);
@@ -312,7 +313,7 @@ export default function PaymentsSummary({ id, type }) {
       const response2 = await getBalance({ iType: 2 });
       if (response2.Status === "Success") {
         const myObject = JSON.parse(response2?.ResultData);
-        console.log(myObject);
+      
         setHrAmount(myObject[0]);
       }
     };
@@ -416,7 +417,7 @@ export default function PaymentsSummary({ id, type }) {
   };
 
   const handleBalance = async (type) => {
-    console.log(type);
+
   };
 
   return (
@@ -428,6 +429,7 @@ export default function PaymentsSummary({ id, type }) {
         paddingBottom: 2,
         zIndex: 1,
         minHeight: "590px",
+        
       }}
     >
       <PaymentDetails />

@@ -23,6 +23,7 @@ import {
   TextField,
 } from "@mui/material";
 import PaymentModal from "./PaymentModal";
+import ErrorMessage from "../../ErrorMessage/ErrorMessage";
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -44,14 +45,23 @@ const buttonStyle = {
   padding: "6px 10px",
 };
 
-export default function PaymentList({ data, id }) {
-  const [expanded, setExpanded] = React.useState(false);
+export default function PaymentList({ data, id, handleChildData }) {
+  const [expanded, setExpanded] = React.useState(true);
   const [modal, setModal] = React.useState(false);
-  const [body, setBody] = React.useState([])
+  const [body, setBody] = React.useState([]);
+  const [message, setMessage] = React.useState("");
+  const [warning, setWarning] = React.useState(false);
 
-  React.useEffect(()=>{
-    setBody(data)
-  },[data])
+  const handleWarningClose = () => {
+    setWarning(false);
+  };
+  const handleWarningOpen = () => {
+    setWarning(true);
+  };
+
+  React.useEffect(() => {
+    setBody(data);
+  }, [data]);
 
   const handleModalOpen = () => {
     setModal(true);
@@ -72,20 +82,47 @@ export default function PaymentList({ data, id }) {
         )
       : [];
 
+  const handleAmount = (e, row) => {
+     if(body[row].BalanceAmount >= Number(e.target.value)){
+      let update = [...body];
+      update[row].fAmount = Number(e.target.value);
+      setBody(update);
+     }else{
+       setMessage("Amount greater than Balance amount")
+       handleWarningOpen()
+     }
+  
+  };
+
+  React.useEffect(() => {
+    const extractedData = body.map((item) => {
+      return {
+        iExpense: item.iId,
+        fAmount: item.fAmount,
+      };
+    });
+    handleChildData(extractedData);
+  }, [body]);
+
   return (
     <>
       <Stack direction="row" paddingTop={1} justifyContent="flex-end">
         {id === 0 ? (
-          <Button
-            onClick={handleModalOpen}
-            size="small"
-            variant="contained"
-            style={buttonStyle}
-          >
-            Pendings
-          </Button>
+          <>
+            {body && body.length ? null : (
+              <Button
+                onClick={handleModalOpen}
+                size="small"
+                variant="contained"
+                style={buttonStyle}
+              >
+                Pendings
+              </Button>
+            )}
+          </>
         ) : null}
       </Stack>
+      {body && body.length ? (
       <Card sx={{ marginTop: 2, boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)" }}>
         <CardActions
           sx={{ padding: 0, background: "#1b77e9", color: "white" }}
@@ -122,12 +159,12 @@ export default function PaymentList({ data, id }) {
               justifyContent: "center",
             }}
           >
-            {body && body.length ? (
+         
               <TableContainer
                 style={{
                   display: "block",
-                  maxHeight: "calc(100vh - 200px)",
-                  maxWidth: 750,
+                  maxHeight: "calc(100vh - 400px)",
+
                   overflowY: "auto",
                   scrollbarWidth: "thin",
                   scrollbarColor: "#888 #f5f5f5",
@@ -158,7 +195,11 @@ export default function PaymentList({ data, id }) {
                       ></TableCell>
                       {headers
                         .filter(
-                          (header) => header !== "iId" && header !== "iExpense"
+                          (header) =>
+                            header !== "iId" &&
+                            header !== "iExpense" &&
+                            header !== "iCategory" &&
+                            header !== "iDate"
                         )
                         .map((header, index) => (
                           <TableCell
@@ -200,62 +241,89 @@ export default function PaymentList({ data, id }) {
                             padding="checkbox"
                             align="center"
                           >
-                            {" "}
                             {index + 1}
                           </TableCell>
-                          {Object.keys(body[0]).map((column, index) => {
-                            if (column !== "iId" && column !== "iExpense") {
+                          {Object.keys(body[0]).map((column, index2) => {
+                            if (
+                              column !== "iId" &&
+                              column !== "iExpense" &&
+                              column !== "iCategory" &&
+                              column !== "iDate"
+                            ) {
                               return (
                                 <>
-                                  <TableCell
-                                    style={{
-                                      padding: 0,
-                                      border: "1px solid #ddd",
-                                      whiteSpace: "nowrap",
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                      width: `calc(100% / 2)`,
-                                      minWidth: "100px",
-                                      maxWidth: 150,
-                                    }}
-                                    key={index + labelId}
-                                    component="th"
-                                    id={labelId}
-                                    scope="row"
-                                    padding="normal"
-                                    align="left"
-                                  >
-                                    {row[column]}
-                                    {/* <TextField
-                                    size="small"
-                                    type="text"
-                                    id="search"
-                                    autoComplete="off"
-                                    autoFocus
-                                    sx={{
-                                      width: 250, // Adjust the width as needed
-                                      zIndex: 0,
-                                      "& .MuiInputBase-root": {
-                                        height: 30, // Adjust the height of the input area
-                                      },
-                                      "& .MuiInputLabel-root": {
-                                        transform:
-                                          "translate(10px, 5px) scale(0.9)", // Adjust label position when not focused
-                                      },
-                                      "& .MuiInputLabel-shrink": {
-                                        transform:
-                                          "translate(14px, -9px) scale(0.75)", // Adjust label position when focused
-                                      },
-                                      "& .MuiInputBase-input": {
-                                        fontSize: "0.75rem", // Adjust the font size of the input text
-                                      },
-                                      "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                        {
-                                          borderColor: "currentColor", // Keeps the current border color
-                                        },
-                                    }}
-                                  /> */}
-                                  </TableCell>
+                                  {column === "fAmount" && id === 0 ? (
+                                    <TableCell
+                                      style={{
+                                        padding: 0,
+                                        border: "1px solid #ddd",
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        width: `calc(100% / 4)`,
+                                        minWidth: "100px",
+                                        maxWidth: 150,
+                                      }}
+                                      key={index2 + labelId}
+                                      component="th"
+                                      id={labelId}
+                                      scope="row"
+                                      align="left"
+                                    >
+                                      <TextField
+                                        size="small"
+                                        type="number"
+                                        id="search"
+                                        value={row[column] === 0 ? " " : row[column]}
+                                        onChange={(e) => handleAmount(e, index)}
+                                        autoComplete="off"
+                                        autoFocus
+                                        sx={{
+                                          width: "100%",
+                                          zIndex: 0,
+                                          "& .MuiInputBase-root": {
+                                            height: 30, // Adjust the height of the input area
+                                          },
+                                          "& .MuiInputLabel-root": {
+                                            transform:
+                                              "translate(10px, 5px) scale(0.9)", // Adjust label position when not focused
+                                          },
+                                          "& .MuiInputLabel-shrink": {
+                                            transform:
+                                              "translate(14px, -9px) scale(0.75)", // Adjust label position when focused
+                                          },
+                                          "& .MuiInputBase-input": {
+                                            fontSize: "1rem", // Adjust the font size of the input text
+                                          },
+                                          "&.Mui-focused .MuiOutlinedInput-notchedOutline":
+                                            {
+                                              borderColor: "currentColor", // Keeps the current border color
+                                            },
+                                        }}
+                                      />
+                                    </TableCell>
+                                  ) : (
+                                    <TableCell
+                                      style={{
+                                        padding: "4px",
+                                        border: "1px solid #ddd",
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        width: `calc(100% / 4)`,
+                                        minWidth: "100px",
+                                        maxWidth: 150,
+                                      }}
+                                      key={index2 + labelId}
+                                      component="th"
+                                      id={labelId}
+                                      scope="row"
+                                      padding="normal"
+                                      align="left"
+                                    >
+                                      {row[column]}{" "}
+                                    </TableCell>
+                                  )}
                                 </>
                               );
                             }
@@ -266,25 +334,21 @@ export default function PaymentList({ data, id }) {
                   </TableBody>
                 </Table>
               </TableContainer>
-            ) : (
-              <Typography
-                variant="h6"
-                id="tableTitle"
-                component="div"
-                sx={{
-                  textAlign: "left",
-                  paddingLeft: 2,
-                  fontSize: "16px",
-                  fontWeight: "semi",
-                }}
-              >
-                No Data
-              </Typography>
-            )}
+           
           </CardContent>
         </Collapse>
-        <PaymentModal handleCloseModal={handleModalClose} isOpen={modal} setBody={setBody} />
-      </Card>
+        </Card>
+      ) : null}
+        <PaymentModal
+          handleCloseModal={handleModalClose}
+          isOpen={modal}
+          setBody={setBody}
+        />
+      <ErrorMessage
+        open={warning}
+        handleClose={handleWarningClose}
+        message={message}
+      />
     </>
   );
 }

@@ -11,9 +11,7 @@ import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import EditIcon from "@mui/icons-material/Edit";
-import CloseIcon from "@mui/icons-material/Close";
-import DeleteIcon from "@mui/icons-material/Delete";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import Paper from "@mui/material/Paper";
 import { visuallyHidden } from "@mui/utils";
 import {
@@ -23,7 +21,9 @@ import {
   IconButton,
   Stack,
   TextField,
+  ThemeProvider,
   Tooltip,
+  createTheme,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
@@ -33,6 +33,7 @@ import AddIcon from "@mui/icons-material/Add";
 import Loader from "../../Loader/Loader";
 import { exportToExcel } from "../../Excel/ExcelForm";
 import {
+  getBalance,
   getDeleteExpense,
   getExpenseSummary,
   getPaymentSmmary,
@@ -43,6 +44,20 @@ import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import ErrorMessage from "../../ErrorMessage/ErrorMessage";
 import { MDBInput } from "mdb-react-ui-kit";
 import PaymentDetails from "./PaymentDetails";
+import AddCash from "./AddCash";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#7f437f",
+      dark: "#a250a2",
+    },
+    secondary: {
+      main: "#008bb6",
+      dark: "#54abc6",
+    },
+  },
+});
 
 const buttonStyle = {
   textTransform: "none", // Set text transform to none for normal case
@@ -102,7 +117,6 @@ function EnhancedTableHead(props) {
         background: `#1b77e9`,
         position: "sticky",
         top: 0,
-
       }}
     >
       <TableRow>
@@ -118,7 +132,11 @@ function EnhancedTableHead(props) {
           padding="checkbox"
         ></TableCell>
         {rows.map((header, index) => {
-          if (header !== "iId" && header !== "Employee" && header !== "iPaymentType") {
+          if (
+            header !== "iId" &&
+            header !== "Employee" &&
+            header !== "iPaymentType"
+          ) {
             // Exclude "iId", "iAssetType", and "sAltName" from the header
             return (
               <TableCell
@@ -178,7 +196,7 @@ function EnhancedTableToolbar(props) {
           marginBottom: { xs: 2, sm: 0 },
         }}
       >
-         <Typography variant="h6" id="tableTitle" component="div">
+        <Typography variant="h6" id="tableTitle" component="div">
           Payments
         </Typography>
       </Box>
@@ -226,11 +244,24 @@ export default function Payments({ id, type }) {
   const [dataId, setDataId] = React.useState(0);
   const [message, setMessage] = React.useState("");
   const [warning, setWarning] = React.useState(false);
+  const [pettyCash, setPettyCash] = React.useState(null);
+  const [hrAmount, setHrAmount] = React.useState(null);
+  const [cash, setCash] = React.useState(false);
+  const [cashType, setCashType] = React.useState(0);
+
   const handleWarningClose = () => {
     setWarning(false);
   };
   const handleWarningOpen = () => {
     setWarning(true);
+  };
+
+  const handleCashOpen = () => {
+    setCash(true);
+  };
+
+  const handleCashClose = () => {
+    setCash(false);
   };
 
   const handleAdd = () => {
@@ -244,10 +275,27 @@ export default function Payments({ id, type }) {
     fetchData();
   };
 
-
   React.useEffect(() => {
     fetchData();
   }, [id, type]);
+
+  const handleGetCash = async () => {
+    const response1 = await getBalance({ iType: 1 });
+    if (response1.Status === "Success") {
+      const myObject = JSON.parse(response1?.ResultData);
+      setPettyCash(myObject[0]);
+    }
+    const response2 = await getBalance({ iType: 2 });
+    if (response2.Status === "Success") {
+      const myObject = JSON.parse(response2?.ResultData);
+
+      setHrAmount(myObject[0]);
+    }
+  };
+
+  React.useEffect(() => {
+    handleGetCash();
+  }, []);
 
   const fetchData = async () => {
     setSelected([]);
@@ -326,11 +374,18 @@ export default function Payments({ id, type }) {
     setExpand(!expand);
   };
 
-  const handleSaveSubmit = () => {};
+  const handleSaveSubmit = () => {
+    handleGetCash()
+  };
 
   const handleClick = (event, id) => {
     setSelected([id]);
     setDataId(id);
+  };
+
+  const handleBalance = async (type) => {
+    setCashType(type);
+    handleCashOpen();
   };
 
   return (
@@ -341,13 +396,16 @@ export default function Payments({ id, type }) {
         paddingRight: 2,
         paddingBottom: 2,
         zIndex: 1,
-        minHeight: "590px",
+        maxHeight: "calc(100vh - 80px)",
+        overflowY: "auto",
+        scrollbarWidth: "thin",
       }}
     >
       <PaymentDetails
         handleNavigate={handleNavigate}
         data={dataId}
         type={type}
+        setSelected={setSelected}
       />
 
       <>
@@ -358,20 +416,19 @@ export default function Payments({ id, type }) {
           paddingTop={2}
           justifyContent="flex-end"
         >
-        
           <TextField
             margin="normal"
             size="small"
             value={searchQuery}
             onChange={handleSearch}
-            type='text'
+            type="text"
             id="search"
             label="Search"
             autoComplete="off"
             autoFocus
             sx={{
               width: 250, // Adjust the width as needed
-              zIndex:0,
+              zIndex: 0,
               "& .MuiInputBase-root": {
                 height: 30, // Adjust the height of the input area
               },
@@ -387,7 +444,6 @@ export default function Payments({ id, type }) {
               "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                 borderColor: "currentColor", // Keeps the current border color
               },
-             
             }}
           />
 
@@ -479,7 +535,11 @@ export default function Payments({ id, type }) {
                             {index + 1}
                           </TableCell>
                           {Object.keys(data[0]).map((column, index) => {
-                            if (column !== "iId" && column !== "Employee" && column !== "iPaymentType") {
+                            if (
+                              column !== "iId" &&
+                              column !== "Employee" &&
+                              column !== "iPaymentType"
+                            ) {
                               return (
                                 <>
                                   {expand ? (
@@ -589,8 +649,104 @@ export default function Payments({ id, type }) {
             </>
           )}
         </Paper>
-      </>
+        <ThemeProvider theme={theme}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              paddingTop: 2,
+              gap: 2, // Add gap between the boxes
+            }}
+          >
+            <Box
+              sx={{
+                width: 200,
+                height: 100,
+                borderRadius: 1,
+                bgcolor: "primary.main",
+                display: "flex",
+                flexDirection: "column",
+                padding: 1,
+                paddingLeft: 2,
+                "&:hover": {
+                  bgcolor: "primary.dark",
+                },
+                cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
+              }}
+              onClick={() => handleBalance(1)} // Add the onClick handler here
+            >
+              <Typography variant="p" color="white">
+                {pettyCash?.sType}
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="h6" color="white">
+                  {pettyCash?.fAmount}/-
+                </Typography>
 
+                <AccountBalanceWalletIcon
+                  style={{
+                    fontSize: 50,
+                    color: "#692969",
+                  }}
+                />
+              </Box>
+            </Box>
+
+            <Box
+              sx={{
+                width: 200,
+                height: 100,
+                borderRadius: 1,
+                bgcolor: "secondary.main",
+                display: "flex",
+                flexDirection: "column",
+                padding: 1,
+                paddingLeft: 2,
+                "&:hover": {
+                  bgcolor: "secondary.dark",
+                },
+                cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
+              }}
+              onClick={() => handleBalance(2)} // Add the onClick handler here
+            >
+              <Typography variant="p" color="white">
+                {hrAmount?.sType}
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="h6" color="white">
+                  {hrAmount?.fAmount}/-
+                </Typography>
+
+                <AccountBalanceWalletIcon
+                  style={{
+                    fontSize: 50,
+                    color: "#026989",
+                  }}
+                />
+              </Box>
+            </Box>
+          </Box>
+        </ThemeProvider>
+      </>
+      <AddCash
+        handleCloseModal={handleCashClose}
+        isOpen={cash}
+        type={cashType}
+        handleSaveSubmit={handleSaveSubmit}
+      />
       <Loader open={open} handleClose={handleClose} />
       <ErrorMessage
         open={warning}

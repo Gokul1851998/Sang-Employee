@@ -71,7 +71,6 @@ export default function ProjectEmp({ handleNavigate, data }) {
       const response = await getProjectDetails({ iId: data });
       if (response?.Status === "Success") {
         const myObject = JSON.parse(response?.ResultData);
-        console.log(myObject);
         setProject(myObject?.Table[0]?.Project);
         setTask(myObject?.Table[0]?.TaskName)
         setDataId(myObject?.Table[0]?.iId);

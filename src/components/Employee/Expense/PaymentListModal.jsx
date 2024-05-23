@@ -49,7 +49,6 @@ export default function PaymentListModal({ isOpen, handleCloseModal, data }) {
     handleOpen();
     if (data !== 0) {
         const response = await getAllPayment({ iId: data });
-        console.log(response);
         if (response.Status === "Success") {
           setModal(isOpen)
           const myObject = JSON.parse(response.ResultData);

@@ -48,17 +48,21 @@ const buttonStyle = {
   padding: "6px 10px",
 };
 
-
 const buttonStyle2 = {
-    textTransform: "none", // Set text transform to none for normal case
-    color: ` #1b77e9`, // Set text color
-    backgroundColor: `#fff`, // Set background color
-    boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
-    fontSize: "12px",
-    padding: "6px 10px",
-  };
+  textTransform: "none", // Set text transform to none for normal case
+  color: ` #1b77e9`, // Set text color
+  backgroundColor: `#fff`, // Set background color
+  boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
+  fontSize: "12px",
+  padding: "6px 10px",
+};
 
-export default function PaymentDetails({ handleNavigate, data, type }) {
+export default function PaymentDetails({
+  handleNavigate,
+  data,
+  type,
+  setSelected,
+}) {
   const iUser = Number(localStorage.getItem("userId"));
   const [open, setOpen] = React.useState(false);
   const [paymentType, setPaymentType] = useState("");
@@ -89,6 +93,7 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
       handleClose();
       if (response?.Status === "Success") {
         const myObject = JSON.parse(response.ResultData);
+       
         setAmount(myObject?.Table[0]?.fAmount);
         setPaymentType({
           sType: myObject?.Table[0]?.sType,
@@ -105,8 +110,8 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
         } else {
           setSelectView(null);
         }
-      }else{
-        handleClear()
+      } else {
+        handleClear();
       }
     } else {
       handleClear();
@@ -126,6 +131,14 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const sumOfAmount = childData?.reduce(
+      (accumulator, item) => accumulator + item.fAmount,
+      0
+    );
+    setAmount(sumOfAmount);
+  }, [childData]);
 
   const handleClose = () => {
     setOpen(false);
@@ -157,7 +170,7 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
             showConfirmButton: false,
             timer: 1500,
           });
-          handleAllClear()
+          handleAllClear();
         } else {
           setMessage("Can't delete");
           handleWarningOpen();
@@ -209,15 +222,33 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    const isValidIdPresent = childData.some(
+      (item) => item.fAmount !== 0 && item.fAmount !== ""
+    );
+    const sumOfAmount = childData.reduce(
+      (accumulator, item) => accumulator + item.fAmount,
+      0
+    );
+    const emptyFields = [];
+    if (!childData.length) emptyFields.push("Fill atleast one pending payment");
+    if (!isValidIdPresent) emptyFields.push("Fill all Amount");
+    if (amount !== sumOfAmount)
+      emptyFields.push("Total amount is not equal to the given amount");
+
+    if (emptyFields.length > 0) {
+      handleWarningOpen();
+      setMessage(`${emptyFields[0]}.`);
+      return;
+    }
     const saveData = {
       iUser,
       iId: id,
-      iPaymenType: paymentType?.iId,
+      iType: paymentType?.iId,
       fAmount: amount,
       iDate: date,
       sRemarks: remark,
       sAttachment: selectedFile?.name ? selectedFile?.name : "",
-      Body:[]
+      Body: childData,
     };
     const formData = new FormData();
     formData.append("data", JSON.stringify(saveData));
@@ -232,9 +263,9 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
       if (result.value) {
         handleOpen();
         const response = await postPayment(formData);
-        console.log(response);
+ 
         handleClose();
-        if (response?.Status === "Success") {   
+        if (response?.Status === "Success") {
           Swal.fire({
             title: "Saved",
             text: "Project Updated!",
@@ -244,6 +275,13 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
           });
 
           handleAllClear();
+        } else {
+          setMessage(
+            response?.MessageDescription
+              ? response?.MessageDescription
+              : "Something went wrong"
+          );
+          handleWarningOpen();
         }
       }
     });
@@ -258,7 +296,8 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
     setSelectedFile(null);
     setSelectView(null);
     setSuspend(null);
-    setBody([])
+    setBody([]);
+    setSelected([]);
   };
 
   const handleAllClear = () => {
@@ -360,12 +399,12 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
               New
             </Button>
             <Button
-            disabled={id !== 0}
+              disabled={id !== 0}
               size="small"
               type="submit"
               variant="contained"
               startIcon={<SaveIcon />}
-              style={id === 0? buttonStyle : buttonStyle2}
+              style={id === 0 ? buttonStyle : buttonStyle2}
             >
               Save
             </Button>
@@ -407,7 +446,7 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
                 <MDBCol lg="3" md="4" sm="6" xs="12">
                   <div className="mb-3">
                     <Autocomplete
-                       readOnly={id !== 0}
+                      readOnly={id !== 0}
                       id={`size-small-filled-assetType`}
                       size="small"
                       value={paymentType}
@@ -453,7 +492,6 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
                       )}
                       renderInput={(params) => (
                         <TextField
-                        
                           required
                           label="Payment Type"
                           {...params}
@@ -477,7 +515,7 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
                 <MDBCol lg="3" md="4" sm="6" xs="12">
                   <div className="mb-3">
                     <MDBInput
-                    readOnly={id !== 0}
+                      readOnly={id !== 0}
                       required
                       id={`form3Example`}
                       type="number"
@@ -502,7 +540,7 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
                 <MDBCol lg="3" md="4" sm="6" xs="12">
                   <div className="mb-3">
                     <MDBInput
-                    readOnly={id !== 0}
+                      readOnly={id !== 0}
                       required
                       id={`form3Example`}
                       type="date"
@@ -511,7 +549,7 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
                       label="Date *"
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
-                    //   min={getCurrentDate()}
+                      //   min={getCurrentDate()}
                       labelStyle={{
                         fontSize: "15px",
                       }}
@@ -528,7 +566,7 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
                 <MDBCol lg="3" md="4" sm="6" xs="12">
                   <div className="mb-3">
                     <MDBInput
-                    readOnly={id !== 0}
+                      readOnly={id !== 0}
                       id={`form3Example`}
                       type="text"
                       size="small"
@@ -617,10 +655,12 @@ export default function PaymentDetails({ handleNavigate, data, type }) {
                   </div>
                 </MDBCol>
               </MDBRow>
-             
-                <PaymentList data={body} id={id} />
-         
-              
+
+              <PaymentList
+                data={body}
+                id={id}
+                handleChildData={handleChildData}
+              />
             </MDBCardBody>
           </div>
         </>

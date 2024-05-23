@@ -25,9 +25,14 @@ import Swal from "sweetalert2";
 import Loader from "../../Loader/Loader";
 import ErrorMessage from "../../ErrorMessage/ErrorMessage";
 import { getAllPayment, getPendingPaymentList } from "../../../api/ApiCall";
-import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
+import DownloadDoneIcon from "@mui/icons-material/DownloadDone";
 
-export default function PaymentModal({ isOpen, handleCloseModal, data, setBody }) {
+export default function PaymentModal({
+  isOpen,
+  handleCloseModal,
+  data,
+  setBody,
+}) {
   const [open, setOpen] = React.useState(false);
   const [dataId, setDataId] = useState(0);
   const [modal, setModal] = useState(false);
@@ -124,10 +129,12 @@ export default function PaymentModal({ isOpen, handleCloseModal, data, setBody }
   };
 
   const handleLoad = () => {
-    const selectedItems = tableData.filter((item) => selected.includes(item.iId));
-    setBody(selectedItems)
-    // Do something with selectedItems, e.g., send to API, display, etc.
-    console.log("Selected Data:", selectedItems);
+    const selectedItems = tableData
+      .filter((item) => selected.includes(item.iId))
+      .map((item) => ({ ...item, fAmount: item.BalanceAmount }));
+
+    setBody(selectedItems);
+    handleAllClear();
   };
 
   return (

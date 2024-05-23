@@ -288,7 +288,6 @@ export const getLogin = async (payload) => {
 
   export const deleteProject= async (payload,payload2) => {
     try {
-      console.log(payload);
       const response = await axios.post(`${baseUrl}DeleteProject`,payload2,{
         params: payload,
       });
@@ -458,6 +457,15 @@ export const getLogin = async (payload) => {
     }
   };
 
+
+  export const postAmount = async (payload) => {
+    try {
+      const response = await axios.post(`${baseUrl}PostAmount`, payload);
+      return response?.data;
+    } catch (error) {
+      console.log('PostAmount',error);
+    }
+  };
 
 
 
