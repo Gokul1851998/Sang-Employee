@@ -35,6 +35,7 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import EmployeeExpense from '../Employee/Expense/EmployeeExpense';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import PaymentsSummary from '../Employee/Payments/PaymentsSummary';
+import Payments from '../Employee/Payments/Payments';
 
 export default function SideBar() {
   const [open, setOpen] = React.useState(false);
@@ -143,7 +144,7 @@ export default function SideBar() {
        ): page === 17 ? (
         <EmployeeExpense type={1} />
       ): page === 18 ? (
-        <PaymentsSummary />
+        <Payments />
       ): null}
       <Loader open={loader} handleClose={handleLoaderClose} />
     </div>

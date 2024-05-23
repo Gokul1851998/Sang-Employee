@@ -45,6 +45,7 @@ import Swal from "sweetalert2";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import ErrorMessage from "../../ErrorMessage/ErrorMessage";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import PaymentDetails from "./PaymentDetails";
 
 const theme = createTheme({
   palette: {
@@ -429,6 +430,7 @@ export default function PaymentsSummary({ id, type }) {
         minHeight: "590px",
       }}
     >
+      <PaymentDetails />
       {details ? null : ( // <EmployeeExpenseDetails handleNavigate={handleNavigate} data={dataId} type={type} />
         <>
           <Stack

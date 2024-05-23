@@ -12,7 +12,6 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import EditIcon from "@mui/icons-material/Edit";
-import ReceiptIcon from '@mui/icons-material/Receipt';
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Paper from "@mui/material/Paper";
@@ -36,14 +35,14 @@ import { exportToExcel } from "../../Excel/ExcelForm";
 import {
   getDeleteExpense,
   getExpenseSummary,
+  getPaymentSmmary,
   getSuspendExpense,
 } from "../../../api/ApiCall";
 import Swal from "sweetalert2";
-import EmployeeExpenseDetails from "./EmployeeExpenseDetails";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import ErrorMessage from "../../ErrorMessage/ErrorMessage";
 import { MDBInput } from "mdb-react-ui-kit";
-import PaymentListModal from "./PaymentListModal";
+import PaymentDetails from "./PaymentDetails";
 
 const buttonStyle = {
   textTransform: "none", // Set text transform to none for normal case
@@ -103,7 +102,7 @@ function EnhancedTableHead(props) {
         background: `#1b77e9`,
         position: "sticky",
         top: 0,
-        zIndex: "5",
+
       }}
     >
       <TableRow>
@@ -119,7 +118,7 @@ function EnhancedTableHead(props) {
           padding="checkbox"
         ></TableCell>
         {rows.map((header, index) => {
-          if (header !== "iId" && header !== "Employee") {
+          if (header !== "iId" && header !== "Employee" && header !== "iPaymentType") {
             // Exclude "iId", "iAssetType", and "sAltName" from the header
             return (
               <TableCell
@@ -148,17 +147,6 @@ function EnhancedTableHead(props) {
             );
           }
         })}
-         <TableCell
-          className="text-white"
-          sx={{
-            padding: "4px",
-            border: "1px solid #ddd",
-            whiteSpace: "nowrap",
-            cursor: "pointer",
-            minWidth: "80px",
-          }}
-          padding="checkbox"
-        >Payments</TableCell>
       </TableRow>
     </TableHead>
   );
@@ -190,8 +178,8 @@ function EnhancedTableToolbar(props) {
           marginBottom: { xs: 2, sm: 0 },
         }}
       >
-        <Typography variant="h6" id="tableTitle" component="div">
-          Expense
+         <Typography variant="h6" id="tableTitle" component="div">
+          Payments
         </Typography>
       </Box>
 
@@ -221,7 +209,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function EmployeeExpense({ id, type }) {
+export default function Payments({ id, type }) {
   const iUser = localStorage.getItem("userId");
   const iEmployee = Number(localStorage.getItem("iEmployee"));
   const [order, setOrder] = React.useState("asc");
@@ -238,15 +226,6 @@ export default function EmployeeExpense({ id, type }) {
   const [dataId, setDataId] = React.useState(0);
   const [message, setMessage] = React.useState("");
   const [warning, setWarning] = React.useState(false);
-  const [payments, setPayments] = React.useState(false)
-
-  const handlePaymentsOpen = ()=>{
-    setPayments(true)
-  }
-
-  const handlePaymentsClose = ()=>{
-    setPayments(false)
-  }
   const handleWarningClose = () => {
     setWarning(false);
   };
@@ -259,82 +238,12 @@ export default function EmployeeExpense({ id, type }) {
     setDetails(true);
     setSelected([]);
   };
+
   const handleNavigate = () => {
     setDetails(false);
     fetchData();
   };
-  const handleEdit = () => {
-    const iId = selected.join();
-    setDataId(iId);
-    setDetails(true);
-    setSelected([]);
-  };
 
-  const handleDelete = async () => {
-    const iIds = selected.join();
-    Swal.fire({
-      text: "Are you sure you want to Delete?",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-    }).then(async (result) => {
-      if (result.value) {
-        handleOpen();
-        const response = await getDeleteExpense({ iIds, iUser });
-        handleClose();
-        if (response?.Status === "Success") {
-          Swal.fire({
-            title: "Deleted",
-            text: "Expense Deleted!",
-            icon: "success",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          fetchData();
-        } else {
-          setMessage("Can't delete");
-          handleWarningOpen();
-        }
-      }
-    });
-  };
-
-  const handleSuspend = async () => {
-    const iIds = selected.join();
-    const filterData = data.filter((item) => item.iId == iIds);
-    Swal.fire({
-      text: "Are you sure you want to Delete?",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-    }).then(async (result) => {
-      if (result.value) {
-        handleOpen();
-        const response = await getSuspendExpense({
-          iIds,
-          iUser,
-          iType: filterData[0]?.Suspended === "True" ? 2 : 1,
-        });
-
-        handleClose();
-        if (response?.Status === "Success") {
-          Swal.fire({
-            title: "Suspended",
-            text: "Expense Suspended!",
-            icon: "success",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          fetchData();
-        } else {
-          setMessage("Can't delete");
-          handleWarningOpen();
-        }
-      }
-    });
-  };
 
   React.useEffect(() => {
     fetchData();
@@ -344,11 +253,11 @@ export default function EmployeeExpense({ id, type }) {
     setSelected([]);
     setDetails(false);
     handleOpen();
-    const response = await getExpenseSummary({ iUser: type === 1 ? 0 : iUser });
+    const response = await getPaymentSmmary({ iUser });
     handleClose();
     if (response.Status === "Success") {
       const myObject = JSON.parse(response.ResultData);
-      setData(myObject.Table);
+      setData(myObject);
     }
   };
 
@@ -410,7 +319,7 @@ export default function EmployeeExpense({ id, type }) {
 
   const handleExcel = () => {
     const Id = ["iId"];
-    exportToExcel(data, `Expense Report`, Id);
+    exportToExcel(data, `Payment Report`, Id);
   };
 
   const handleExpand = () => {
@@ -435,7 +344,7 @@ export default function EmployeeExpense({ id, type }) {
         minHeight: "590px",
       }}
     >
-      <EmployeeExpenseDetails
+      <PaymentDetails
         handleNavigate={handleNavigate}
         data={dataId}
         type={type}
@@ -449,8 +358,7 @@ export default function EmployeeExpense({ id, type }) {
           paddingTop={2}
           justifyContent="flex-end"
         >
-         
-
+        
           <TextField
             margin="normal"
             size="small"
@@ -463,6 +371,7 @@ export default function EmployeeExpense({ id, type }) {
             autoFocus
             sx={{
               width: 250, // Adjust the width as needed
+              zIndex:0,
               "& .MuiInputBase-root": {
                 height: 30, // Adjust the height of the input area
               },
@@ -570,7 +479,7 @@ export default function EmployeeExpense({ id, type }) {
                             {index + 1}
                           </TableCell>
                           {Object.keys(data[0]).map((column, index) => {
-                            if (column !== "iId" && column !== "Employee") {
+                            if (column !== "iId" && column !== "Employee" && column !== "iPaymentType") {
                               return (
                                 <>
                                   {expand ? (
@@ -579,7 +488,7 @@ export default function EmployeeExpense({ id, type }) {
                                         padding: "4px",
                                         border: "1px solid #ddd",
                                         whiteSpace: "nowrap",
-                                        width: `calc(100% / 8)`,
+                                        width: `calc(100% / 3)`,
                                       }}
                                       key={index + labelId}
                                       component="th"
@@ -600,7 +509,7 @@ export default function EmployeeExpense({ id, type }) {
                                         whiteSpace: "nowrap",
                                         overflow: "hidden",
                                         textOverflow: "ellipsis",
-                                        width: `calc(100% / 8)`,
+                                        width: `calc(100% / 3)`,
                                         minWidth: "100px",
                                         maxWidth: 150,
                                       }}
@@ -620,11 +529,6 @@ export default function EmployeeExpense({ id, type }) {
                               );
                             }
                           })}
-                                <TableCell padding="checkbox" align="center">
-                                <IconButton onClick={handlePaymentsOpen}>
-            <ReceiptIcon sx={{color:"#1b77e9"}} />
-            </IconButton>
-                          </TableCell>
                         </TableRow>
                       );
                     })}
@@ -693,7 +597,6 @@ export default function EmployeeExpense({ id, type }) {
         handleClose={handleWarningClose}
         message={message}
       />
-       <PaymentListModal isOpen={payments} handleCloseModal={handlePaymentsClose} data={dataId} />
     </Box>
   );
 }
