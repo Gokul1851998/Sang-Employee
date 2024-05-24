@@ -93,7 +93,6 @@ export default function PaymentDetails({
       handleClose();
       if (response?.Status === "Success") {
         const myObject = JSON.parse(response.ResultData);
-       
         setAmount(myObject?.Table[0]?.fAmount);
         setPaymentType({
           sType: myObject?.Table[0]?.sType,
@@ -133,11 +132,13 @@ export default function PaymentDetails({
   }, []);
 
   useEffect(() => {
-    const sumOfAmount = childData?.reduce(
-      (accumulator, item) => accumulator + item.fAmount,
-      0
-    );
-    setAmount(sumOfAmount);
+    if (id === 0) {
+      const sumOfAmount = childData?.reduce(
+        (accumulator, item) => accumulator + item.fAmount,
+        0
+      );
+      setAmount(sumOfAmount);
+    }
   }, [childData]);
 
   const handleClose = () => {
@@ -263,7 +264,7 @@ export default function PaymentDetails({
       if (result.value) {
         handleOpen();
         const response = await postPayment(formData);
- 
+
         handleClose();
         if (response?.Status === "Success") {
           Swal.fire({
@@ -419,7 +420,7 @@ export default function PaymentDetails({
                 {suspend ? "Unsuspend" : "Suspend"}
               </Button>
             )}
-            <Button
+            {/* <Button
               size="small"
               onClick={handleDelete}
               variant="contained"
@@ -427,7 +428,7 @@ export default function PaymentDetails({
               style={buttonStyle}
             >
               Delete
-            </Button>
+            </Button> */}
           </Stack>
         </Grid>
       </Grid>

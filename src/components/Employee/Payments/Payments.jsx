@@ -674,7 +674,7 @@ export default function Payments({ id, type }) {
                 },
                 cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
               }}
-              onClick={() => handleBalance(1)} // Add the onClick handler here
+              // onClick={() => handleBalance(1)} 
             >
               <Typography variant="p" color="white">
                 {pettyCash?.sType}
@@ -714,7 +714,7 @@ export default function Payments({ id, type }) {
                 },
                 cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
               }}
-              onClick={() => handleBalance(2)} // Add the onClick handler here
+              // onClick={() => handleBalance(2)} 
             >
               <Typography variant="p" color="white">
                 {hrAmount?.sType}

@@ -24,7 +24,9 @@ import {
   IconButton,
   Stack,
   TextField,
+  ThemeProvider,
   Tooltip,
+  createTheme,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
@@ -34,6 +36,7 @@ import AddIcon from "@mui/icons-material/Add";
 import Loader from "../../Loader/Loader";
 import { exportToExcel } from "../../Excel/ExcelForm";
 import {
+  getBalance,
   getDeleteExpense,
   getExpenseSummary,
   getSuspendExpense,
@@ -44,6 +47,21 @@ import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import ErrorMessage from "../../ErrorMessage/ErrorMessage";
 import { MDBInput } from "mdb-react-ui-kit";
 import PaymentListModal from "./PaymentListModal";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import AddCash from "../Payments/AddCash";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#7f437f",
+      dark: "#a250a2",
+    },
+    secondary: {
+      main: "#008bb6",
+      dark: "#54abc6",
+    },
+  },
+});
 
 const buttonStyle = {
   textTransform: "none", // Set text transform to none for normal case
@@ -239,6 +257,18 @@ export default function EmployeeExpense({ id, type }) {
   const [message, setMessage] = React.useState("");
   const [warning, setWarning] = React.useState(false);
   const [payments, setPayments] = React.useState(false)
+  const [pettyCash, setPettyCash] = React.useState(null);
+  const [hrAmount, setHrAmount] = React.useState(null);
+  const [cash, setCash] = React.useState(false);
+  const [cashType, setCashType] = React.useState(0);
+
+  const handleCashOpen = () => {
+    setCash(true);
+  };
+
+  const handleCashClose = () => {
+    setCash(false);
+  };
 
   const handlePaymentsOpen = ()=>{
     setPayments(true)
@@ -299,6 +329,24 @@ export default function EmployeeExpense({ id, type }) {
       }
     });
   };
+
+  const handleGetCash = async () => {
+    const response1 = await getBalance({ iType: 1 });
+    if (response1.Status === "Success") {
+      const myObject = JSON.parse(response1?.ResultData);
+      setPettyCash(myObject[0]);
+    }
+    const response2 = await getBalance({ iType: 2 });
+    if (response2.Status === "Success") {
+      const myObject = JSON.parse(response2?.ResultData);
+
+      setHrAmount(myObject[0]);
+    }
+  };
+
+  React.useEffect(() => {
+    handleGetCash();
+  }, []);
 
   const handleSuspend = async () => {
     const iIds = selected.join();
@@ -417,11 +465,19 @@ export default function EmployeeExpense({ id, type }) {
     setExpand(!expand);
   };
 
-  const handleSaveSubmit = () => {};
 
   const handleClick = (event, id) => {
     setSelected([id]);
     setDataId(id);
+  };
+
+  const handleBalance = async (type) => {
+    setCashType(type);
+    handleCashOpen();
+  };
+
+  const handleSaveSubmit = () => {
+    handleGetCash()
   };
 
   return (
@@ -432,7 +488,9 @@ export default function EmployeeExpense({ id, type }) {
         paddingRight: 2,
         paddingBottom: 2,
         zIndex: 1,
-        minHeight: "590px",
+        maxHeight: "calc(100vh - 80px)",
+        overflowY: "auto",
+        scrollbarWidth: "thin",
       }}
     >
       <EmployeeExpenseDetails
@@ -685,6 +743,97 @@ export default function EmployeeExpense({ id, type }) {
             </>
           )}
         </Paper>
+        <ThemeProvider theme={theme}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              paddingTop: 2,
+              gap: 2, // Add gap between the boxes
+            }}
+          >
+            <Box
+              sx={{
+                width: 200,
+                height: 100,
+                borderRadius: 1,
+                bgcolor: "primary.main",
+                display: "flex",
+                flexDirection: "column",
+                padding: 1,
+                paddingLeft: 2,
+                "&:hover": {
+                  bgcolor: "primary.dark",
+                },
+                cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
+              }}
+              onClick={() => handleBalance(1)} // Add the onClick handler here
+            >
+              <Typography variant="p" color="white">
+                {pettyCash?.sType}
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="h6" color="white">
+                  {pettyCash?.fAmount}/-
+                </Typography>
+
+                <AccountBalanceWalletIcon
+                  style={{
+                    fontSize: 50,
+                    color: "#692969",
+                  }}
+                />
+              </Box>
+            </Box>
+
+            <Box
+              sx={{
+                width: 200,
+                height: 100,
+                borderRadius: 1,
+                bgcolor: "secondary.main",
+                display: "flex",
+                flexDirection: "column",
+                padding: 1,
+                paddingLeft: 2,
+                "&:hover": {
+                  bgcolor: "secondary.dark",
+                },
+                cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
+              }}
+              onClick={() => handleBalance(2)} // Add the onClick handler here
+            >
+              <Typography variant="p" color="white">
+                {hrAmount?.sType}
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="h6" color="white">
+                  {hrAmount?.fAmount}/-
+                </Typography>
+
+                <AccountBalanceWalletIcon
+                  style={{
+                    fontSize: 50,
+                    color: "#026989",
+                  }}
+                />
+              </Box>
+            </Box>
+          </Box>
+        </ThemeProvider>
       </>
 
       <Loader open={open} handleClose={handleClose} />
@@ -692,6 +841,12 @@ export default function EmployeeExpense({ id, type }) {
         open={warning}
         handleClose={handleWarningClose}
         message={message}
+      />
+         <AddCash
+        handleCloseModal={handleCashClose}
+        isOpen={cash}
+        type={cashType}
+        handleSaveSubmit={handleSaveSubmit}
       />
        <PaymentListModal isOpen={payments} handleCloseModal={handlePaymentsClose} data={dataId} />
     </Box>
