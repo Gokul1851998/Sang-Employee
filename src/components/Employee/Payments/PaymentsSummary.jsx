@@ -687,98 +687,100 @@ export default function PaymentsSummary({ id, type }) {
               </>
             )}
           </Paper>
-
-          <ThemeProvider theme={theme}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                paddingTop: 2,
-                gap: 2, // Add gap between the boxes
-              }}
-            >
+          {type === 1 && (
+              <ThemeProvider theme={theme}>
               <Box
                 sx={{
-                  width: 200,
-                  height: 100,
-                  borderRadius: 1,
-                  bgcolor: "primary.main",
                   display: "flex",
-                  flexDirection: "column",
-                  padding: 1,
-                  paddingLeft: 2,
-                  "&:hover": {
-                    bgcolor: "secondary.dark",
-                  },
-                  cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
+                  justifyContent: "center",
+                  alignItems: "center",
+                  paddingTop: 2,
+                  gap: 2, // Add gap between the boxes
                 }}
-                onClick={() => handleBalance(1)} // Add the onClick handler here
               >
-                <Typography variant="p" color="white">
-                  {pettyCash?.sType}
-                </Typography>
                 <Box
                   sx={{
+                    width: 200,
+                    height: 100,
+                    borderRadius: 1,
+                    bgcolor: "primary.main",
                     display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
+                    flexDirection: "column",
+                    padding: 1,
+                    paddingLeft: 2,
+                    "&:hover": {
+                      bgcolor: "secondary.dark",
+                    },
+                    cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
                   }}
+                  onClick={() => handleBalance(1)} // Add the onClick handler here
                 >
-                  <Typography variant="h6" color="white">
-                    {pettyCash?.fAmount}/-
+                  <Typography variant="p" color="white">
+                    {pettyCash?.sType}
                   </Typography>
-
-                  <AccountBalanceWalletIcon
-                    style={{
-                      fontSize: 50,
-                      color: "#692969",
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
                     }}
-                  />
+                  >
+                    <Typography variant="h6" color="white">
+                      {pettyCash?.fAmount}/-
+                    </Typography>
+  
+                    <AccountBalanceWalletIcon
+                      style={{
+                        fontSize: 50,
+                        color: "#692969",
+                      }}
+                    />
+                  </Box>
                 </Box>
-              </Box>
-
-              <Box
-                sx={{
-                  width: 200,
-                  height: 100,
-                  borderRadius: 1,
-                  bgcolor: "secondary.main",
-                  display: "flex",
-                  flexDirection: "column",
-                  padding: 1,
-                  paddingLeft: 2,
-                  "&:hover": {
-                    bgcolor: "secondary.dark",
-                  },
-                  cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
-                }}
-                onClick={() => handleBalance(2)} // Add the onClick handler here
-              >
-                <Typography variant="p" color="white">
-                  {hrAmount?.sType}
-                </Typography>
+  
                 <Box
                   sx={{
+                    width: 200,
+                    height: 100,
+                    borderRadius: 1,
+                    bgcolor: "secondary.main",
                     display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
+                    flexDirection: "column",
+                    padding: 1,
+                    paddingLeft: 2,
+                    "&:hover": {
+                      bgcolor: "secondary.dark",
+                    },
+                    cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
                   }}
+                  onClick={() => handleBalance(2)} // Add the onClick handler here
                 >
-                  <Typography variant="h6" color="white">
-                    {hrAmount?.fAmount}/-
+                  <Typography variant="p" color="white">
+                    {hrAmount?.sType}
                   </Typography>
-
-                  <AccountBalanceWalletIcon
-                    style={{
-                      fontSize: 50,
-                      color: "#026989",
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
                     }}
-                  />
+                  >
+                    <Typography variant="h6" color="white">
+                      {hrAmount?.fAmount}/-
+                    </Typography>
+  
+                    <AccountBalanceWalletIcon
+                      style={{
+                        fontSize: 50,
+                        color: "#026989",
+                      }}
+                    />
+                  </Box>
                 </Box>
               </Box>
-            </Box>
-          </ThemeProvider>
+            </ThemeProvider>
+           )}
+        
         </>
       )}
       <Loader open={open} handleClose={handleClose} />

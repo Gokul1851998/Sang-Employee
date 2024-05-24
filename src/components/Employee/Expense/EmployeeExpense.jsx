@@ -12,7 +12,7 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import EditIcon from "@mui/icons-material/Edit";
-import ReceiptIcon from '@mui/icons-material/Receipt';
+import ReceiptIcon from "@mui/icons-material/Receipt";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Paper from "@mui/material/Paper";
@@ -166,7 +166,7 @@ function EnhancedTableHead(props) {
             );
           }
         })}
-         <TableCell
+        <TableCell
           className="text-white"
           sx={{
             padding: "4px",
@@ -176,7 +176,9 @@ function EnhancedTableHead(props) {
             minWidth: "80px",
           }}
           padding="checkbox"
-        >Payments</TableCell>
+        >
+          Payments
+        </TableCell>
       </TableRow>
     </TableHead>
   );
@@ -256,7 +258,7 @@ export default function EmployeeExpense({ id, type }) {
   const [dataId, setDataId] = React.useState(0);
   const [message, setMessage] = React.useState("");
   const [warning, setWarning] = React.useState(false);
-  const [payments, setPayments] = React.useState(false)
+  const [payments, setPayments] = React.useState(false);
   const [pettyCash, setPettyCash] = React.useState(null);
   const [hrAmount, setHrAmount] = React.useState(null);
   const [cash, setCash] = React.useState(false);
@@ -270,13 +272,13 @@ export default function EmployeeExpense({ id, type }) {
     setCash(false);
   };
 
-  const handlePaymentsOpen = ()=>{
-    setPayments(true)
-  }
+  const handlePaymentsOpen = () => {
+    setPayments(true);
+  };
 
-  const handlePaymentsClose = ()=>{
-    setPayments(false)
-  }
+  const handlePaymentsClose = () => {
+    setPayments(false);
+  };
   const handleWarningClose = () => {
     setWarning(false);
   };
@@ -465,7 +467,6 @@ export default function EmployeeExpense({ id, type }) {
     setExpand(!expand);
   };
 
-
   const handleClick = (event, id) => {
     setSelected([id]);
     setDataId(id);
@@ -477,7 +478,7 @@ export default function EmployeeExpense({ id, type }) {
   };
 
   const handleSaveSubmit = () => {
-    handleGetCash()
+    handleGetCash();
   };
 
   return (
@@ -507,14 +508,12 @@ export default function EmployeeExpense({ id, type }) {
           paddingTop={2}
           justifyContent="flex-end"
         >
-         
-
           <TextField
             margin="normal"
             size="small"
             value={searchQuery}
             onChange={handleSearch}
-            type='text'
+            type="text"
             id="search"
             label="Search"
             autoComplete="off"
@@ -536,7 +535,6 @@ export default function EmployeeExpense({ id, type }) {
               "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                 borderColor: "currentColor", // Keeps the current border color
               },
-             
             }}
           />
 
@@ -678,10 +676,10 @@ export default function EmployeeExpense({ id, type }) {
                               );
                             }
                           })}
-                                <TableCell padding="checkbox" align="center">
-                                <IconButton onClick={handlePaymentsOpen}>
-            <ReceiptIcon sx={{color:"#1b77e9"}} />
-            </IconButton>
+                          <TableCell padding="checkbox" align="center">
+                            <IconButton onClick={handlePaymentsOpen}>
+                              <ReceiptIcon sx={{ color: "#1b77e9" }} />
+                            </IconButton>
                           </TableCell>
                         </TableRow>
                       );
@@ -743,97 +741,99 @@ export default function EmployeeExpense({ id, type }) {
             </>
           )}
         </Paper>
-        <ThemeProvider theme={theme}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              paddingTop: 2,
-              gap: 2, // Add gap between the boxes
-            }}
-          >
+        {type === 1 && (
+            <ThemeProvider theme={theme}>
             <Box
               sx={{
-                width: 200,
-                height: 100,
-                borderRadius: 1,
-                bgcolor: "primary.main",
                 display: "flex",
-                flexDirection: "column",
-                padding: 1,
-                paddingLeft: 2,
-                "&:hover": {
-                  bgcolor: "primary.dark",
-                },
-                cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
+                justifyContent: "center",
+                alignItems: "center",
+                paddingTop: 2,
+                gap: 2, // Add gap between the boxes
               }}
-              onClick={() => handleBalance(1)} // Add the onClick handler here
             >
-              <Typography variant="p" color="white">
-                {pettyCash?.sType}
-              </Typography>
               <Box
                 sx={{
+                  width: 200,
+                  height: 100,
+                  borderRadius: 1,
+                  bgcolor: "primary.main",
                   display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
+                  flexDirection: "column",
+                  padding: 1,
+                  paddingLeft: 2,
+                  "&:hover": {
+                    bgcolor: "primary.dark",
+                  },
+                  cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
                 }}
+                onClick={() => handleBalance(1)} // Add the onClick handler here
               >
-                <Typography variant="h6" color="white">
-                  {pettyCash?.fAmount}/-
+                <Typography variant="p" color="white">
+                  {pettyCash?.sType}
                 </Typography>
-
-                <AccountBalanceWalletIcon
-                  style={{
-                    fontSize: 50,
-                    color: "#692969",
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                   }}
-                />
+                >
+                  <Typography variant="h6" color="white">
+                    {pettyCash?.fAmount}/-
+                  </Typography>
+  
+                  <AccountBalanceWalletIcon
+                    style={{
+                      fontSize: 50,
+                      color: "#692969",
+                    }}
+                  />
+                </Box>
               </Box>
-            </Box>
-
-            <Box
-              sx={{
-                width: 200,
-                height: 100,
-                borderRadius: 1,
-                bgcolor: "secondary.main",
-                display: "flex",
-                flexDirection: "column",
-                padding: 1,
-                paddingLeft: 2,
-                "&:hover": {
-                  bgcolor: "secondary.dark",
-                },
-                cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
-              }}
-              onClick={() => handleBalance(2)} // Add the onClick handler here
-            >
-              <Typography variant="p" color="white">
-                {hrAmount?.sType}
-              </Typography>
+  
               <Box
                 sx={{
+                  width: 200,
+                  height: 100,
+                  borderRadius: 1,
+                  bgcolor: "secondary.main",
                   display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
+                  flexDirection: "column",
+                  padding: 1,
+                  paddingLeft: 2,
+                  "&:hover": {
+                    bgcolor: "secondary.dark",
+                  },
+                  cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
                 }}
+                onClick={() => handleBalance(2)} // Add the onClick handler here
               >
-                <Typography variant="h6" color="white">
-                  {hrAmount?.fAmount}/-
+                <Typography variant="p" color="white">
+                  {hrAmount?.sType}
                 </Typography>
-
-                <AccountBalanceWalletIcon
-                  style={{
-                    fontSize: 50,
-                    color: "#026989",
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                   }}
-                />
+                >
+                  <Typography variant="h6" color="white">
+                    {hrAmount?.fAmount}/-
+                  </Typography>
+  
+                  <AccountBalanceWalletIcon
+                    style={{
+                      fontSize: 50,
+                      color: "#026989",
+                    }}
+                  />
+                </Box>
               </Box>
             </Box>
-          </Box>
-        </ThemeProvider>
+          </ThemeProvider>
+        )}
       </>
 
       <Loader open={open} handleClose={handleClose} />
@@ -842,13 +842,17 @@ export default function EmployeeExpense({ id, type }) {
         handleClose={handleWarningClose}
         message={message}
       />
-         <AddCash
+      <AddCash
         handleCloseModal={handleCashClose}
         isOpen={cash}
         type={cashType}
         handleSaveSubmit={handleSaveSubmit}
       />
-       <PaymentListModal isOpen={payments} handleCloseModal={handlePaymentsClose} data={dataId} />
+      <PaymentListModal
+        isOpen={payments}
+        handleCloseModal={handlePaymentsClose}
+        data={dataId}
+      />
     </Box>
   );
 }
