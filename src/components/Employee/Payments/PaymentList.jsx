@@ -83,7 +83,7 @@ export default function PaymentList({ data, id, handleChildData, amount,setValue
    
    
     }
-  }, [amount,id]);
+  }, [amount,id,modal]);
   
   
   
