@@ -131,15 +131,15 @@ export default function PaymentDetails({
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (id === 0) {
-      const sumOfAmount = childData?.reduce(
-        (accumulator, item) => accumulator + item.fAmount,
-        0
-      );
-      setAmount(sumOfAmount);
-    }
-  }, [childData]);
+  // useEffect(() => {
+  //   if (id === 0) {
+  //     const sumOfAmount = childData?.reduce(
+  //       (accumulator, item) => accumulator + item.fAmount,
+  //       0
+  //     );
+  //     setAmount(sumOfAmount);
+  //   }
+  // }, [childData]);
 
   const handleClose = () => {
     setOpen(false);
@@ -661,6 +661,8 @@ export default function PaymentDetails({
                 data={body}
                 id={id}
                 handleChildData={handleChildData}
+                amount={amount}
+                setValue={setAmount}
               />
             </MDBCardBody>
           </div>

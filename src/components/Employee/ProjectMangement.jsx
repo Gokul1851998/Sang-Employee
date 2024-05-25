@@ -617,16 +617,23 @@ const handleDelete =async()=>{
               </>
             ) : (
               <>
-                <TableContainer sx={{ marginBottom: 2 }} component={Paper}>
-                  <img
-                    className="p-5"
-                    srcSet={`${empty}`}
-                    src={`${empty}`}
-                    alt={empty}
-                    loading="lazy"
-                    style={{ width: "450px" }}
-                  />
-                </TableContainer>
+                   <TableContainer
+  sx={{ height: 100, display: "flex", alignItems: "center", justifyContent: "center" }}
+>
+  <Typography
+    variant="h6"
+    id="tableTitle"
+    component="div"
+    sx={{
+      textAlign: "center",
+      margin: "0 auto", // Center the text horizontally
+      fontSize: "16px",
+      fontWeight: "semi",
+    }}
+  >
+    No Data
+  </Typography>
+</TableContainer>
               </>
             )}
           </Paper>

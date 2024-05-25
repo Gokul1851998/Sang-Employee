@@ -728,21 +728,33 @@ export default function EmployeeExpense({ id, type }) {
             </>
           ) : (
             <>
-              <TableContainer sx={{ marginBottom: 2 }} component={Paper}>
-                <img
-                  className="p-5"
-                  srcSet={`${empty}`}
-                  src={`${empty}`}
-                  alt={empty}
-                  loading="lazy"
-                  style={{ width: "450px" }}
-                />
+              <TableContainer
+                sx={{
+                  height: 100,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  id="tableTitle"
+                  component="div"
+                  sx={{
+                    textAlign: "center",
+                    margin: "0 auto", // Center the text horizontally
+                    fontSize: "16px",
+                    fontWeight: "semi",
+                  }}
+                >
+                  No Data
+                </Typography>
               </TableContainer>
             </>
           )}
         </Paper>
         {type === 1 && (
-            <ThemeProvider theme={theme}>
+          <ThemeProvider theme={theme}>
             <Box
               sx={{
                 display: "flex",
@@ -770,7 +782,7 @@ export default function EmployeeExpense({ id, type }) {
                 onClick={() => handleBalance(1)} // Add the onClick handler here
               >
                 <Typography variant="p" color="white">
-                  {pettyCash?.sType}
+                  Petty Cash
                 </Typography>
                 <Box
                   sx={{
@@ -780,9 +792,9 @@ export default function EmployeeExpense({ id, type }) {
                   }}
                 >
                   <Typography variant="h6" color="white">
-                    {pettyCash?.fAmount}/-
+                    {pettyCash?.fAmount ? pettyCash?.fAmount : 0}/-
                   </Typography>
-  
+
                   <AccountBalanceWalletIcon
                     style={{
                       fontSize: 50,
@@ -791,7 +803,7 @@ export default function EmployeeExpense({ id, type }) {
                   />
                 </Box>
               </Box>
-  
+
               <Box
                 sx={{
                   width: 200,
@@ -810,7 +822,7 @@ export default function EmployeeExpense({ id, type }) {
                 onClick={() => handleBalance(2)} // Add the onClick handler here
               >
                 <Typography variant="p" color="white">
-                  {hrAmount?.sType}
+                  Hr Amount
                 </Typography>
                 <Box
                   sx={{
@@ -820,9 +832,9 @@ export default function EmployeeExpense({ id, type }) {
                   }}
                 >
                   <Typography variant="h6" color="white">
-                    {hrAmount?.fAmount}/-
+                    {hrAmount?.fAmount ? hrAmount?.fAmount : 0}/-
                   </Typography>
-  
+
                   <AccountBalanceWalletIcon
                     style={{
                       fontSize: 50,

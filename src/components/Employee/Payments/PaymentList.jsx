@@ -45,7 +45,7 @@ const buttonStyle = {
   padding: "6px 10px",
 };
 
-export default function PaymentList({ data, id, handleChildData }) {
+export default function PaymentList({ data, id, handleChildData, amount,setValue }) {
   const [expanded, setExpanded] = React.useState(true);
   const [modal, setModal] = React.useState(false);
   const [body, setBody] = React.useState([]);
@@ -62,6 +62,31 @@ export default function PaymentList({ data, id, handleChildData }) {
   React.useEffect(() => {
     setBody(data);
   }, [data]);
+
+  React.useEffect(() => {
+    if (id === 0 && body?.length) {
+      let remainingAmount = amount;
+      const updatedBody = body.map((payment) => {
+        const maxFunds = Math.min(payment.BalanceAmount, remainingAmount);
+        remainingAmount -= maxFunds;
+        return {
+          ...payment,
+          fAmount: maxFunds,
+        };
+      });
+      const sumOfAmount = updatedBody.reduce(
+        (accumulator, item) => accumulator + item.fAmount,
+        0
+      );
+
+        setBody(updatedBody);
+   
+   
+    }
+  }, [amount,id]);
+  
+  
+  
 
   const handleModalOpen = () => {
     setModal(true);

@@ -57,9 +57,9 @@ export default function PaymentModal({
     handleOpen();
 
     const response = await getPendingPaymentList();
-    if (response.Status === "Success") {
+    if (response?.Status === "Success") {
       setModal(isOpen);
-      const myObject = JSON.parse(response.ResultData);
+      const myObject = JSON.parse(response?.ResultData);
       setTableData(myObject);
     } else {
       handleCloseModal();
@@ -131,7 +131,7 @@ export default function PaymentModal({
   const handleLoad = () => {
     const selectedItems = tableData
       .filter((item) => selected.includes(item.iId))
-      .map((item) => ({ ...item, fAmount: item.BalanceAmount }));
+      .map((item) => ({ ...item, fAmount: 0 }));
 
     setBody(selectedItems);
     handleAllClear();

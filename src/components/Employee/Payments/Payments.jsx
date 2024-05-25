@@ -636,16 +636,23 @@ export default function Payments({ id, type }) {
             </>
           ) : (
             <>
-              <TableContainer sx={{ marginBottom: 2 }} component={Paper}>
-                <img
-                  className="p-5"
-                  srcSet={`${empty}`}
-                  src={`${empty}`}
-                  alt={empty}
-                  loading="lazy"
-                  style={{ width: "450px" }}
-                />
-              </TableContainer>
+            <TableContainer
+  sx={{ height: 100, display: "flex", alignItems: "center", justifyContent: "center" }}
+>
+  <Typography
+    variant="h6"
+    id="tableTitle"
+    component="div"
+    sx={{
+      textAlign: "center",
+      margin: "0 auto", // Center the text horizontally
+      fontSize: "16px",
+      fontWeight: "semi",
+    }}
+  >
+    No Data
+  </Typography>
+</TableContainer>
             </>
           )}
         </Paper>
@@ -677,7 +684,7 @@ export default function Payments({ id, type }) {
               // onClick={() => handleBalance(1)} 
             >
               <Typography variant="p" color="white">
-                {pettyCash?.sType}
+               Petty Cash
               </Typography>
               <Box
                 sx={{
@@ -687,7 +694,7 @@ export default function Payments({ id, type }) {
                 }}
               >
                 <Typography variant="h6" color="white">
-                  {pettyCash?.fAmount}/-
+                  {pettyCash?.fAmount? pettyCash?.fAmount : 0}/-
                 </Typography>
 
                 <AccountBalanceWalletIcon
@@ -716,8 +723,8 @@ export default function Payments({ id, type }) {
               }}
               // onClick={() => handleBalance(2)} 
             >
-              <Typography variant="p" color="white">
-                {hrAmount?.sType}
+               <Typography variant="p" color="white">
+               Hr Amount
               </Typography>
               <Box
                 sx={{
@@ -727,7 +734,7 @@ export default function Payments({ id, type }) {
                 }}
               >
                 <Typography variant="h6" color="white">
-                  {hrAmount?.fAmount}/-
+                  {hrAmount?.fAmount ? hrAmount?.fAmount : 0}/-
                 </Typography>
 
                 <AccountBalanceWalletIcon
