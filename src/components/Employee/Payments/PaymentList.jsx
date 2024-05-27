@@ -52,6 +52,7 @@ export default function PaymentList({
   amount,
   setValue,
 }) {
+
   const [expanded, setExpanded] = React.useState(true);
   const [modal, setModal] = React.useState(false);
   const [body, setBody] = React.useState([]);
@@ -66,12 +67,11 @@ export default function PaymentList({
   };
 
   React.useEffect(() => {
-    setBody(data); // Updating the body state when the component receives new data from props
-}, [id, data]);
-
+    setBody(data);
+  }, [id, data]);
 
   React.useEffect(() => {
-    if (id === 0 && body && body?.length) {
+    if (id === 0 && body && body?.length && amount) {
       let remainingAmount = amount;
       const updatedBody = [...body].map((payment) => {
         const maxFunds = Math.min(payment.BalanceAmount, remainingAmount);
