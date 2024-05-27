@@ -60,6 +60,10 @@ const theme = createTheme({
       main: "#008bb6",
       dark: "#54abc6",
     },
+    third: {
+      main: "#d9b10e",
+      dark: "#d2ba55",
+    },
   },
 });
 
@@ -263,6 +267,7 @@ export default function EmployeeExpense({ id, type }) {
   const [hrAmount, setHrAmount] = React.useState(null);
   const [cash, setCash] = React.useState(false);
   const [cashType, setCashType] = React.useState(0);
+  const [credit, setCredit] = React.useState(0)
 
   const handleCashOpen = () => {
     setCash(true);
@@ -333,16 +338,20 @@ export default function EmployeeExpense({ id, type }) {
   };
 
   const handleGetCash = async () => {
-    const response1 = await getBalance({ iType: 1 });
+    const response1 = await getBalance({ iType: 1, iUser });
     if (response1.Status === "Success") {
       const myObject = JSON.parse(response1?.ResultData);
       setPettyCash(myObject[0]);
     }
-    const response2 = await getBalance({ iType: 2 });
+    const response2 = await getBalance({ iType: 2, iUser });
     if (response2.Status === "Success") {
       const myObject = JSON.parse(response2?.ResultData);
-
       setHrAmount(myObject[0]);
+    }
+    const response3 = await getBalance({ iUser,iType:3 });
+    if (response3.Status === "Success") {
+      const myObject = JSON.parse(response3?.ResultData);
+      setCredit(myObject[0])
     }
   };
 
@@ -843,6 +852,46 @@ export default function EmployeeExpense({ id, type }) {
                   />
                 </Box>
               </Box>
+
+              <Box
+              sx={{
+                width: 200,
+                height: 100,
+                borderRadius: 1,
+                bgcolor: "third.main",
+                display: "flex",
+                flexDirection: "column",
+                padding: 1,
+                paddingLeft: 2,
+                "&:hover": {
+                  bgcolor: "third.dark",
+                },
+                cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
+              }}
+              onClick={() => handleBalance(3)}
+            >
+              <Typography variant="p" color="white">
+                Credit Amount
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="h6" color="white">
+                  {credit?.fAmount ? credit?.fAmount : 0}/-
+                </Typography>
+
+                <AccountBalanceWalletIcon
+                  style={{
+                    fontSize: 50,
+                    color: "#907a1c",
+                  }}
+                />
+              </Box>
+            </Box>
             </Box>
           </ThemeProvider>
         )}

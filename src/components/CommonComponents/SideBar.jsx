@@ -34,7 +34,6 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import EmployeeExpense from '../Employee/Expense/EmployeeExpense';
 import PaymentsIcon from '@mui/icons-material/Payments';
-import PaymentsSummary from '../Employee/Payments/PaymentsSummary';
 import Payments from '../Employee/Payments/Payments';
 
 export default function SideBar() {

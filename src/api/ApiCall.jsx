@@ -467,6 +467,17 @@ export const getLogin = async (payload) => {
     }
   };
 
+  export const getSelfTransactions = async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}GetSelfTransactions`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('GetSelfTransactions',error);
+    }
+  };
+
 
 
   

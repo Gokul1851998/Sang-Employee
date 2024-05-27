@@ -31,7 +31,7 @@ export default function PaymentModal({
   isOpen,
   handleCloseModal,
   data,
-  setBody,
+  handlePendings,
 }) {
   const [open, setOpen] = React.useState(false);
   const [dataId, setDataId] = useState(0);
@@ -44,7 +44,6 @@ export default function PaymentModal({
     display: isOpen ? "block" : "none",
   };
   const iUser = Number(localStorage.getItem("userId"));
-
   const buttonStyle = {
     textTransform: "none",
     color: `#fff`,
@@ -92,7 +91,9 @@ export default function PaymentModal({
     setWarning(true);
   };
 
-  const handleClear = () => {};
+  const handleClear = () => { 
+    setTableData([]);
+  };
 
   const handleAllClear = () => {
     handleCloseModal();
@@ -131,9 +132,9 @@ export default function PaymentModal({
   const handleLoad = () => {
     const selectedItems = tableData
       .filter((item) => selected.includes(item.iId))
-      .map((item) => ({ ...item, fAmount: 0 }));
+      .map((item) => ({ ...item, PaidAmount: 0 }));
 
-    setBody(selectedItems);
+    handlePendings(selectedItems);
     handleAllClear();
   };
 

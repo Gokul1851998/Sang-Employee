@@ -45,7 +45,13 @@ const buttonStyle = {
   padding: "6px 10px",
 };
 
-export default function PaymentList({ data, id, handleChildData, amount,setValue }) {
+export default function PaymentList({
+  data,
+  id,
+  handleChildData,
+  amount,
+  setValue,
+}) {
   const [expanded, setExpanded] = React.useState(true);
   const [modal, setModal] = React.useState(false);
   const [body, setBody] = React.useState([]);
@@ -60,33 +66,25 @@ export default function PaymentList({ data, id, handleChildData, amount,setValue
   };
 
   React.useEffect(() => {
-    setBody(data);
-  }, [data]);
+    setBody(data); // Updating the body state when the component receives new data from props
+}, [id, data]);
+
 
   React.useEffect(() => {
-    if (id === 0 && body?.length) {
+    if (id === 0 && body && body?.length) {
       let remainingAmount = amount;
-      const updatedBody = body.map((payment) => {
+      const updatedBody = [...body].map((payment) => {
         const maxFunds = Math.min(payment.BalanceAmount, remainingAmount);
         remainingAmount -= maxFunds;
         return {
           ...payment,
-          fAmount: maxFunds,
+          PaidAmount: maxFunds,
         };
       });
-      const sumOfAmount = updatedBody.reduce(
-        (accumulator, item) => accumulator + item.fAmount,
-        0
-      );
 
-        setBody(updatedBody);
-   
-   
+      setBody(updatedBody);
     }
-  }, [amount,id,modal]);
-  
-  
-  
+  }, [amount, id, modal]);
 
   const handleModalOpen = () => {
     setModal(true);
@@ -108,26 +106,31 @@ export default function PaymentList({ data, id, handleChildData, amount,setValue
       : [];
 
   const handleAmount = (e, row) => {
-     if(body[row].BalanceAmount >= Number(e.target.value)){
+    if (body[row].BalanceAmount >= Number(e.target.value)) {
       let update = [...body];
-      update[row].fAmount = Number(e.target.value);
+      update[row].PaidAmount = Number(e.target.value);
       setBody(update);
-     }else{
-       setMessage("Amount greater than Balance amount")
-       handleWarningOpen()
-     }
-  
+    } else {
+      setMessage("Amount greater than Balance amount");
+      handleWarningOpen();
+    }
   };
 
   React.useEffect(() => {
-    const extractedData = body.map((item) => {
-      return {
-        iExpense: item.iId,
-        fAmount: item.fAmount,
-      };
-    });
+    const extractedData =
+      body &&
+      body.map((item) => {
+        return {
+          iExpense: item.iId,
+          PaidAmount: item.PaidAmount,
+        };
+      });
     handleChildData(extractedData);
   }, [body]);
+
+  const handlePendings = (data) => {
+    setBody(data);
+  };
 
   return (
     <>
@@ -148,43 +151,42 @@ export default function PaymentList({ data, id, handleChildData, amount,setValue
         ) : null}
       </Stack>
       {body && body.length ? (
-      <Card sx={{ marginTop: 2, boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)" }}>
-        <CardActions
-          sx={{ padding: 0, background: "#1b77e9", color: "white" }}
-          disableSpacing
-        >
-          <Typography
-            variant="h6"
-            id="tableTitle"
-            component="div"
-            sx={{
-              textAlign: "left",
-              paddingLeft: 2,
-              fontSize: "16px",
-              fontWeight: "semi",
-            }}
+        <Card sx={{ marginTop: 2, boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)" }}>
+          <CardActions
+            sx={{ padding: 0, background: "#1b77e9", color: "white" }}
+            disableSpacing
           >
-            Sub Payments
-          </Typography>
-          <ExpandMore
-            expand={expanded}
-            onClick={handleExpandClick}
-            aria-expanded={expanded}
-            aria-label="show more"
-          >
-            <ExpandMoreIcon sx={{ color: "white" }} />
-          </ExpandMore>
-        </CardActions>
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
-          <CardContent
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-         
+            <Typography
+              variant="h6"
+              id="tableTitle"
+              component="div"
+              sx={{
+                textAlign: "left",
+                paddingLeft: 2,
+                fontSize: "16px",
+                fontWeight: "semi",
+              }}
+            >
+              Sub Payments
+            </Typography>
+            <ExpandMore
+              expand={expanded}
+              onClick={handleExpandClick}
+              aria-expanded={expanded}
+              aria-label="show more"
+            >
+              <ExpandMoreIcon sx={{ color: "white" }} />
+            </ExpandMore>
+          </CardActions>
+          <Collapse in={expanded} timeout="auto" unmountOnExit>
+            <CardContent
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <TableContainer
                 style={{
                   display: "block",
@@ -277,7 +279,7 @@ export default function PaymentList({ data, id, handleChildData, amount,setValue
                             ) {
                               return (
                                 <>
-                                  {column === "fAmount" && id === 0 ? (
+                                  {column === "PaidAmount" && id === 0 ? (
                                     <TableCell
                                       style={{
                                         padding: 0,
@@ -299,7 +301,9 @@ export default function PaymentList({ data, id, handleChildData, amount,setValue
                                         size="small"
                                         type="number"
                                         id="search"
-                                        value={row[column] === 0 ? " " : row[column]}
+                                        value={
+                                          row[column] === 0 ? " " : row[column]
+                                        }
                                         onChange={(e) => handleAmount(e, index)}
                                         autoComplete="off"
                                         autoFocus
@@ -359,16 +363,16 @@ export default function PaymentList({ data, id, handleChildData, amount,setValue
                   </TableBody>
                 </Table>
               </TableContainer>
-           
-          </CardContent>
-        </Collapse>
+            </CardContent>
+          </Collapse>
         </Card>
       ) : null}
-        <PaymentModal
-          handleCloseModal={handleModalClose}
-          isOpen={modal}
-          setBody={setBody}
-        />
+      <PaymentModal
+        handleCloseModal={handleModalClose}
+        isOpen={modal}
+        handlePendings={handlePendings}
+        data={id}
+      />
       <ErrorMessage
         open={warning}
         handleClose={handleWarningClose}

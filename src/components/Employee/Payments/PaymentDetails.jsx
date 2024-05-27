@@ -26,13 +26,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import {
   deletePayment,
-  getCategory,
-  getDeleteExpense,
-  getExpenseDetails,
   getPaymentDetails,
   getPaymentType,
-  getSuspendExpense,
-  postExpense,
   postPayment,
 } from "../../../api/ApiCall";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -62,6 +57,7 @@ export default function PaymentDetails({
   data,
   type,
   setSelected,
+  handleSaveSubmit,
 }) {
   const iUser = Number(localStorage.getItem("userId"));
   const [open, setOpen] = React.useState(false);
@@ -76,7 +72,6 @@ export default function PaymentDetails({
   const [selectView, setSelectView] = useState(null);
   const [message, setMessage] = React.useState("");
   const [warning, setWarning] = React.useState(false);
-  const [suspend, setSuspend] = useState(false);
   const [body, setBody] = useState([]);
 
   const handleFileChange = (event) => {
@@ -85,37 +80,45 @@ export default function PaymentDetails({
   };
 
   const fetchData = async () => {
-    handleClear();
-    if (data !== 0) {
-      handleOpen();
-      setId(data);
-      const response = await getPaymentDetails({ iId: data });
-      handleClose();
-      if (response?.Status === "Success") {
-        const myObject = JSON.parse(response.ResultData);
-        setAmount(myObject?.Table[0]?.fAmount);
-        setPaymentType({
-          sType: myObject?.Table[0]?.sType,
-          iId: myObject?.Table[0]?.iPaymentType,
-        });
-        setDate(myObject?.Table[0]?.iDate);
-        setRemark(myObject?.Table[0]?.sRemarks);
-        setBody(myObject.Table1);
-        const sPath = myObject?.Table[0]?.sPath?.replace(/\/$/, "");
-        const sAttachment = myObject?.Table[0]?.sAttachment;
+    try {
+      handleClear();
+      if (data !== 0) {
+        handleOpen();
+        setId(data);
+        const response = await getPaymentDetails({ iId: data });
+        handleClose();
+        if (response?.Status === "Success") {
+          const myObject = JSON.parse(response?.ResultData);
+          setAmount(myObject?.Table[0]?.fAmount);
+          setPaymentType({
+            sType: myObject?.Table[0]?.sType,
+            iId: myObject?.Table[0]?.iPaymentType,
+          });
+          setDate(myObject?.Table[0]?.iDate);
+          setRemark(myObject?.Table[0]?.sRemarks);
+          setBody(myObject.Table1);
+          const sPath = myObject?.Table[0]?.sPath?.replace(/\/$/, "");
+          const sAttachment = myObject?.Table[0]?.sAttachment;
 
-        if (sPath && sAttachment) {
-          setSelectView(`${sPath}/${sAttachment}`);
+          if (sPath && sAttachment) {
+            setSelectView(`${sPath}/${sAttachment}`);
+          } else {
+            setSelectView(null);
+          }
         } else {
-          setSelectView(null);
+          handleClear();
         }
       } else {
         handleClear();
       }
-    } else {
-      handleClear();
+    } catch (error) {
+      console.error("Failed to fetch payment details:", error);
+      handleClose();
+      setMessage("Error fetching data");
+      handleWarningOpen();
     }
   };
+
   useEffect(() => {
     fetchData();
   }, [data]);
@@ -180,40 +183,6 @@ export default function PaymentDetails({
     });
   };
 
-  const handleSuspend = async () => {
-    Swal.fire({
-      text: "Are you sure you want to Delete?",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-    }).then(async (result) => {
-      if (result.value) {
-        handleOpen();
-        const response = await getSuspendExpense({
-          iIds: id,
-          iUser,
-          iType: suspend ? 2 : 1,
-        });
-
-        handleClose();
-        if (response?.Status === "Success") {
-          Swal.fire({
-            title: "Suspended",
-            text: "Expense Suspended!",
-            icon: "success",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          fetchData();
-        } else {
-          setMessage("Can't delete");
-          handleWarningOpen();
-        }
-      }
-    });
-  };
-
   const handleWarningClose = () => {
     setWarning(false);
   };
@@ -224,15 +193,16 @@ export default function PaymentDetails({
   const handleSave = async (e) => {
     e.preventDefault();
     const isValidIdPresent = childData.some(
-      (item) => item.fAmount !== 0 && item.fAmount !== ""
+      (item) => item.PaidAmount !== 0 && item.PaidAmount !== ""
     );
     const sumOfAmount = childData.reduce(
-      (accumulator, item) => accumulator + item.fAmount,
+      (accumulator, item) => accumulator + item.PaidAmount,
       0
     );
     const emptyFields = [];
     if (!childData.length) emptyFields.push("Fill atleast one pending payment");
     if (!isValidIdPresent) emptyFields.push("Fill all Amount");
+    console.log(amount, sumOfAmount);
     if (amount !== sumOfAmount)
       emptyFields.push("Total amount is not equal to the given amount");
 
@@ -264,7 +234,7 @@ export default function PaymentDetails({
       if (result.value) {
         handleOpen();
         const response = await postPayment(formData);
-
+        console.log(response);
         handleClose();
         if (response?.Status === "Success") {
           Swal.fire({
@@ -274,7 +244,7 @@ export default function PaymentDetails({
             showConfirmButton: false,
             timer: 1500,
           });
-
+          handleSaveSubmit();
           handleAllClear();
         } else {
           setMessage(
@@ -287,8 +257,9 @@ export default function PaymentDetails({
       }
     });
   };
-
   const handleClear = () => {
+    setBody([]); // Resetting the body state to an empty array when "New" button is clicked
+    setSelected([]);
     setId(0);
     setAmount("");
     setPaymentType("");
@@ -296,10 +267,8 @@ export default function PaymentDetails({
     setRemark("");
     setSelectedFile(null);
     setSelectView(null);
-    setSuspend(null);
-    setBody([]);
-    setSelected([]);
-  };
+};
+
 
   const handleAllClear = () => {
     handleClear();
@@ -409,17 +378,7 @@ export default function PaymentDetails({
             >
               Save
             </Button>
-            {type === 1 && (
-              <Button
-                onClick={handleSuspend}
-                size="small"
-                variant="contained"
-                startIcon={<DoDisturbIcon />}
-                style={buttonStyle}
-              >
-                {suspend ? "Unsuspend" : "Suspend"}
-              </Button>
-            )}
+
             {/* <Button
               size="small"
               onClick={handleDelete}

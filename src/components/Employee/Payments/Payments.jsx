@@ -56,6 +56,10 @@ const theme = createTheme({
       main: "#008bb6",
       dark: "#54abc6",
     },
+    third: {
+      main: "#d9b10e",
+      dark: "#d2ba55",
+    },
   },
 });
 
@@ -248,6 +252,7 @@ export default function Payments({ id, type }) {
   const [hrAmount, setHrAmount] = React.useState(null);
   const [cash, setCash] = React.useState(false);
   const [cashType, setCashType] = React.useState(0);
+  const [credit, setCredit] = React.useState(0)
 
   const handleWarningClose = () => {
     setWarning(false);
@@ -280,16 +285,20 @@ export default function Payments({ id, type }) {
   }, [id, type]);
 
   const handleGetCash = async () => {
-    const response1 = await getBalance({ iType: 1 });
+    const response1 = await getBalance({ iType: 1, iUser });
     if (response1.Status === "Success") {
       const myObject = JSON.parse(response1?.ResultData);
       setPettyCash(myObject[0]);
     }
-    const response2 = await getBalance({ iType: 2 });
+    const response2 = await getBalance({ iType: 2, iUser });
     if (response2.Status === "Success") {
       const myObject = JSON.parse(response2?.ResultData);
-
       setHrAmount(myObject[0]);
+    }
+    const response3 = await getBalance({ iUser,iType:3 });
+    if (response3.Status === "Success") {
+      const myObject = JSON.parse(response3?.ResultData);
+      setCredit(myObject[0])
     }
   };
 
@@ -303,9 +312,11 @@ export default function Payments({ id, type }) {
     handleOpen();
     const response = await getPaymentSmmary({ iUser });
     handleClose();
-    if (response.Status === "Success") {
-      const myObject = JSON.parse(response.ResultData);
+    if (response?.Status === "Success") {
+      const myObject = JSON.parse(response?.ResultData);
       setData(myObject);
+    } else {
+      setData([]);
     }
   };
 
@@ -375,7 +386,7 @@ export default function Payments({ id, type }) {
   };
 
   const handleSaveSubmit = () => {
-    handleGetCash()
+    handleGetCash();
   };
 
   const handleClick = (event, id) => {
@@ -406,6 +417,7 @@ export default function Payments({ id, type }) {
         data={dataId}
         type={type}
         setSelected={setSelected}
+        handleSaveSubmit={handleSaveSubmit}
       />
 
       <>
@@ -548,7 +560,7 @@ export default function Payments({ id, type }) {
                                         padding: "4px",
                                         border: "1px solid #ddd",
                                         whiteSpace: "nowrap",
-                                        width: `calc(100% / 3)`,
+                                        width: `calc(100% / 4)`,
                                       }}
                                       key={index + labelId}
                                       component="th"
@@ -569,7 +581,7 @@ export default function Payments({ id, type }) {
                                         whiteSpace: "nowrap",
                                         overflow: "hidden",
                                         textOverflow: "ellipsis",
-                                        width: `calc(100% / 3)`,
+                                        width: `calc(100% / 4)`,
                                         minWidth: "100px",
                                         maxWidth: 150,
                                       }}
@@ -636,23 +648,28 @@ export default function Payments({ id, type }) {
             </>
           ) : (
             <>
-            <TableContainer
-  sx={{ height: 100, display: "flex", alignItems: "center", justifyContent: "center" }}
->
-  <Typography
-    variant="h6"
-    id="tableTitle"
-    component="div"
-    sx={{
-      textAlign: "center",
-      margin: "0 auto", // Center the text horizontally
-      fontSize: "16px",
-      fontWeight: "semi",
-    }}
-  >
-    No Data
-  </Typography>
-</TableContainer>
+              <TableContainer
+                sx={{
+                  height: 100,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  id="tableTitle"
+                  component="div"
+                  sx={{
+                    textAlign: "center",
+                    margin: "0 auto", // Center the text horizontally
+                    fontSize: "16px",
+                    fontWeight: "semi",
+                  }}
+                >
+                  No Data
+                </Typography>
+              </TableContainer>
             </>
           )}
         </Paper>
@@ -681,10 +698,10 @@ export default function Payments({ id, type }) {
                 },
                 cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
               }}
-              // onClick={() => handleBalance(1)} 
+              // onClick={() => handleBalance(1)}
             >
               <Typography variant="p" color="white">
-               Petty Cash
+                Petty Cash
               </Typography>
               <Box
                 sx={{
@@ -694,7 +711,7 @@ export default function Payments({ id, type }) {
                 }}
               >
                 <Typography variant="h6" color="white">
-                  {pettyCash?.fAmount? pettyCash?.fAmount : 0}/-
+                  {pettyCash?.fAmount ? pettyCash?.fAmount : 0}/-
                 </Typography>
 
                 <AccountBalanceWalletIcon
@@ -721,10 +738,10 @@ export default function Payments({ id, type }) {
                 },
                 cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
               }}
-              // onClick={() => handleBalance(2)} 
+              // onClick={() => handleBalance(2)}
             >
-               <Typography variant="p" color="white">
-               Hr Amount
+              <Typography variant="p" color="white">
+                Hr Amount
               </Typography>
               <Box
                 sx={{
@@ -741,6 +758,46 @@ export default function Payments({ id, type }) {
                   style={{
                     fontSize: 50,
                     color: "#026989",
+                  }}
+                />
+              </Box>
+            </Box>
+
+            <Box
+              sx={{
+                width: 200,
+                height: 100,
+                borderRadius: 1,
+                bgcolor: "third.main",
+                display: "flex",
+                flexDirection: "column",
+                padding: 1,
+                paddingLeft: 2,
+                "&:hover": {
+                  bgcolor: "third.dark",
+                },
+                cursor: "pointer", // Optional: Changes cursor to pointer to indicate it's clickable
+              }}
+              // onClick={() => handleBalance(2)}
+            >
+              <Typography variant="p" color="white">
+                Credit Amount
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="h6" color="white">
+                  {credit?.fAmount ? credit?.fAmount : 0}/-
+                </Typography>
+
+                <AccountBalanceWalletIcon
+                  style={{
+                    fontSize: 50,
+                    color: "#907a1c",
                   }}
                 />
               </Box>
