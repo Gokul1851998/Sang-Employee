@@ -411,7 +411,7 @@ export default function Employee() {
                               {...params}
                               inputProps={{
                                 ...params.inputProps,
-                                autoComplete: "new-password", // disable autocomplete and autofill
+                                autoComplete: "off", // disable autocomplete and autofill
                                 style: {
                                   borderWidth: "1px",
                                   borderColor: "#ddd",
@@ -480,7 +480,7 @@ export default function Employee() {
                               {...params}
                               inputProps={{
                                 ...params.inputProps,
-                                autoComplete: "new-password", // disable autocomplete and autofill
+                                autoComplete: "off", // disable autocomplete and autofill
                                 style: {
                                   borderWidth: "1px",
                                   borderColor: "#ddd",
@@ -542,6 +542,7 @@ export default function Employee() {
               inputProps={{
                 maxLength: 150,
               }}
+              autoComplete="off"
               onChange={(e) => {
                 const inputValue = e.target.value;
                 setFrom(inputValue);
@@ -573,6 +574,7 @@ export default function Employee() {
               }}
               label="To Date"
               variant="outlined"
+              autoComplete="off"
               InputLabelProps={{
                 shrink: true, // Set shrink to true when there is a value
               }}
@@ -637,7 +639,7 @@ export default function Employee() {
                   {...params}
                   inputProps={{
                     ...params.inputProps,
-                    autoComplete: "new-password", // disable autocomplete and autofill
+                    autoComplete: "off", // disable autocomplete and autofill
                   }}
                   sx={{ minWidth: 200 }} // Set the width for Autocomplete
                 />
@@ -695,7 +697,7 @@ export default function Employee() {
                   {...params}
                   inputProps={{
                     ...params.inputProps,
-                    autoComplete: "new-password", // disable autocomplete and autofill
+                    autoComplete: "off", // disable autocomplete and autofill
                   }}
                   sx={{ minWidth: 200 }} // Set the width for Autocomplete
                 />

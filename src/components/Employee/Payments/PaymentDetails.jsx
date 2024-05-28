@@ -202,7 +202,6 @@ export default function PaymentDetails({
     const emptyFields = [];
     if (!childData.length) emptyFields.push("Fill atleast one pending payment");
     if (!isValidIdPresent) emptyFields.push("Fill all Amount");
-    console.log(amount, sumOfAmount);
     if (amount !== sumOfAmount)
       emptyFields.push("Total amount is not equal to the given amount");
 
@@ -234,7 +233,6 @@ export default function PaymentDetails({
       if (result.value) {
         handleOpen();
         const response = await postPayment(formData);
-        console.log(response);
         handleClose();
         if (response?.Status === "Success") {
           Swal.fire({

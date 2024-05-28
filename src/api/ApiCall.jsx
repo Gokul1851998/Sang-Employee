@@ -478,6 +478,17 @@ export const getLogin = async (payload) => {
     }
   };
 
+  export const postSelfTransactions = async (payload) => {
+    try {
+      const response = await axios.get(`${baseUrl}PostSelfTransactions`,{
+        params: payload,
+      });
+      return response?.data;
+    } catch (error) {
+      console.log('PostSelfTransactions',error);
+    }
+  };
+
 
 
   

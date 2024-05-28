@@ -10,12 +10,14 @@ import {
   CardContent,
   IconButton,
   Stack,
+  Tab,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  Tabs,
   TextField,
   Typography,
   Zoom,
@@ -28,6 +30,7 @@ import {
   getAllPayment,
   getSelfTransactions,
   postAmount,
+  postSelfTransactions,
 } from "../../../api/ApiCall";
 
 export default function AddCash({
@@ -37,14 +40,20 @@ export default function AddCash({
   type,
   handleSaveSubmit,
 }) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const [dataId, setDataId] = useState(0);
   const [modal, setModal] = useState(false);
   const [warning, setWarning] = useState(false);
   const [message, setMessage] = useState("");
   const [cash, setCash] = useState(0);
   const [error, setError] = useState(false);
-  const [table, setTable] = useState([]);
+  const [table1, setTable1] = useState([]);
+  const [table2, setTable2] = useState([]);
+  const [value, setValue] = useState(0); // Default to the first tab
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   const modalStyle = {
     display: isOpen ? "block" : "none",
@@ -73,19 +82,21 @@ export default function AddCash({
   }, [cash]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (type === 3) {
-        handleOpen();
-        const response = await getSelfTransactions({ iUser: 0 });
-        handleClose();
-        if (response.Status === "Success") {
-          const myObject = JSON.parse(response?.ResultData);
-          setTable(myObject);
-        }
+    fetchData2();
+  }, [type, isOpen]);
+
+  const fetchData2 = async () => {
+    if (type === 3) {
+      handleOpen();
+      const response = await getSelfTransactions({ iUser: 0 });
+      handleClose();
+      if (response.Status === "Success") {
+        const myObject = JSON.parse(response?.ResultData);
+        setTable1(myObject?.Table);
+        setTable2(myObject?.Table1);
       }
-    };
-    fetchData();
-  }, [type]);
+    }
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -138,16 +149,58 @@ export default function AddCash({
     }
   };
 
-  const headers =
-    table && table.length
-      ? Object.keys(table[0]).filter(
-          (key) => key !== "iId" && key !== "Employee"
+  const headers1 =
+    table1 && table1.length
+      ? Object.keys(table1[0]).filter(
+          (key) =>
+            key !== "iId" &&
+            key !== "iUser" &&
+            key !== "iType" &&
+            key !== "sType"
         )
       : [];
 
-      const handlePay = async(e,id)=>{
-          console.log(id);
+  const headers2 =
+    table2 && table2.length
+      ? Object.keys(table2[0]).filter(
+          (key) =>
+            key !== "iId" &&
+            key !== "iUser" &&
+            key !== "iType" &&
+            key !== "sType"
+        )
+      : [];
+
+  const handlePay = async (e, row, type) => {
+    Swal.fire({
+      text: "Are you sure you want to continue?",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+    }).then(async (result) => {
+      if (result.value) {
+        handleOpen();
+        const response = await postSelfTransactions({
+          iType: type,
+          iIds: row.iId,
+          iUser,
+        });
+        handleClose();
+        if (response?.Status === "Success") {
+          Swal.fire({
+            title: "Paid",
+            text: "Amount has been Paid!",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          fetchData2()
+     
+        }
       }
+    });
+  };
 
   return (
     <div>
@@ -174,134 +227,326 @@ export default function AddCash({
                     </IconButton>
                   </Stack>
                   <CardContent>
-                    <TableContainer
-                      style={{
-                        display: "block",
-                        maxHeight: "calc(100vh - 200px)",
-                        overflowY: "auto",
-                        scrollbarWidth: "thin",
-                        scrollbarColor: "#888 #f5f5f5",
-                        scrollbarTrackColor: "#f5f5f5",
-                        boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)",
-                      }}
+                    <Tabs
+                      value={value}
+                      onChange={handleChange}
+                      aria-label="disabled tabs example"
                     >
-                      <Table
-                        sx={{ minWidth: 750 }}
-                        aria-labelledby="tableTitle"
-                        size={"small"}
-                      >
-                        <TableHead
+                      <Tab sx={{ textTransform: "none" }} label="List" />
+                      <Tab sx={{ textTransform: "none" }} label="Employee" />
+                    </Tabs>
+                    {value === 0 &&
+                      (table1 && table1.length ? (
+                        <TableContainer
                           style={{
-                            background: `#1b77e9`,
-                            position: "sticky",
-                            top: 0,
-                            zIndex: "5",
+                            display: "block",
+                            maxHeight: "calc(100vh - 200px)",
+                            overflowY: "auto",
+                            scrollbarWidth: "thin",
+                            scrollbarColor: "#888 #f5f5f5",
+                            scrollbarTrackColor: "#f5f5f5",
+                            boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)",
                           }}
                         >
-                          <TableRow>
-                            {headers.map((header, index) => (
-                              <TableCell
-                                sx={{
-                                  border: "1px solid #ddd",
-                                  cursor: "pointer",
-                                  padding: "4px",
-                                  color: "white",
-                                }}
-                                key={`${index}-${header}`}
-                                align="left"
-                                padding="normal"
-                              >
-                                {header}
-                              </TableCell>
-                            ))}
-                            <TableCell
-                              sx={{
-                                border: "1px solid #ddd",
-                                cursor: "pointer",
-                                padding: "4px",
-                                color: "white",
+                          <Table
+                            sx={{ minWidth: 750 }}
+                            aria-labelledby="tableTitle"
+                            size={"small"}
+                          >
+                            <TableHead
+                              style={{
+                                background: `#1b77e9`,
+                                position: "sticky",
+                                top: 0,
+                                zIndex: "5",
                               }}
-                              align="center"
-                              padding="normal"
                             >
-                              Payment
-                            </TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {table.map((row, index) => {
-                            const labelId = `enhanced-table-checkbox-${index}`;
-
-                            return (
-                              <TableRow
-                                key={row.iId}
-                                hover
-                                role="checkbox"
-                                className={`table-row `}
-                                tabIndex={-1}
-                                sx={{
-                                  cursor: "pointer",
-                                }}
-                              >
-                                {Object.keys(table[0]).map((column, index) => {
-                                  if (
-                                    column !== "iId" &&
-                                    column !== "Employee"
-                                  ) {
-                                    return (
-                                      <>
-                                        <TableCell
-                                          style={{
-                                            padding: "4px",
-                                            border: "1px solid #ddd",
-                                            whiteSpace: "nowrap",
-                                            overflow: "hidden",
-                                            textOverflow: "ellipsis",
-                                            width: `calc(100% / 4)`,
-                                            minWidth: "100px",
-                                            maxWidth: 150,
-                                          }}
-                                          key={index + labelId}
-                                          component="th"
-                                          id={labelId}
-                                          scope="row"
-                                          padding="normal"
-                                          align="left"
-                                        >
-                                          {row[column]}
-                                        </TableCell>
-                                      </>
-                                    );
-                                  }
-                                })}
+                              <TableRow>
+                                {headers1.map((header, index) => (
+                                  <TableCell
+                                    sx={{
+                                      border: "1px solid #ddd",
+                                      cursor: "pointer",
+                                      padding: "4px",
+                                      color: "white",
+                                    }}
+                                    key={`${index}-${header}`}
+                                    align="left"
+                                    padding="normal"
+                                  >
+                                    {header}
+                                  </TableCell>
+                                ))}
                                 <TableCell
-                                  style={{
-                                    padding: "0px",
+                                  sx={{
                                     border: "1px solid #ddd",
+                                    cursor: "pointer",
+                                    padding: "4px",
+                                    color: "white",
                                   }}
-                                  padding="checkbox"
                                   align="center"
+                                  padding="normal"
                                 >
-                                  <IconButton type="button">
-                                    <Button onClick={(e)=>handlePay(e,row)}
-                                      sx={{
-                                        ...buttonStyle,
-                                        fontSize: "10px",
-                                        padding: "4px 8px",
-                                      
-                                      }}
-                                      variant="contained"
-                                    >
-                                      Pay
-                                    </Button>
-                                  </IconButton>
+                                  Payment
                                 </TableCell>
                               </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
+                            </TableHead>
+                            <TableBody>
+                              {table1.map((row, index) => {
+                                const labelId = `enhanced-table-checkbox-${index}`;
+
+                                return (
+                                  <TableRow
+                                    key={row.iId}
+                                    hover
+                                    role="checkbox"
+                                    className={`table-row `}
+                                    tabIndex={-1}
+                                    sx={{
+                                      cursor: "pointer",
+                                    }}
+                                  >
+                                    {Object.keys(table1[0]).map(
+                                      (column, index) => {
+                                        if (
+                                          column !== "iId" &&
+                                          column !== "iUser" &&
+                                          column !== "iType" &&
+                                          column !== "sType"
+                                        ) {
+                                          return (
+                                            <TableCell
+                                              style={{
+                                                padding: "4px",
+                                                border: "1px solid #ddd",
+                                                whiteSpace: "nowrap",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                width: `calc(100% / 4)`,
+                                                minWidth: "100px",
+                                                maxWidth: 150,
+                                              }}
+                                              key={index + labelId}
+                                              component="th"
+                                              id={labelId}
+                                              scope="row"
+                                              padding="normal"
+                                              align="left"
+                                            >
+                                              {row[column]}
+                                            </TableCell>
+                                          );
+                                        }
+                                      }
+                                    )}
+                                    <TableCell
+                                      style={{
+                                        padding: "0px",
+                                        border: "1px solid #ddd",
+                                      }}
+                                      padding="checkbox"
+                                      align="center"
+                                    >
+                                      <IconButton type="button">
+                                        <Button
+                                          onClick={(e) => handlePay(e, row, 1)}
+                                          sx={{
+                                            ...buttonStyle,
+                                            fontSize: "10px",
+                                            padding: "4px 8px",
+                                          }}
+                                          variant="contained"
+                                        >
+                                          Pay
+                                        </Button>
+                                      </IconButton>
+                                    </TableCell>
+                                  </TableRow>
+                                );
+                              })}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      ) : (
+                        <TableContainer
+                          sx={{
+                            height: 50,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Typography
+                            variant="h6"
+                            id="tableTitle"
+                            component="div"
+                            sx={{
+                              textAlign: "center",
+                              margin: "0 auto", // Center the text horizontally
+                              fontSize: "16px",
+                              fontWeight: "semi",
+                            }}
+                          >
+                            No Credits
+                          </Typography>
+                        </TableContainer>
+                      ))}
+                    {value === 1 &&
+                      (table2 && table2.length ? (
+                        <TableContainer
+                          style={{
+                            display: "block",
+                            maxHeight: "calc(100vh - 200px)",
+                            overflowY: "auto",
+                            scrollbarWidth: "thin",
+                            scrollbarColor: "#888 #f5f5f5",
+                            scrollbarTrackColor: "#f5f5f5",
+                            boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)",
+                          }}
+                        >
+                          <Table
+                            sx={{ minWidth: 750 }}
+                            aria-labelledby="tableTitle"
+                            size={"small"}
+                          >
+                            <TableHead
+                              style={{
+                                background: `#1b77e9`,
+                                position: "sticky",
+                                top: 0,
+                                zIndex: "5",
+                              }}
+                            >
+                              <TableRow>
+                                {headers2.map((header, index) => (
+                                  <TableCell
+                                    sx={{
+                                      border: "1px solid #ddd",
+                                      cursor: "pointer",
+                                      padding: "4px",
+                                      color: "white",
+                                    }}
+                                    key={`${index}-${header}`}
+                                    align="left"
+                                    padding="normal"
+                                  >
+                                    {header}
+                                  </TableCell>
+                                ))}
+                                <TableCell
+                                  sx={{
+                                    border: "1px solid #ddd",
+                                    cursor: "pointer",
+                                    padding: "4px",
+                                    color: "white",
+                                  }}
+                                  align="center"
+                                  padding="normal"
+                                >
+                                  Payment
+                                </TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {table2.map((row, index) => {
+                                const labelId = `enhanced-table-checkbox-${index}`;
+
+                                return (
+                                  <TableRow
+                                    key={row.iId}
+                                    hover
+                                    role="checkbox"
+                                    className={`table-row `}
+                                    tabIndex={-1}
+                                    sx={{
+                                      cursor: "pointer",
+                                    }}
+                                  >
+                                    {Object.keys(table2[0]).map(
+                                      (column, index) => {
+                                        if (
+                                          column !== "iId" &&
+                                          column !== "iUser" &&
+                                          column !== "iType" &&
+                                          column !== "sType"
+                                        ) {
+                                          return (
+                                            <TableCell
+                                              style={{
+                                                padding: "4px",
+                                                border: "1px solid #ddd",
+                                                whiteSpace: "nowrap",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                width: `calc(100% / 3)`,
+                                                minWidth: "100px",
+                                                maxWidth: 150,
+                                              }}
+                                              key={index + labelId}
+                                              component="th"
+                                              id={labelId}
+                                              scope="row"
+                                              padding="normal"
+                                              align="left"
+                                            >
+                                              {row[column]}
+                                            </TableCell>
+                                          );
+                                        }
+                                      }
+                                    )}
+                                    <TableCell
+                                      style={{
+                                        padding: "0px",
+                                        border: "1px solid #ddd",
+                                      }}
+                                      padding="checkbox"
+                                      align="center"
+                                    >
+                                      <IconButton type="button">
+                                        <Button
+                                          onClick={(e) => handlePay(e, row, 2)}
+                                          sx={{
+                                            ...buttonStyle,
+                                            fontSize: "10px",
+                                            padding: "4px 8px",
+                                          }}
+                                          variant="contained"
+                                        >
+                                          Pay
+                                        </Button>
+                                      </IconButton>
+                                    </TableCell>
+                                  </TableRow>
+                                );
+                              })}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      ) : (
+                        <TableContainer
+                          sx={{
+                            height: 50,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Typography
+                            variant="h6"
+                            id="tableTitle"
+                            component="div"
+                            sx={{
+                              textAlign: "center",
+                              margin: "0 auto", // Center the text horizontally
+                              fontSize: "16px",
+                              fontWeight: "semi",
+                            }}
+                          >
+                            No Credits
+                          </Typography>
+                        </TableContainer>
+                      ))}
                   </CardContent>
                 </form>
               </div>
@@ -310,80 +555,70 @@ export default function AddCash({
             <div className="modal-dialog modal-dialog-centered modal-sm">
               <div className="modal-content">
                 <form>
-                  <Stack
-                    direction="row"
-                    margin={1}
-                    justifyContent="space-between"
-                  >
-                    <Typography
-                      variant="h6"
-                      id="tableTitle"
-                      component="div"
-                      sx={{
-                        textAlign: "left",
-                        padding: 1,
-                        fontSize: "16px",
-                        fontWeight: "semi",
-                      }}
-                    >
-                      {type === 1
-                        ? "Add Petty Cash "
-                        : type === 2
-                        ? "Add HR Amount "
-                        : null}
-                    </Typography>
+                  <Stack direction="row" spacing={1} justifyContent="flex-end">
                     <IconButton onClick={handleAllClear}>
                       <CloseIcon sx={{ color: "#1b77e9" }} />
                     </IconButton>
                   </Stack>
                   <CardContent>
-                    <Box
-                      display="flex"
-                      flexDirection="column"
-                      alignItems="center"
-                      justifyContent="center"
-                      sx={{ width: "100%" }}
+                    <Typography
+                      gutterBottom
+                      variant="h6"
+                      component="div"
+                      sx={{
+                        textAlign: "center",
+                      }}
                     >
-                      <TextField
-                        size="small"
-                        value={cash === 0 ? "" : cash}
-                        onChange={(e) => setCash(Number(e.target.value))}
-                        type="number"
-                        id="search"
-                        label="Amount"
-                        error={error}
-                        autoComplete="off"
-                        autoFocus
-                        sx={{
-                          width: "100%",
-                          zIndex: 0,
-                          "& .MuiInputBase-root": {
-                            height: 30, // Adjust the height of the input area
-                          },
-                          "& .MuiInputLabel-root": {
-                            transform: "translate(10px, 5px) scale(0.9)", // Adjust label position when not focused
-                          },
-                          "& .MuiInputLabel-shrink": {
-                            transform: "translate(14px, -9px) scale(0.75)", // Adjust label position when focused
-                          },
-                          "& .MuiInputBase-input": {
-                            fontSize: "1rem", // Adjust the font size of the input text
-                          },
-                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "currentColor", // Keeps the current border color
-                          },
-                        }}
-                      />
+                      Add Cash
+                    </Typography>
+                    {warning && (
+                      <MuiAlert
+                        elevation={6}
+                        variant="filled"
+                        onClose={handleCloseAlert}
+                        severity="warning"
+                        sx={{ mb: 2 }}
+                      >
+                        {message}
+                      </MuiAlert>
+                    )}
+                    {error && (
+                      <ErrorMessage message="Please add amount greater than 0" />
+                    )}
+                    <TextField
+                      label="Enter Cash Amount"
+                      type="number"
+                      fullWidth
+                      variant="outlined"
+                      margin="normal"
+                      value={cash === 0 ? "" : cash}
+                      onChange={(e) => setCash(Number(e.target.value))}
+                      error={error}
+                      helperText={error && "Cash amount must be greater than 0"}
+                      inputProps={{ min: 0 }} // Prevents entering negative values
+                    />
+
+                    <Stack
+                      direction="row"
+                      spacing={2}
+                      justifyContent="center"
+                      sx={{ mt: 2 }}
+                    >
                       <Button
-                        size="small"
                         onClick={handleSave}
                         variant="contained"
-                        sx={{ mt: 2 }} // Add margin-top for spacing
-                        style={buttonStyle}
+                        sx={{ ...buttonStyle, width: "50%" }}
                       >
-                        Add
+                        Save
                       </Button>
-                    </Box>
+                      <Button
+                        onClick={handleClear}
+                        variant="contained"
+                        sx={{ ...buttonStyle, width: "50%" }}
+                      >
+                        Clear
+                      </Button>
+                    </Stack>
                   </CardContent>
                 </form>
               </div>
@@ -391,13 +626,6 @@ export default function AddCash({
           )}
         </div>
       </Zoom>
-
-      <Loader open={open} handleClose={handleClose} />
-      <ErrorMessage
-        open={warning}
-        handleClose={handleCloseAlert}
-        message={message}
-      />
     </div>
   );
 }
