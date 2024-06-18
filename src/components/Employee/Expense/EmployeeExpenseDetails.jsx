@@ -62,8 +62,6 @@ export default function EmployeeExpenseDetails({ handleNavigate, data, type }) {
   const [warning, setWarning] = React.useState(false);
   const [suspend, setSuspend] = useState(false);
 
-
-
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
@@ -86,9 +84,9 @@ export default function EmployeeExpenseDetails({ handleNavigate, data, type }) {
         setDate(myObject?.Table[0]?.iDate);
         setRemark(myObject?.Table[0]?.sRemarks);
         setSuspend(myObject?.Table[0]?.Suspended === "False" ? false : true);
-        const sPath = myObject?.Table[0]?.sPath?.replace(/\/$/, '');
+        const sPath = myObject?.Table[0]?.sPath?.replace(/\/$/, "");
         const sAttachment = myObject?.Table[0]?.sAttachment;
-  
+
         if (sPath && sAttachment) {
           setSelectView(`${sPath}/${sAttachment}`);
         } else {
@@ -243,8 +241,8 @@ export default function EmployeeExpenseDetails({ handleNavigate, data, type }) {
     setDate(getCurrentDate);
     setRemark("");
     setSelectedFile(null);
-    setSelectView(null)
-    setSuspend(null)
+    setSelectView(null);
+    setSuspend(null);
   };
 
   const handleAllClear = () => {
@@ -268,13 +266,21 @@ export default function EmployeeExpenseDetails({ handleNavigate, data, type }) {
 
   const handleUpload = () => {
     setSelectedFile(null);
-    setSelectView(null)
+    setSelectView(null);
   };
 
   const handleDownload = () => {
     if (selectView) {
-      const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "xlsx"];
-      const fileNameParts = selectView.split('/').pop()
+      const imageExtensions = [
+        "jpg",
+        "jpeg",
+        "png",
+        "gif",
+        "bmp",
+        "webp",
+        "xlsx",
+      ];
+      const fileNameParts = selectView.split("/").pop();
       const extension = fileNameParts[fileNameParts.length - 1].toLowerCase();
 
       if (imageExtensions.includes(extension)) {
@@ -290,7 +296,7 @@ export default function EmployeeExpenseDetails({ handleNavigate, data, type }) {
         // It's an existing file, download it from the URL
         const link = document.createElement("a");
         link.href = selectView;
-        link.download = selectView.split('/').pop();
+        link.download = selectView.split("/").pop();
         link.target = "_blank";
         document.body.appendChild(link);
         link.click();
@@ -308,8 +314,6 @@ export default function EmployeeExpenseDetails({ handleNavigate, data, type }) {
     }
   };
 
-
-
   return (
     <form onSubmit={handleSave}>
       <Grid container spacing={1} padding={1} alignItems="center">
@@ -326,10 +330,7 @@ export default function EmployeeExpenseDetails({ handleNavigate, data, type }) {
             }}
           >
             Expense
-       
-           
-          </Typography> 
-
+          </Typography>
         </Grid>
         <Grid item xs={6}>
           <Stack direction="row" spacing={1} justifyContent="flex-end">
@@ -351,7 +352,7 @@ export default function EmployeeExpenseDetails({ handleNavigate, data, type }) {
             >
               Save
             </Button>
-          
+
             {type === 1 && (
               <Button
                 onClick={handleSuspend}
@@ -372,7 +373,6 @@ export default function EmployeeExpenseDetails({ handleNavigate, data, type }) {
             >
               Delete
             </Button>
-           
           </Stack>
         </Grid>
       </Grid>
@@ -491,7 +491,6 @@ export default function EmployeeExpenseDetails({ handleNavigate, data, type }) {
                       label="Date *"
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
-                      min={getCurrentDate()}
                       labelStyle={{
                         fontSize: "15px",
                       }}
@@ -536,7 +535,10 @@ export default function EmployeeExpenseDetails({ handleNavigate, data, type }) {
                       <>
                         <div>
                           <div>
-                            <strong>Selected File:</strong> {selectedFile?.name? selectedFile.name : selectView.split('/').pop()}
+                            <strong>Selected File:</strong>{" "}
+                            {selectedFile?.name
+                              ? selectedFile.name
+                              : selectView.split("/").pop()}
                           </div>
                           <Button
                             onClick={handleDownload}
@@ -606,7 +608,6 @@ export default function EmployeeExpenseDetails({ handleNavigate, data, type }) {
         handleClose={handleWarningClose}
         message={message}
       />
-      
     </form>
   );
 }
