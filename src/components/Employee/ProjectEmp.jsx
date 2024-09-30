@@ -267,7 +267,6 @@ export default function ProjectEmp({ handleNavigate, data }) {
                       label="Start Date"
                       value={start}
                       onChange={(e) => setStart(e.target.value)}
-                      min={getCurrentDate()}
                       labelStyle={{
                         fontSize: "15px",
                       }}
@@ -293,7 +292,6 @@ export default function ProjectEmp({ handleNavigate, data }) {
                       label="Cut off Date"
                       value={cutOff}
                       onChange={(e) => setCutOff(e.target.value)}
-                      min={getCurrentDate()}
                       labelStyle={{
                         fontSize: "15px",
                       }}

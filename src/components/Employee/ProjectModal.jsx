@@ -262,7 +262,6 @@ export default function ProjectModal({
                         type="date"
                         label="Start Date"
                         onChange={(e) => setStartDate(e.target.value)}
-                        min={getCurrentDate()}
                         labelStyle={{
                           fontSize: "15px",
                         }}
@@ -277,7 +276,6 @@ export default function ProjectModal({
                         type="date"
                         label="Cut Off Date"
                         onChange={(e) => setCutOfDate(e.target.value)}
-                        min={getCurrentDate()}
                         labelStyle={{
                           fontSize: "15px",
                         }}
