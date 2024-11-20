@@ -215,6 +215,7 @@ export default function ComplaintsReport() {
   const [displayView, setDisplayView] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [dataId, setDataId] = React.useState(0);
+  const [editSelect, setEditSelect] = React.useState(false);
 
   const handleOpenModal = () => {
     setDataId(0);
@@ -258,6 +259,21 @@ export default function ComplaintsReport() {
   const handleOpen = () => {
     setOpen(true);
   };
+
+  React.useEffect(() => {
+    if (selected[0]) {
+      const foundTransaction = data.find(
+        (transaction) => transaction.iId === selected[0]
+      );
+      if(foundTransaction?.AdminRemarks){
+        setEditSelect(true);
+      }
+      else{
+        setEditSelect(false);
+      }
+    }
+  }, [selected[0]]);
+  
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -363,6 +379,8 @@ export default function ComplaintsReport() {
     }
     setSelected(newSelected);
   };
+
+  
   return (
     <Box
       sx={{
@@ -399,7 +417,7 @@ export default function ComplaintsReport() {
         </Button>
         <Button
           size="small"
-          disabled={selected.length !== 1}
+          disabled={selected.length !== 1 || editSelect}
           onClick={handleEdit}
           variant="contained"
           startIcon={<EditIcon />}
@@ -417,16 +435,16 @@ export default function ComplaintsReport() {
         >
           Excel
         </Button>
-        <Button
+        {/* <Button
           size="small"
-          disabled={selected.length !== 1}
+          disabled={selected.length !== 1 || editSelect}
           onClick={handleDelete}
           variant="contained"
           startIcon={<DeleteIcon />}
           sx={selected.length === 1? buttonStyle : buttonStyle2}
         >
           Delete
-        </Button>
+        </Button> */}
       </Stack>
       <Box
         sx={{
