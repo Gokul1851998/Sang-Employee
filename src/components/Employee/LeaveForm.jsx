@@ -343,7 +343,7 @@ export default function LeaveForm({ setChange, id }) {
                     label="Start Date"
                     onChange={(e) => setStart(e.target.value)}
                     type="date"
-                    min={getCurrentDate()}
+                    // min={getCurrentDate()}
                     style={{ marginBottom: 10 }}
                   />
                 </MDBCol>
@@ -354,7 +354,7 @@ export default function LeaveForm({ setChange, id }) {
                     id="form3Example1"
                     label="End Date"
                     onChange={(e) => setEnd(e.target.value)}
-                    min={getCurrentDate()}
+                    // min={getCurrentDate()}
                     type="date"
                   />
                 </MDBCol>
