@@ -13,6 +13,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import {
   deleteLeaveApplication,
   getLeaveApplicationSummary,
+  leaveAuthorization,
 } from "../../api/ApiCall";
 import Loader from "../Loader/Loader";
 import {
@@ -29,6 +30,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import LeaveForm from "./LeaveForm";
+import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 import Swal from "sweetalert2";
 
 const buttonStyle = {
@@ -169,6 +171,49 @@ export default function EmployeeLeave() {
     setId(null);
     setNavigate(true);
   };
+
+
+    const handleApprove = async (iAuth, status, iTransId) => {
+      Swal.fire({
+        title: "Remarks",
+        input: "text",
+        inputAttributes: {
+          autocapitalize: "off",
+          maxlength: 200, 
+        },
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        showCancelButton: true,
+        confirmButtonText: `${status}`,
+        showLoaderOnConfirm: true,
+        preConfirm: async (login) => {
+          if (iAuth === 2 && !login) {
+            Swal.showValidationMessage("Remarks are mandatory for rejection");
+            return;
+          }
+  
+          const apiData = {
+            sRemarks: login,
+            iTransId,
+            iUser:userId,
+            iAuth,
+          };
+  
+          const response = await leaveAuthorization(apiData);
+  
+          if (response.Status === "Success") {
+            Swal.fire({
+              title: `${status}`,
+              text: `Leave request ${status}.`,
+              icon: "success",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            fetchData();
+          }
+        },
+      });
+    };
 
   return (
     <>
@@ -494,6 +539,27 @@ export default function EmployeeLeave() {
                                           }
                                         >
                                           <DeleteIcon
+                                            fontSize="small"
+                                            sx={{
+                                              fontSize: 16,
+                                              color: "#1b77e9",
+                                            }}
+                                          />
+                                        </IconButton>
+                                      </Tooltip>
+                                      <Tooltip title="Reject" arrow>
+                                        <IconButton
+                                          aria-label="Reject"
+                                          size="small"
+                                          onClick={() =>
+                                            handleApprove(
+                                              2,
+                                              "Reject",
+                                              row.iTransId
+                                            )
+                                          }
+                                        >
+                                          <DisabledByDefaultIcon
                                             fontSize="small"
                                             sx={{
                                               fontSize: 16,
