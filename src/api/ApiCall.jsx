@@ -489,7 +489,17 @@ export const getLogin = async (payload) => {
     }
   };
 
-
+ //Get Leave ApplicationReport
+ export const getLeaveApplicationReport = async (payload) => {
+  try {
+    const response = await axios.get(`${baseUrl}GetLeaveApplicationReport`, {
+      params: payload,
+    });
+    return response?.data;
+  } catch (error) {
+    console.log('GetLeaveApplicationReport',error);
+  }
+};
 
   
   

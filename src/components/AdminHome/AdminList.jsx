@@ -65,7 +65,7 @@ function EnhancedTableHead(props) {
     >
       <TableRow>
         {rows.map((header, index) => {
-          if (header !== "iId" && header !== hideEmployee ?"Employee" : null) {
+          if (header !== "iId" && header!=="TransId" && header !== hideEmployee ?"Employee" : null) {
             // Exclude "iId", "iAssetType", and "sAltName" from the header
             return (
               <TableCell
@@ -115,7 +115,7 @@ EnhancedTableHead.propTypes = {
 };
 
 function EnhancedTableToolbar(props) {
-  const { numSelected, values, changes, action, expandAction, expand } = props;
+  const { numSelected, values, changes, action, expandAction, expand,name } = props;
 
   return (
     <Toolbar
@@ -129,7 +129,7 @@ function EnhancedTableToolbar(props) {
         id="tableTitle"
         component="div"
       >
-        Report
+       {name} Report
       </Typography>
 
       <TextField
@@ -267,6 +267,7 @@ export default function AdminList({ data, name, count, hideEmployee  }) {
           changes={handleSearch}
           expand={expand}
           expandAction={handleExpand}
+          name={name}
         />
 
         {data.length > 0 && (
@@ -308,7 +309,7 @@ export default function AdminList({ data, name, count, hideEmployee  }) {
                       sx={{ cursor: "pointer" }}
                     >
                       {Object.keys(data[0]).map((column, index) => {
-                        if (column !== "iId" && column !== hideEmployee ? "Employee" : null) {
+                        if (column !== "iId" && column!=="TransId" && column !== hideEmployee ? "Employee" : null) {
                           return (
                             <>
                               {expand ? (

@@ -35,6 +35,8 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import EmployeeExpense from '../Employee/Expense/EmployeeExpense';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import Payments from '../Employee/Payments/Payments';
+import SuperAdminAbsenteeReport from '../SuperAdmin/SuperAdminAbsenteeReport';
+import NewReleasesIcon from '@mui/icons-material/NewReleases';
 
 export default function SideBar() {
   const [open, setOpen] = React.useState(false);
@@ -103,7 +105,9 @@ export default function SideBar() {
                     <AccountBalanceWalletIcon />
                   ): text.iMenuId === 18 ? (
                     <PaymentsIcon />
-                  ) : (
+                  ):text.iMenuId === 19 ? (
+                    <NewReleasesIcon/>
+                  ): (
                     <MailIcon />
                   )} </ListItemIcon>
               <ListItemText primary={text.sMenuName} />
@@ -144,6 +148,8 @@ export default function SideBar() {
         <EmployeeExpense type={1} />
       ): page === 18 ? (
         <Payments />
+      ):page === 19 ? (
+        <SuperAdminAbsenteeReport />
       ): null}
       <Loader open={loader} handleClose={handleLoaderClose} />
     </div>

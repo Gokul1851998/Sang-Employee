@@ -278,7 +278,7 @@ export default function ComplaintsAuth({ name }) {
       input: "text",
       inputAttributes: {
         autocapitalize: "off",
-        maxlength: 200,
+        maxlength: 1000,
       },
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
